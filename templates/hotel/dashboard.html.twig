@@ -1,0 +1,178 @@
+{% extends 'hotel/base.html.twig' %}
+
+{% block title %}Dashboard Hôtel{% endblock %}
+
+{% block page_title %}{{ hotel.name }}{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Bienvenue, {{ app.user.firstName }} · {{ hotel.stars ? hotel.stars ~ ' ⭐' : '' }} {{ hotel.city }}</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('hotel_new_ride') }}" class="btn-primary group">
+    <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    Nouvelle course
+  </a>
+{% endblock %}
+
+{% block content %}
+{# Stats with animated counters #}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 stagger-in">
+  <div class="card p-5 group" x-data="counter({{ stats.total }})" x-init="start()">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">Total courses</span>
+      <div class="w-8 h-8 bg-dark-50 rounded-lg flex items-center justify-center transition-all duration-300 group-hover:bg-gold-100 group-hover:scale-110">🚗</div>
+    </div>
+    <div class="text-3xl font-bold text-dark-900" x-text="current"></div>
+    <div class="text-xs text-dark-300 mt-1">Toutes périodes</div>
+  </div>
+
+  <div class="card p-5 group" x-data="counter({{ stats.pending }})" x-init="start()">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">En attente</span>
+      <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-amber-600 transition-all duration-300 group-hover:scale-110">⏳</div>
+    </div>
+    <div class="text-3xl font-bold text-amber-600" x-text="current"></div>
+    <div class="text-xs text-dark-300 mt-1">Assignation requise</div>
+  </div>
+
+  <div class="card p-5 group" x-data="counter({{ stats.completed }})" x-init="start()">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">Terminées</span>
+      <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center text-green-600 transition-all duration-300 group-hover:scale-110">✅</div>
+    </div>
+    <div class="text-3xl font-bold text-green-600" x-text="current"></div>
+    <div class="text-xs text-dark-300 mt-1">Avec succès</div>
+  </div>
+
+  <div class="card p-5 group animate-glow-pulse" style="background: linear-gradient(135deg, #fdf9ef, #ffffff); border-color: #f4dea8;"
+    x-data="counter({{ stats.commission }}, true)" x-init="start()">
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold text-gold-700 uppercase tracking-wider">Commissions</span>
+      <div class="w-8 h-8 bg-gold-100 rounded-lg flex items-center justify-center text-gold-600 transition-all duration-300 group-hover:scale-110">💰</div>
+    </div>
+    <div class="text-3xl font-bold text-gold-700"><span x-text="current"></span> €</div>
+    <div class="text-xs text-gold-500 mt-1">Revenus totaux</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  {# Recent rides #}
+  <div class="lg:col-span-2 card overflow-hidden">
+    <div class="flex items-center justify-between p-5 border-b border-gray-50">
+      <h2 class="font-semibold text-dark-900 font-display">Courses récentes</h2>
+      <a href="{{ path('hotel_rides') }}" class="text-gold-600 text-sm font-medium hover:underline transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-1">
+        Voir tout <span class="transition-transform duration-200 group-hover:translate-x-1">→</span>
+      </a>
+    </div>
+    {% if recentRides is empty %}
+      <div class="p-10 text-center animate-fade-in-up">
+        <div class="text-5xl mb-3 animate-float">🚗</div>
+        <p class="text-dark-400 text-sm">Aucune course pour l'instant</p>
+        <a href="{{ path('hotel_new_ride') }}" class="btn-primary mt-4 inline-flex">Créer une course</a>
+      </div>
+    {% else %}
+      <div class="divide-y divide-gray-50 stagger-in">
+        {% for ride in recentRides %}
+          <a href="{{ path('hotel_ride_detail', {id: ride.id}) }}"
+             class="flex items-center gap-4 px-5 py-4 hover:bg-gold-50/50 transition-all duration-300 group hover:pl-7">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0 transition-transform duration-300 group-hover:scale-110
+              {% if ride.status == 'pending' %}bg-amber-50
+              {% elseif ride.status == 'completed' %}bg-green-50
+              {% elseif ride.status == 'in_progress' %}bg-purple-50
+              {% elseif ride.status == 'cancelled' %}bg-red-50
+              {% else %}bg-blue-50{% endif %}">
+              {{ ride.statusIcon }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-dark-900 text-sm">{{ ride.clientName }}</span>
+                <span class="text-dark-300 text-xs">·</span>
+                <span class="text-dark-400 text-xs font-mono">{{ ride.reference }}</span>
+              </div>
+              <div class="text-xs text-dark-300 mt-0.5 truncate">
+                {{ ride.pickupAddress|split(',')|first }} → {{ ride.destinationAddress|split(',')|first }}
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="text-xs font-medium text-dark-500">{{ ride.pickupDatetime|date('d/m H:i') }}</div>
+              <span class="badge mt-1 transition-all duration-200 group-hover:scale-105
+                {% if ride.status == 'pending' %}bg-amber-100 text-amber-800
+                {% elseif ride.status == 'completed' %}bg-green-100 text-green-800
+                {% elseif ride.status == 'in_progress' %}bg-purple-100 text-purple-800
+                {% elseif ride.status == 'cancelled' %}bg-red-100 text-red-800
+                {% else %}bg-blue-100 text-blue-800{% endif %}">
+                {{ ride.statusLabel }}
+              </span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {# Quick actions + info #}
+  <div class="space-y-4 stagger-in">
+    <div class="card p-5">
+      <h2 class="font-semibold text-dark-900 mb-4 font-display">Actions rapides</h2>
+      <div class="space-y-2">
+        <a href="{{ path('hotel_new_ride') }}" class="w-full flex items-center gap-3 p-3 bg-gold-50 hover:bg-gold-100 rounded-xl transition-all duration-300 hover:translate-x-1 hover:shadow-md group">
+          <span class="text-gold-600 text-lg transition-transform duration-300 group-hover:scale-125 group-hover:rotate-90">➕</span>
+          <span class="text-gold-700 font-medium text-sm">Nouvelle course</span>
+        </a>
+        <a href="{{ path('hotel_rides', {status: 'pending'}) }}" class="w-full flex items-center gap-3 p-3 bg-amber-50 hover:bg-amber-100 rounded-xl transition-all duration-300 hover:translate-x-1 hover:shadow-md group">
+          <span class="text-amber-600 text-lg transition-transform duration-300 group-hover:scale-125">⏳</span>
+          <span class="text-amber-700 font-medium text-sm">Courses en attente ({{ stats.pending }})</span>
+        </a>
+        <a href="{{ path('hotel_commissions') }}" class="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-xl transition-all duration-300 hover:translate-x-1 hover:shadow-md group">
+          <span class="text-green-600 text-lg transition-transform duration-300 group-hover:scale-125">💰</span>
+          <span class="text-green-700 font-medium text-sm">Mes commissions</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="font-semibold text-dark-900 mb-1 font-display">Mon hôtel</h2>
+      <div class="space-y-2 text-sm text-dark-500 mt-3">
+        <div class="flex items-center gap-2"><span>📍</span><span>{{ hotel.address }}, {{ hotel.city }}</span></div>
+        {% if hotel.phone %}<div class="flex items-center gap-2"><span>📞</span><span>{{ hotel.phone }}</span></div>{% endif %}
+        {% if hotel.email %}<div class="flex items-center gap-2"><span>✉️</span><span>{{ hotel.email }}</span></div>{% endif %}
+        <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+          <span class="text-gold-600 font-bold">💰</span>
+          <span class="font-semibold text-gold-700">Commission : {{ hotel.commissionRate }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function counter(target, isDecimal = false) {
+  return {
+    current: 0,
+    target: target,
+    start() {
+      if (this.target === 0) return;
+      const duration = 1200;
+      const steps = 40;
+      const increment = this.target / steps;
+      let step = 0;
+      const timer = setInterval(() => {
+        step++;
+        const progress = step / steps;
+        const eased = 1 - Math.pow(1 - progress, 3);
+        this.current = isDecimal
+          ? (this.target * eased).toFixed(2).replace('.', ',')
+          : Math.round(this.target * eased);
+        if (step >= steps) {
+          this.current = isDecimal
+            ? this.target.toFixed(2).replace('.', ',')
+            : this.target;
+          clearInterval(timer);
+        }
+      }, duration / steps);
+    }
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'layout/app.html.twig' %}
+
+{% block nav_links %}
+  <a href="{{ path('hotel_dashboard') }}"
+    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+      {{ app.request.attributes.get('_route') == 'hotel_dashboard' ? 'text-gold-700 bg-gold-50' : 'text-dark-500 hover:text-dark-900 hover:bg-gray-50' }}">
+    Tableau de bord
+  </a>
+  <a href="{{ path('hotel_new_ride') }}"
+    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+      {{ app.request.attributes.get('_route') == 'hotel_new_ride' ? 'text-gold-700 bg-gold-50' : 'text-dark-500 hover:text-dark-900 hover:bg-gray-50' }}">
+    Nouvelle course
+  </a>
+  <a href="{{ path('hotel_rides') }}"
+    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+      {{ app.request.attributes.get('_route') starts with 'hotel_ride' ? 'text-gold-700 bg-gold-50' : 'text-dark-500 hover:text-dark-900 hover:bg-gray-50' }}">
+    Mes courses
+  </a>
+  <a href="{{ path('hotel_commissions') }}"
+    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+      {{ app.request.attributes.get('_route') == 'hotel_commissions' ? 'text-gold-700 bg-gold-50' : 'text-dark-500 hover:text-dark-900 hover:bg-gray-50' }}">
+    Commissions
+  </a>
+{% endblock %}
+
+{% block mobile_nav %}
+  <a href="{{ path('hotel_dashboard') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_dashboard' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Tableau de bord</a>
+  <a href="{{ path('hotel_new_ride') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_new_ride' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Nouvelle course</a>
+  <a href="{{ path('hotel_rides') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'hotel_ride' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Mes courses</a>
+  <a href="{{ path('hotel_commissions') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_commissions' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Commissions</a>
+{% endblock %}

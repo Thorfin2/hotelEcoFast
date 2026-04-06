@@ -1,0 +1,225 @@
+{% extends 'hotel/base.html.twig' %}
+
+{% block title %}Course #{{ ride.reference }}{% endblock %}
+{% block page_title %}Course #{{ ride.reference }}{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ ride.clientName }} · {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('hotel_rides') }}" class="btn-secondary">← Mes courses</a>
+  {% if ride.status in ['pending', 'assigned'] %}
+    <form method="post" action="{{ path('hotel_cancel_ride', {id: ride.id}) }}"
+          onsubmit="return confirm('Confirmer l\'annulation ?')">
+      <input type="hidden" name="_token" value="{{ csrf_token('cancel_ride_' ~ ride.id) }}">
+      <button type="submit" class="btn-danger text-sm">❌ Annuler la course</button>
+    </form>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  {# Main info #}
+  <div class="lg:col-span-2 space-y-6">
+
+    {# Status banner #}
+    <div class="card p-5 flex items-center gap-4
+      {% if ride.status == 'pending' %}border-l-4 border-amber-400
+      {% elseif ride.status == 'completed' %}border-l-4 border-green-400
+      {% elseif ride.status == 'in_progress' %}border-l-4 border-purple-400
+      {% elseif ride.status == 'cancelled' %}border-l-4 border-red-400
+      {% else %}border-l-4 border-blue-400{% endif %}">
+      <div class="text-4xl">{{ ride.statusIcon }}</div>
+      <div>
+        <div class="font-bold text-dark-900 text-lg">{{ ride.statusLabel }}</div>
+        <div class="text-dark-400 text-sm">
+          {% if ride.status == 'pending' %}En attente d'assignation d'un chauffeur par l'administrateur
+          {% elseif ride.status == 'assigned' %}Chauffeur assigné, en attente de confirmation
+          {% elseif ride.status == 'confirmed' %}Le chauffeur a confirmé la mission
+          {% elseif ride.status == 'in_progress' %}La course est en cours
+          {% elseif ride.status == 'completed' %}Course terminée avec succès
+          {% elseif ride.status == 'cancelled' %}Cette course a été annulée
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {# Client + Trajet #}
+    <div class="card p-6">
+      <h3 class="font-semibold text-dark-900 mb-4">👤 Client</h3>
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">Nom</div>
+          <div class="font-semibold text-dark-900">{{ ride.clientName }}</div>
+        </div>
+        {% if ride.clientPhone %}
+        <div>
+          <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">Téléphone</div>
+          <a href="tel:{{ ride.clientPhone }}" class="font-semibold text-gold-600 hover:underline">{{ ride.clientPhone }}</a>
+        </div>
+        {% endif %}
+        {% if ride.clientEmail %}
+        <div class="col-span-2">
+          <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">Email</div>
+          <div class="font-semibold text-dark-900">{{ ride.clientEmail }}</div>
+        </div>
+        {% endif %}
+        {% if ride.flightNumber %}
+        <div>
+          <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">N° de vol</div>
+          <div class="font-semibold text-dark-900">✈️ {{ ride.flightNumber }}</div>
+        </div>
+        {% endif %}
+        <div>
+          <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">Passagers</div>
+          <div class="font-semibold text-dark-900">{{ ride.passengers }} personne(s)</div>
+        </div>
+        {% if ride.luggage %}
+        <div>
+          <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">Bagages</div>
+          <div class="font-semibold text-dark-900">{{ ride.luggage }} bagage(s)</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card p-6">
+      <h3 class="font-semibold text-dark-900 mb-4">🚗 Trajet</h3>
+      <div class="space-y-4">
+        <div class="flex items-start gap-3">
+          <div class="flex flex-col items-center mt-1">
+            <div class="w-3 h-3 rounded-full bg-gold-500"></div>
+            <div class="w-0.5 h-12 bg-dark-200 my-1"></div>
+            <div class="w-3 h-3 rounded-full bg-dark-300"></div>
+          </div>
+          <div class="flex-1 space-y-6">
+            <div>
+              <div class="text-xs text-dark-300 font-semibold uppercase tracking-wider mb-1">Départ</div>
+              <div class="font-semibold text-dark-900">{{ ride.pickupAddress }}</div>
+              <div class="text-gold-600 text-sm font-semibold mt-1">📅 {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
+            </div>
+            <div>
+              <div class="text-xs text-dark-300 font-semibold uppercase tracking-wider mb-1">Destination</div>
+              <div class="font-semibold text-dark-900">{{ ride.destinationAddress }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if ride.notes %}
+        <div class="mt-4 pt-4 border-t border-gray-100">
+          <div class="text-xs text-dark-300 font-semibold uppercase tracking-wider mb-2">Notes</div>
+          <div class="text-dark-600 text-sm bg-gold-50 rounded-lg p-3 border border-gold-100">{{ ride.notes }}</div>
+        </div>
+      {% endif %}
+    </div>
+
+    {# Notifications #}
+    {% if ride.notifications is not empty %}
+    <div class="card p-6">
+      <h3 class="font-semibold text-dark-900 mb-4">📬 Notifications envoyées</h3>
+      <div class="space-y-2">
+        {% for notif in ride.notifications %}
+          <div class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm
+              {% if notif.channel == 'email' %}bg-blue-50 text-blue-600{% else %}bg-green-50 text-green-600{% endif %}">
+              {{ notif.channel == 'email' ? '✉️' : '💬' }}
+            </div>
+            <div class="flex-1">
+              <div class="text-sm font-medium text-dark-900">{{ notif.typeLabel }} → {{ notif.recipientLabel }}</div>
+              <div class="text-xs text-dark-300">{{ notif.createdAt|date('d/m H:i') }}</div>
+            </div>
+            <span class="badge {% if notif.status == 'sent' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+              {{ notif.status == 'sent' ? 'Envoyé' : 'Échec' }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Sidebar #}
+  <div class="space-y-4">
+
+    {# Chauffeur #}
+    {% if ride.driver %}
+    <div class="card p-5">
+      <h3 class="font-semibold text-dark-900 mb-3">🚘 Chauffeur assigné</h3>
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center text-gold-700 font-bold">
+          {{ ride.driver.firstName|first }}{{ ride.driver.lastName|first }}
+        </div>
+        <div>
+          <div class="font-semibold text-dark-900">{{ ride.driver.fullName }}</div>
+          <div class="text-xs text-dark-400">{{ ride.driver.vehicleModel }}</div>
+        </div>
+      </div>
+      <div class="space-y-2 text-sm">
+        <div class="flex items-center gap-2 text-dark-500">
+          <span>📞</span><a href="tel:{{ ride.driver.phone }}" class="text-gold-600 hover:underline">{{ ride.driver.phone }}</a>
+        </div>
+        <div class="flex items-center gap-2 text-dark-500">
+          <span>🔑</span><span class="font-mono text-xs bg-dark-50 px-2 py-0.5 rounded">{{ ride.driver.licensePlate }}</span>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="card p-5 border-amber-100">
+      <h3 class="font-semibold text-dark-900 mb-2">🚘 Chauffeur</h3>
+      <div class="text-amber-600 text-sm">⏳ En attente d'assignation par l'administrateur</div>
+    </div>
+    {% endif %}
+
+    {# Financials #}
+    {% if ride.price %}
+    <div class="card p-5" style="background: linear-gradient(135deg, #fdf9ef, #ffffff);">
+      <h3 class="font-semibold text-dark-900 mb-3">💰 Financier</h3>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-dark-400">Prix total</span>
+          <span class="font-bold text-dark-900">{{ ride.price }} €</span>
+        </div>
+        <div class="flex justify-between border-t border-gray-100 pt-2">
+          <span class="text-dark-400">Commission ({{ hotel.commissionRate }}%)</span>
+          <span class="font-bold text-gold-700 text-base">{{ ride.hotelCommission }} €</span>
+        </div>
+        {% if ride.driverAmount %}
+        <div class="flex justify-between">
+          <span class="text-dark-400">Part chauffeur</span>
+          <span class="font-medium text-dark-600">{{ ride.driverAmount }} €</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# Timeline #}
+    <div class="card p-5">
+      <h3 class="font-semibold text-dark-900 mb-3">📅 Chronologie</h3>
+      <div class="space-y-3 text-xs">
+        <div class="flex items-center gap-2 text-dark-500">
+          <div class="w-2 h-2 rounded-full bg-gold-500"></div>
+          <div><span class="font-medium">Créée :</span> {{ ride.createdAt|date('d/m H:i') }}</div>
+        </div>
+        {% if ride.assignedAt %}
+        <div class="flex items-center gap-2 text-dark-500">
+          <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+          <div><span class="font-medium">Assignée :</span> {{ ride.assignedAt|date('d/m H:i') }}</div>
+        </div>
+        {% endif %}
+        {% if ride.startedAt %}
+        <div class="flex items-center gap-2 text-dark-500">
+          <div class="w-2 h-2 rounded-full bg-purple-500"></div>
+          <div><span class="font-medium">Démarrée :</span> {{ ride.startedAt|date('d/m H:i') }}</div>
+        </div>
+        {% endif %}
+        {% if ride.completedAt %}
+        <div class="flex items-center gap-2 text-dark-500">
+          <div class="w-2 h-2 rounded-full bg-green-500"></div>
+          <div><span class="font-medium">Terminée :</span> {{ ride.completedAt|date('d/m H:i') }}</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'driver/base.html.twig' %}
+
+{% block title %}Dashboard Chauffeur{% endblock %}
+{% block page_title %}Bonjour, {{ driver.firstName }} !{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ driver.vehicleModel }} · {{ driver.licensePlate }}</p>{% endblock %}
+
+{% block header_actions %}
+  <form method="post" action="{{ path('driver_profile') }}" class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5 text-sm">
+      <div class="w-2 h-2 rounded-full
+        {% if driver.status == 'available' %}bg-green-500 animate-pulse
+        {% elseif driver.status == 'busy' %}bg-amber-500 animate-pulse
+        {% else %}bg-dark-300{% endif %}"></div>
+      <span class="font-medium text-dark-600">{{ driver.statusLabel }}</span>
+    </div>
+    {% if driver.status == 'available' %}
+      <button name="status" value="offline" class="btn-secondary text-sm py-2">Passer hors ligne</button>
+    {% elseif driver.status == 'offline' %}
+      <button name="status" value="available" class="btn-primary text-sm py-2">Passer disponible</button>
+    {% endif %}
+  </form>
+{% endblock %}
+
+{% block content %}
+{# Status card #}
+<div class="card p-5 mb-6 animate-fade-in transition-all duration-500
+  {% if driver.status == 'available' %}border-green-200 bg-green-50
+  {% elseif driver.status == 'busy' %}border-amber-200 bg-amber-50
+  {% else %}border-dark-200{% endif %}"
+  x-data="{ pulse: true }" x-init="setInterval(() => pulse = !pulse, 2000)">
+  <div class="flex items-center gap-3">
+    <div class="text-3xl transition-transform duration-500" :class="pulse ? 'scale-110' : 'scale-100'">
+      {% if driver.status == 'available' %}✅
+      {% elseif driver.status == 'busy' %}🚗
+      {% else %}😴{% endif %}
+    </div>
+    <div>
+      <div class="font-bold font-display text-dark-900 text-lg">
+        {% if driver.status == 'available' %}Vous êtes disponible
+        {% elseif driver.status == 'busy' %}Vous êtes en mission
+        {% else %}Vous êtes hors ligne{% endif %}
+      </div>
+      <div class="text-dark-400 text-sm">
+        {% if driver.status == 'available' %}En attente d'une nouvelle mission
+        {% elseif driver.status == 'busy' %}{{ activeMissions|length }} mission(s) active(s)
+        {% else %}Vous ne recevez pas de nouvelles missions{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Stats #}
+<div class="grid grid-cols-3 gap-4 mb-6 stagger-in">
+  <div class="card p-4 text-center group" x-data="counter({{ activeMissions|length }})" x-init="start()">
+    <div class="text-2xl font-bold font-display text-dark-900 transition-transform duration-300 group-hover:scale-110" x-text="current"></div>
+    <div class="text-xs text-dark-300 mt-1">Missions actives</div>
+  </div>
+  <div class="card p-4 text-center group" x-data="counter({{ completedCount }})" x-init="start()">
+    <div class="text-2xl font-bold text-green-600 transition-transform duration-300 group-hover:scale-110" x-text="current"></div>
+    <div class="text-xs text-dark-300 mt-1">Terminées</div>
+  </div>
+  <div class="card p-4 text-center group">
+    <div class="w-4 h-4 rounded-full mx-auto mb-1 transition-transform duration-300 group-hover:scale-150
+      {% if driver.status == 'available' %}bg-green-500
+      {% elseif driver.status == 'busy' %}bg-amber-500 animate-pulse
+      {% else %}bg-dark-300{% endif %}"></div>
+    <div class="text-xs text-dark-300">{{ driver.statusLabel }}</div>
+  </div>
+</div>
+
+{# Active missions #}
+{% if activeMissions is not empty %}
+  <h2 class="font-semibold font-display text-dark-900 mb-3">Missions en cours</h2>
+  <div class="space-y-3 mb-6 stagger-in">
+    {% for ride in activeMissions %}
+      <div class="card p-5 border-l-4 transition-all duration-300 hover:shadow-lg hover:translate-x-1 group
+        {% if ride.status == 'assigned' %}border-blue-400
+        {% elseif ride.status == 'confirmed' %}border-indigo-400
+        {% else %}border-purple-400{% endif %}">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="font-bold font-display text-dark-900">{{ ride.clientName }}</span>
+              <span class="font-mono text-xs text-dark-300">{{ ride.reference }}</span>
+              <span class="badge transition-all duration-200 group-hover:scale-105
+                {% if ride.status == 'assigned' %}bg-blue-100 text-blue-800
+                {% elseif ride.status == 'confirmed' %}bg-indigo-100 text-indigo-800
+                {% else %}bg-purple-100 text-purple-800{% endif %}">
+                {{ ride.statusLabel }}
+              </span>
+            </div>
+            <div class="space-y-1 text-sm text-dark-500">
+              <div class="flex items-center gap-2"><span class="text-green-500">●</span> {{ ride.pickupAddress }}</div>
+              <div class="flex items-center gap-2"><span class="text-red-400">●</span> {{ ride.destinationAddress }}</div>
+            </div>
+            <div class="text-gold-700 font-bold mt-2">📅 {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
+          </div>
+          <a href="{{ path('driver_mission_detail', {id: ride.id}) }}" class="btn-primary text-sm ml-4 transition-all duration-300 group-hover:shadow-lg">Gérer →</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card p-10 text-center animate-fade-in-up">
+    <div class="text-5xl mb-3 animate-float">🚗</div>
+    <p class="text-dark-400">Aucune mission active pour le moment</p>
+    <p class="text-dark-300 text-sm mt-1">Les nouvelles missions apparaîtront ici</p>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function counter(target) {
+  return {
+    current: 0,
+    target: target,
+    start() {
+      if (this.target === 0) return;
+      const duration = 800;
+      const steps = 30;
+      let step = 0;
+      const timer = setInterval(() => {
+        step++;
+        const eased = 1 - Math.pow(1 - step / steps, 3);
+        this.current = Math.round(this.target * eased);
+        if (step >= steps) { this.current = this.target; clearInterval(timer); }
+      }, duration / steps);
+    }
+  }
+}
+</script>
+{% endblock %}

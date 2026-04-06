@@ -1,0 +1,71 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Chauffeurs{% endblock %}
+{% block page_title %}Chauffeurs{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ drivers|length }} chauffeur(s)</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('admin_driver_new') }}" class="btn-primary">+ Nouveau chauffeur</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-in">
+  {% for driver in drivers %}
+    <div class="card p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group {{ not driver.isActive ? 'opacity-60' : '' }}">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg
+          {% if driver.status == 'available' %}bg-green-500
+          {% elseif driver.status == 'busy' %}bg-amber-500
+          {% else %}bg-dark-300{% endif %}">
+          {{ driver.firstName|first }}{{ driver.lastName|first }}
+        </div>
+        <div class="flex-1">
+          <h3 class="font-bold font-display text-dark-900">{{ driver.fullName }}</h3>
+          <p class="text-dark-400 text-xs">{{ driver.vehicleModel }} · {{ driver.vehicleType }}</p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <div class="w-2 h-2 rounded-full
+            {% if driver.status == 'available' %}bg-green-500
+            {% elseif driver.status == 'busy' %}bg-amber-500 animate-pulse
+            {% else %}bg-dark-300{% endif %}"></div>
+          <span class="text-xs font-medium
+            {% if driver.status == 'available' %}text-green-700
+            {% elseif driver.status == 'busy' %}text-amber-700
+            {% else %}text-dark-400{% endif %}">
+            {{ driver.statusLabel }}
+          </span>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 text-xs text-dark-400 mb-4">
+        <div class="flex items-center gap-1.5"><span>📞</span>{{ driver.phone }}</div>
+        {% if driver.email %}<div class="flex items-center gap-1.5 truncate"><span>✉️</span>{{ driver.email }}</div>{% endif %}
+        <div class="flex items-center gap-1.5"><span>🔑</span><span class="font-mono bg-dark-50 px-1.5 py-0.5 rounded text-dark-600">{{ driver.licensePlate }}</span></div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-dark-100">
+        <div class="text-center">
+          <div class="text-lg font-bold text-dark-900">{{ driver.rides|length }}</div>
+          <div class="text-xs text-dark-300">Missions</div>
+        </div>
+        <div class="flex gap-2">
+          <form method="post" action="{{ path('admin_driver_status', {id: driver.id}) }}" class="inline">
+            <select name="status" onchange="this.form.submit()" class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white">
+              <option value="available" {{ driver.status == 'available' ? 'selected' : '' }}>Disponible</option>
+              <option value="busy" {{ driver.status == 'busy' ? 'selected' : '' }}>En mission</option>
+              <option value="offline" {{ driver.status == 'offline' ? 'selected' : '' }}>Hors ligne</option>
+            </select>
+          </form>
+          <a href="{{ path('admin_driver_edit', {id: driver.id}) }}" class="text-xs text-gold-600 hover:underline font-medium">Modifier</a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-span-3 card p-12 text-center">
+      <div class="text-5xl mb-4">🚘</div>
+      <p class="text-dark-400">Aucun chauffeur</p>
+      <a href="{{ path('admin_driver_new') }}" class="btn-primary mt-4 inline-flex">Ajouter un chauffeur</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

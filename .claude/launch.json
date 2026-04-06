@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Symfony Dev Server",
+      "runtimeExecutable": "/Applications/MAMP/bin/php/php8.3.30/bin/php",
+      "runtimeArgs": ["-S", "localhost:8000", "-t", "public/"],
+      "port": 8000
+    }
+  ]
+}

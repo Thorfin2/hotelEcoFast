@@ -1,0 +1,79 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Paramètres{% endblock %}
+{% block page_title %}Paramètres de tarification{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Configurez les prix par kilomètre et le tarif minimum</p>{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+
+  {% for message in app.flashes('success') %}
+    <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
+      x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0">
+      <span class="text-green-600 text-sm">&#10003;</span>
+      <p class="text-green-800 text-sm">{{ message }}</p>
+    </div>
+  {% endfor %}
+
+  <form method="post" class="space-y-6">
+
+    <div class="card p-6">
+      <h2 class="font-semibold text-dark-900 mb-4 flex items-center gap-2">
+        <span class="w-7 h-7 bg-gold-100 text-gold-600 rounded-lg flex items-center justify-center text-sm">&#128176;</span>
+        Tarification des courses
+      </h2>
+      <p class="text-dark-400 text-sm mb-6">Ces paramètres sont utilisés pour le calcul automatique du prix lors de la création d'une course.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="price_per_km" class="block text-sm font-semibold text-dark-700 mb-1.5">Prix par kilomètre</label>
+          <div class="relative">
+            <input type="number" name="price_per_km" id="price_per_km" step="0.01" min="0"
+              value="{{ pricePerKm }}"
+              class="form-input pr-10"
+              placeholder="2.50">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 text-sm font-medium">EUR/km</span>
+          </div>
+          <p class="text-dark-400 text-xs mt-1.5">Utilisé pour calculer : distance x prix/km</p>
+        </div>
+
+        <div>
+          <label for="minimum_price" class="block text-sm font-semibold text-dark-700 mb-1.5">Prix minimum</label>
+          <div class="relative">
+            <input type="number" name="minimum_price" id="minimum_price" step="0.01" min="0"
+              value="{{ minimumPrice }}"
+              class="form-input pr-8"
+              placeholder="25.00">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 text-sm font-medium">EUR</span>
+          </div>
+          <p class="text-dark-400 text-xs mt-1.5">Prix plancher appliqu&eacute; si le calcul donne un montant inf&eacute;rieur</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-6 bg-gray-50">
+      <h3 class="font-semibold text-dark-700 text-sm mb-3">Exemple de calcul</h3>
+      <div class="text-sm text-dark-500 space-y-1" x-data="{
+        pricePerKm: {{ pricePerKm }},
+        minPrice: {{ minimumPrice }},
+        exampleKm: 35
+      }">
+        <p>Pour une course de <span class="font-semibold text-dark-800" x-text="exampleKm + ' km'"></span> :</p>
+        <p class="font-mono text-dark-700 mt-2 bg-white px-3 py-2 rounded border border-gray-200">
+          <span x-text="exampleKm"></span> km x <span x-text="pricePerKm.toFixed(2)"></span> EUR = <span class="font-bold text-gold-700" x-text="Math.max(exampleKm * pricePerKm, minPrice).toFixed(2) + ' EUR'"></span>
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="submit" class="btn-primary py-2.5 px-6">
+        Enregistrer les paramètres
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

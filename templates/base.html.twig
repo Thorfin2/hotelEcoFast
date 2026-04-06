@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ app_name }}{% endblock %} — EcoFast Hotel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold:    { 50:'#fdf9ef', 100:'#faf0d4', 200:'#f4dea8', 300:'#edc872', 400:'#e5ad3e', 500:'#d4952a', 600:'#b87a20', 700:'#96601d', 800:'#7a4e1f', 900:'#66411e' },
+            dark:    { 50:'#f5f5f6', 100:'#e6e6e8', 200:'#cfd0d4', 300:'#aeb0b6', 400:'#868991', 500:'#6b6e76', 600:'#5a5c63', 700:'#4d4e54', 800:'#434449', 900:'#1a1a1e', 950:'#111113' },
+            primary: { 50:'#fdf9ef', 100:'#faf0d4', 200:'#f4dea8', 300:'#edc872', 400:'#e5ad3e', 500:'#d4952a', 600:'#b87a20', 700:'#96601d', 800:'#7a4e1f', 900:'#66411e' },
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          keyframes: {
+            'fade-in': { '0%': { opacity:'0', transform:'translateY(8px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+            'fade-in-up': { '0%': { opacity:'0', transform:'translateY(16px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+            'scale-in': { '0%': { opacity:'0', transform:'scale(0.96)' }, '100%': { opacity:'1', transform:'scale(1)' } },
+            'float': { '0%,100%': { transform:'translateY(0)' }, '50%': { transform:'translateY(-4px)' } },
+            'glow-pulse': { '0%,100%': { boxShadow:'0 0 12px rgba(212,149,42,0.1)' }, '50%': { boxShadow:'0 0 20px rgba(212,149,42,0.25)' } },
+          },
+          animation: {
+            'fade-in': 'fade-in 0.35s ease-out both',
+            'fade-in-up': 'fade-in-up 0.4s ease-out both',
+            'scale-in': 'scale-in 0.25s ease-out both',
+            'float': 'float 3s ease-in-out infinite',
+            'glow-pulse': 'glow-pulse 2.5s ease-in-out infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+
+    /* ── Sidebar (Laravel-style) ───────────────────── */
+    .sidebar-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.5rem 0.875rem; border-radius: 0.375rem;
+      font-size: 0.8125rem; font-weight: 500; color: #6b6e76;
+      transition: all 0.15s ease;
+    }
+    .sidebar-link:hover { background: #f5f5f6; color: #1a1a1e; }
+    .sidebar-link.active {
+      background: #fdf9ef; color: #b87a20; font-weight: 600;
+      border-left: 2px solid #d4952a; margin-left: -1px;
+    }
+    .sidebar-link svg { width: 1.125rem; height: 1.125rem; flex-shrink: 0; }
+
+    /* ── Forms ──────────────────────────────────────── */
+    .form-input {
+      width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cfd0d4; border-radius: 0.375rem;
+      font-size: 0.875rem; transition: border-color 0.15s, box-shadow 0.15s; background: #fff;
+      color: #1a1a1e;
+    }
+    .form-input:focus { outline: none; border-color: #d4952a; box-shadow: 0 0 0 3px rgba(212,149,42,0.12); }
+    .form-select {
+      width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cfd0d4; border-radius: 0.375rem;
+      font-size: 0.875rem; background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-select:focus { outline: none; border-color: #d4952a; box-shadow: 0 0 0 3px rgba(212,149,42,0.12); }
+    .form-textarea {
+      width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cfd0d4; border-radius: 0.375rem;
+      font-size: 0.875rem; resize: vertical; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-textarea:focus { outline: none; border-color: #d4952a; box-shadow: 0 0 0 3px rgba(212,149,42,0.12); }
+
+    /* ── Buttons (Laravel-style) ───────────────────── */
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; background: #1a1a1e; color: #fff;
+      border-radius: 0.375rem; font-weight: 500; font-size: 0.8125rem;
+      transition: all 0.15s ease; border: 1px solid transparent; cursor: pointer;
+    }
+    .btn-primary:hover { background: #434449; }
+    .btn-primary:active { background: #111113; }
+    .btn-primary:focus-visible { outline: 2px solid #d4952a; outline-offset: 2px; }
+
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; background: #d4952a; color: #fff;
+      border-radius: 0.375rem; font-weight: 500; font-size: 0.8125rem;
+      transition: all 0.15s ease; border: none; cursor: pointer;
+    }
+    .btn-gold:hover { background: #b87a20; }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; background: #fff; color: #4d4e54;
+      border: 1px solid #cfd0d4; border-radius: 0.375rem;
+      font-weight: 500; font-size: 0.8125rem;
+      transition: all 0.15s ease; cursor: pointer;
+    }
+    .btn-secondary:hover { background: #f5f5f6; border-color: #aeb0b6; }
+
+    .btn-danger {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; background: #dc2626; color: #fff;
+      border-radius: 0.375rem; font-weight: 500; font-size: 0.8125rem;
+      transition: all 0.15s ease; cursor: pointer;
+    }
+    .btn-danger:hover { background: #b91c1c; }
+
+    /* ── Cards (Laravel-style) ─────────────────────── */
+    .card {
+      background: #fff; border-radius: 0.5rem;
+      border: 1px solid #e6e6e8;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      transition: box-shadow 0.15s ease;
+    }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+    .badge {
+      display: inline-flex; align-items: center; padding: 0.125rem 0.5rem;
+      border-radius: 9999px; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.01em;
+    }
+
+    /* ── Scrollbar ─────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cfd0d4; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #aeb0b6; }
+
+    [x-cloak] { display: none !important; }
+
+    /* ── Tables ─────────────────────────────────────── */
+    tbody tr { transition: background 0.1s ease; }
+
+    /* ── Staggered fade-in ─────────────────────────── */
+    .stagger-in > * { animation: fade-in 0.3s ease-out both; }
+    .stagger-in > *:nth-child(1) { animation-delay: 0.03s; }
+    .stagger-in > *:nth-child(2) { animation-delay: 0.06s; }
+    .stagger-in > *:nth-child(3) { animation-delay: 0.09s; }
+    .stagger-in > *:nth-child(4) { animation-delay: 0.12s; }
+    .stagger-in > *:nth-child(5) { animation-delay: 0.15s; }
+    .stagger-in > *:nth-child(6) { animation-delay: 0.18s; }
+    .stagger-in > *:nth-child(7) { animation-delay: 0.21s; }
+    .stagger-in > *:nth-child(8) { animation-delay: 0.24s; }
+
+    main { animation: fade-in-up 0.35s ease-out both; }
+
+    /* ── Filter pills ──────────────────────────────── */
+    .filter-pill { transition: all 0.15s ease; }
+    .filter-pill:hover { transform: translateY(-1px); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+    /* ── Subtle link hover ─────────────────────────── */
+    a, button { transition: all 0.15s ease; }
+  </style>
+  {% block stylesheets %}{% endblock %}
+</head>
+<body class="h-full bg-gray-100">
+
+{% block body %}{% endblock %}
+
+{# ── Toast notifications ────────────────────────── #}
+<div x-data="toastManager()" x-cloak class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none">
+  <template x-for="toast in toasts" :key="toast.id">
+    <div x-show="toast.visible"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-y-2 opacity-0"
+         x-transition:enter-end="translate-y-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-end="translate-y-2 opacity-0"
+         :class="toast.type === 'success' ? 'border-green-200' : (toast.type === 'error' ? 'border-red-200' : 'border-gray-200')"
+         class="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg bg-white text-dark-900 shadow-lg border min-w-72 max-w-sm">
+      <span x-text="toast.type === 'success' ? '✅' : (toast.type === 'error' ? '❌' : 'ℹ️')" class="text-base"></span>
+      <span class="text-sm flex-1" x-text="toast.message"></span>
+      <button @click="dismiss(toast.id)" class="text-dark-300 hover:text-dark-600 text-lg leading-none">&times;</button>
+    </div>
+  </template>
+</div>
+
+{% for type, messages in app.flashes %}
+  {% for message in messages %}
+    <div data-flash="{{ type }}" data-message="{{ message }}" hidden></div>
+  {% endfor %}
+{% endfor %}
+
+<script>
+function toastManager() {
+  return {
+    toasts: [],
+    add(message, type = 'success') {
+      const id = Date.now();
+      this.toasts.push({ id, message, type, visible: true });
+      setTimeout(() => this.dismiss(id), 4000);
+    },
+    dismiss(id) {
+      const t = this.toasts.find(t => t.id === id);
+      if (t) t.visible = false;
+      setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 300);
+    },
+    init() {
+      document.querySelectorAll('[data-flash]').forEach(el => {
+        this.add(el.dataset.message, el.dataset.flash === 'success' ? 'success' : (el.dataset.flash === 'error' ? 'error' : 'info'));
+      });
+    }
+  }
+}
+</script>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>

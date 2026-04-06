@@ -1,0 +1,72 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Commissions{% endblock %}
+{% block page_title %}Commissions{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ month|date('F Y') }}</p>{% endblock %}
+
+{% block content %}
+<div class="flex items-center gap-3 mb-6">
+  <a href="{{ path('admin_commissions', {month: month|date_modify('-1 month')|date('Y-m')}) }}" class="btn-secondary py-2">← Mois précédent</a>
+  <form method="get" class="flex items-center gap-2">
+    <input type="month" name="month" value="{{ month|date('Y-m') }}" class="form-input w-auto">
+    <button type="submit" class="btn-secondary py-2">Filtrer</button>
+  </form>
+  <a href="{{ path('admin_commissions', {month: month|date_modify('+1 month')|date('Y-m')}) }}" class="btn-secondary py-2">Mois suivant →</a>
+</div>
+
+{# Summary #}
+{% set grandTotal = data|reduce((carry, d) => carry + d.total, 0) %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="card p-5" style="background:linear-gradient(135deg,#fdf9ef,#fff);border-color:#f4dea8">
+    <div class="text-xs font-semibold text-gold-600 uppercase tracking-wider mb-2">Total commissions</div>
+    <div class="text-3xl font-bold font-display text-gold-700">{{ grandTotal|number_format(2, ',', ' ') }} €</div>
+    <div class="text-xs text-gold-400 mt-1">{{ month|date('F Y') }}</div>
+  </div>
+  <div class="card p-5">
+    <div class="text-xs font-semibold text-dark-400 uppercase tracking-wider mb-2">Hôtels actifs</div>
+    <div class="text-3xl font-bold font-display text-dark-900">{{ data|length }}</div>
+    <div class="text-xs text-dark-300 mt-1">partenaires</div>
+  </div>
+  <div class="card p-5">
+    <div class="text-xs font-semibold text-dark-400 uppercase tracking-wider mb-2">Courses traitées</div>
+    {% set totalRides = data|reduce((carry, d) => carry + d.rides|length, 0) %}
+    <div class="text-3xl font-bold font-display text-dark-900">{{ totalRides }}</div>
+    <div class="text-xs text-dark-300 mt-1">ce mois</div>
+  </div>
+</div>
+
+<div class="space-y-4">
+  {% for item in data %}
+    <div class="card overflow-hidden">
+      <div class="flex items-center justify-between p-5 border-b border-dark-50">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-gold-50 rounded-lg flex items-center justify-center text-gold-600">🏨</div>
+          <div>
+            <h3 class="font-semibold font-display text-dark-900">{{ item.hotel.name }}</h3>
+            <div class="text-xs text-dark-300">{{ item.hotel.city }} · Commission {{ item.hotel.commissionRate }}%</div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-xl font-bold text-gold-700">{{ item.total|number_format(2, ',', ' ') }} €</div>
+          <div class="text-xs text-dark-300">{{ item.rides|length }} course(s)</div>
+        </div>
+      </div>
+      {% if item.rides is not empty %}
+        <div class="divide-y divide-dark-50">
+          {% for ride in item.rides %}
+            <div class="flex items-center gap-4 px-5 py-3 text-sm">
+              <span class="font-mono text-xs text-dark-300">{{ ride.reference }}</span>
+              <span class="flex-1 font-medium text-dark-900">{{ ride.clientName }}</span>
+              <span class="text-dark-300 text-xs">{{ ride.pickupDatetime|date('d/m') }}</span>
+              <span class="text-dark-500">{{ ride.price }} €</span>
+              <span class="font-bold text-gold-700">{{ ride.hotelCommission }} €</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="p-5 text-sm text-dark-300 text-center">Aucune course terminée ce mois</div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier {{ hotel.name }}{% endblock %}
+{% block page_title %}Modifier l'hôtel{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ hotel.name }}</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('admin_hotels') }}" class="btn-secondary">← Retour</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+  <div class="card p-6">
+    {{ form_start(form) }}
+    <div class="space-y-4">
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(field) }}</label>
+          {{ form_widget(field) }}
+          {{ form_errors(field) }}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+    </div>
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}

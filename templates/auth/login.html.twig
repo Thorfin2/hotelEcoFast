@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+
+  {# Logo #}
+  <div class="mb-6 text-center" x-data="{ show: false }" x-init="setTimeout(() => show = true, 100)" x-show="show"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 -translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0">
+    <div class="inline-flex items-center gap-3 mb-3">
+      <span class="text-4xl">🚗</span>
+      <span class="font-display font-bold text-dark-900 text-3xl">EcoFast Hotel</span>
+    </div>
+    <p class="text-dark-400 text-sm">Plateforme de gestion de transport hôtelier</p>
+  </div>
+
+  {# Login card #}
+  <div class="w-full sm:max-w-md px-6 py-6 bg-white shadow-md overflow-hidden sm:rounded-lg"
+    x-data="{ show: false }" x-init="setTimeout(() => show = true, 200)" x-show="show"
+    x-transition:enter="transition ease-out duration-400"
+    x-transition:enter-start="opacity-0 translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0">
+
+    {% if error %}
+      <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 animate-fade-in">
+        <span class="text-red-500 text-sm">⚠️</span>
+        <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+      </div>
+    {% endif %}
+
+    <form method="post" class="space-y-4" action="{{ path('app_login') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+      <div>
+        <label class="block text-sm font-medium text-dark-700 mb-1">Email</label>
+        <input type="email" name="email" value="{{ last_username }}" autocomplete="email" required
+          class="form-input" placeholder="votre@email.com" autofocus>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-dark-700 mb-1">Mot de passe</label>
+        <div class="relative" x-data="{ show: false }">
+          <input :type="show ? 'text' : 'password'" name="password" autocomplete="current-password" required
+            class="form-input pr-10" placeholder="••••••••">
+          <button type="button" @click="show = !show"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 hover:text-dark-600 text-xs">
+            <span x-text="show ? '🙈' : '👁️'"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center">
+        <label class="flex items-center gap-2 text-sm text-dark-500 cursor-pointer">
+          <input type="checkbox" name="_remember_me" class="rounded border-gray-300 text-dark-900 focus:ring-gold-500">
+          Se souvenir de moi
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary w-full py-2.5 text-sm">
+        Se connecter
+      </button>
+    </form>
+  </div>
+
+  {# Demo accounts #}
+  <div class="w-full sm:max-w-md mt-4 px-6 py-4 bg-white shadow-md sm:rounded-lg"
+    x-data="{ show: false }" x-init="setTimeout(() => show = true, 350)" x-show="show"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 translate-y-4"
+    x-transition:enter-end="opacity-100 translate-y-0">
+    <p class="text-xs font-medium text-dark-400 uppercase tracking-wider mb-3">Comptes de démonstration</p>
+    <div class="space-y-1.5">
+      <button onclick="fillLogin('admin@ecofasthotel.com','ecofasthotel')"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-left hover:bg-gray-50 transition-colors group">
+        <span class="w-7 h-7 bg-dark-900 rounded-md flex items-center justify-center text-white text-xs font-semibold">A</span>
+        <div class="flex-1">
+          <div class="font-medium text-dark-800 text-sm">Administrateur</div>
+          <div class="text-dark-400 text-xs">admin@ecofasthotel.com</div>
+        </div>
+        <span class="text-xs text-dark-300 group-hover:text-gold-600 transition-colors">→</span>
+      </button>
+      <button onclick="fillLogin('hotel@ecofasthotel.com','ecofasthotel')"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-left hover:bg-gray-50 transition-colors group">
+        <span class="w-7 h-7 bg-gold-600 rounded-md flex items-center justify-center text-white text-xs font-semibold">H</span>
+        <div class="flex-1">
+          <div class="font-medium text-dark-800 text-sm">Hôtel Ritz Paris</div>
+          <div class="text-dark-400 text-xs">hotel@ecofasthotel.com</div>
+        </div>
+        <span class="text-xs text-dark-300 group-hover:text-gold-600 transition-colors">→</span>
+      </button>
+      <button onclick="fillLogin('chauffeur@ecofasthotel.com','ecofasthotel')"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm text-left hover:bg-gray-50 transition-colors group">
+        <span class="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center text-white text-xs font-semibold">C</span>
+        <div class="flex-1">
+          <div class="font-medium text-dark-800 text-sm">Chauffeur</div>
+          <div class="text-dark-400 text-xs">chauffeur@ecofasthotel.com</div>
+        </div>
+        <span class="text-xs text-dark-300 group-hover:text-gold-600 transition-colors">→</span>
+      </button>
+    </div>
+  </div>
+
+  <p class="text-center text-dark-300 text-xs mt-6 mb-4">© 2026 EcoFast Hotel</p>
+</div>
+
+<script>
+function fillLogin(email, password) {
+  document.querySelector('input[name="email"]').value = email;
+  document.querySelector('input[name="password"]').value = password;
+  document.querySelector('form').submit();
+}
+</script>
+{% endblock %}

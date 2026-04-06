@@ -1,0 +1,52 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Historique des notifications{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ notifications|length }} notifications récentes</p>{% endblock %}
+
+{% block content %}
+<div class="card overflow-hidden">
+  <table class="w-full">
+    <thead>
+      <tr class="bg-dark-50 border-b border-dark-100">
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Canal</th>
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Type</th>
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Destinataire</th>
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Sujet</th>
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Course</th>
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Date</th>
+        <th class="text-left px-5 py-3 text-xs font-semibold text-dark-400 uppercase">Statut</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-dark-50">
+      {% for notif in notifications %}
+        <tr class="hover:bg-gold-50/50">
+          <td class="px-5 py-3.5">
+            <span class="text-xl">{{ notif.channel == 'email' ? '✉️' : '💬' }}</span>
+          </td>
+          <td class="px-5 py-3.5 text-sm text-dark-600 font-medium">{{ notif.typeLabel }}</td>
+          <td class="px-5 py-3.5">
+            <div class="text-sm font-medium text-dark-900">{{ notif.recipientLabel }}</div>
+            <div class="text-xs text-dark-300 truncate max-w-40">{{ notif.recipientEmail ?? notif.recipientPhone }}</div>
+          </td>
+          <td class="px-5 py-3.5 text-xs text-dark-500 max-w-56 truncate">{{ notif.subject }}</td>
+          <td class="px-5 py-3.5">
+            {% if notif.ride %}
+              <a href="{{ path('admin_ride_detail', {id: notif.ride.id}) }}"
+                 class="font-mono text-xs text-gold-600 hover:underline">{{ notif.ride.reference }}</a>
+            {% else %}—{% endif %}
+          </td>
+          <td class="px-5 py-3.5 text-xs text-dark-400">{{ notif.createdAt|date('d/m/Y H:i') }}</td>
+          <td class="px-5 py-3.5">
+            <span class="badge {{ notif.status == 'sent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+              {{ notif.status == 'sent' ? '✅ Envoyé' : '❌ Échec' }}
+            </span>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7" class="px-5 py-12 text-center text-dark-300">Aucune notification</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'driver/base.html.twig' %}
+
+{% block title %}Mission #{{ ride.reference }}{% endblock %}
+{% block page_title %}Mission #{{ ride.reference }}{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ ride.clientName }} · {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('driver_missions') }}" class="btn-secondary">← Retour</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+
+  {# Status + CTA #}
+  <div class="card p-5 mb-5
+    {% if ride.status == 'assigned' %}border-l-4 border-blue-400
+    {% elseif ride.status == 'confirmed' %}border-l-4 border-indigo-400
+    {% elseif ride.status == 'in_progress' %}border-l-4 border-purple-400
+    {% elseif ride.status == 'completed' %}border-l-4 border-green-400
+    {% endif %}">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="text-3xl">{{ ride.statusIcon }}</div>
+        <div>
+          <div class="font-bold font-display text-dark-900 text-lg">{{ ride.statusLabel }}</div>
+          <div class="text-dark-400 text-sm">#{{ ride.reference }}</div>
+        </div>
+      </div>
+
+      {# Action buttons based on status #}
+      <div x-data>
+        {% if ride.status == 'assigned' %}
+          <form method="post" action="{{ path('driver_confirm_mission', {id: ride.id}) }}"
+                @submit.prevent="if(confirm('Confirmer cette mission ?')) $el.submit()">
+            <button class="btn-primary">✅ Confirmer la mission</button>
+          </form>
+        {% elseif ride.status == 'confirmed' %}
+          <form method="post" action="{{ path('driver_start_mission', {id: ride.id}) }}"
+                @submit.prevent="if(confirm('Démarrer la course maintenant ?')) $el.submit()">
+            <button class="btn-primary">🚗 Démarrer la course</button>
+          </form>
+        {% elseif ride.status == 'in_progress' %}
+          <form method="post" action="{{ path('driver_complete_mission', {id: ride.id}) }}"
+                @submit.prevent="if(confirm('Confirmer que la course est terminée ?')) $el.submit()">
+            <button class="btn-primary" style="background:#059669">🏁 Terminer la course</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if ride.status == 'assigned' %}
+      <div class="mt-3 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+        💬 En confirmant, un email et SMS seront envoyés à l'hôtel.
+      </div>
+    {% elseif ride.status == 'confirmed' %}
+      <div class="mt-3 p-3 bg-indigo-50 rounded-lg text-sm text-indigo-700">
+        💬 En démarrant, le client et l'hôtel seront notifiés par SMS.
+      </div>
+    {% elseif ride.status == 'in_progress' %}
+      <div class="mt-3 p-3 bg-purple-50 rounded-lg text-sm text-purple-700">
+        💬 En terminant, une notification de fin de course sera envoyée.
+      </div>
+    {% endif %}
+  </div>
+
+  {# Client info #}
+  <div class="card p-5 mb-4">
+    <h3 class="font-semibold font-display text-dark-900 mb-3 text-sm">👤 Client</h3>
+    <div class="space-y-2 text-sm">
+      <div class="flex items-center justify-between">
+        <span class="text-dark-400">Nom</span>
+        <span class="font-semibold text-dark-900">{{ ride.clientName }}</span>
+      </div>
+      {% if ride.clientPhone %}
+      <div class="flex items-center justify-between">
+        <span class="text-dark-400">Téléphone</span>
+        <a href="tel:{{ ride.clientPhone }}" class="font-semibold text-gold-600 text-lg hover:underline">
+          📞 {{ ride.clientPhone }}
+        </a>
+      </div>
+      {% endif %}
+      {% if ride.flightNumber %}
+      <div class="flex items-center justify-between">
+        <span class="text-dark-400">N° vol</span>
+        <span class="font-semibold text-dark-900">✈️ {{ ride.flightNumber }}</span>
+      </div>
+      {% endif %}
+      <div class="flex items-center justify-between">
+        <span class="text-dark-400">Passagers</span>
+        <span class="font-semibold text-dark-900">{{ ride.passengers }} 👤</span>
+      </div>
+      {% if ride.luggage %}
+      <div class="flex items-center justify-between">
+        <span class="text-dark-400">Bagages</span>
+        <span class="font-semibold text-dark-900">{{ ride.luggage }} 🧳</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Route #}
+  <div class="card p-5 mb-4">
+    <h3 class="font-semibold font-display text-dark-900 mb-4 text-sm">🗺️ Itinéraire</h3>
+    <div class="relative pl-6">
+      <div class="absolute left-2 top-3 bottom-3 w-0.5 bg-dark-200"></div>
+      <div class="mb-6">
+        <div class="absolute left-0.5 w-4 h-4 bg-gold-500 rounded-full border-2 border-white shadow"></div>
+        <div class="text-xs text-dark-300 uppercase tracking-wider font-semibold mb-1">Départ</div>
+        <div class="font-semibold font-display text-dark-900">{{ ride.pickupAddress }}</div>
+        <div class="text-gold-700 font-bold mt-1">📅 {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
+      </div>
+      <div>
+        <div class="absolute left-0.5 bottom-0 w-4 h-4 bg-dark-400 rounded-full border-2 border-white shadow"></div>
+        <div class="text-xs text-dark-300 uppercase tracking-wider font-semibold mb-1">Arrivée</div>
+        <div class="font-semibold font-display text-dark-900">{{ ride.destinationAddress }}</div>
+      </div>
+    </div>
+    {% if ride.notes %}
+      <div class="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+        <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1">📝 Instructions</div>
+        <div class="text-sm text-dark-600">{{ ride.notes }}</div>
+      </div>
+    {% endif %}
+  </div>
+
+  {# Financials #}
+  {% if ride.driverAmount %}
+  <div class="card p-5" style="background:linear-gradient(135deg,#fdf9ef,#fff)">
+    <h3 class="font-semibold font-display text-dark-900 mb-3 text-sm">💰 Rémunération</h3>
+    <div class="text-center">
+      <div class="text-4xl font-bold text-gold-700">{{ ride.driverAmount }} €</div>
+      <div class="text-xs text-dark-300 mt-1">Votre part sur ce trajet</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

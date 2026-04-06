@@ -1,0 +1,37 @@
+parameters:
+    app.name: '%env(APP_NAME)%'
+    app.base_url: '%env(APP_BASE_URL)%'
+    mailer.host: '%env(MAILER_HOST)%'
+    mailer.port: '%env(int:MAILER_PORT)%'
+    mailer.username: '%env(MAILER_USERNAME)%'
+    mailer.password: '%env(MAILER_PASSWORD)%'
+    mailer.from_email: '%env(MAILER_FROM_EMAIL)%'
+    mailer.from_name: '%env(MAILER_FROM_NAME)%'
+    mailer.encryption: '%env(MAILER_ENCRYPTION)%'
+    sms.simulation: '%env(bool:SMS_SIMULATION)%'
+    google_maps.api_key: '%env(GOOGLE_MAPS_API_KEY)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Service\NotificationService:
+        arguments:
+            $mailerHost: '%mailer.host%'
+            $mailerPort: '%mailer.port%'
+            $mailerUsername: '%mailer.username%'
+            $mailerPassword: '%mailer.password%'
+            $mailerFromEmail: '%mailer.from_email%'
+            $mailerFromName: '%mailer.from_name%'
+            $mailerEncryption: '%mailer.encryption%'
+            $smsSimulation: '%sms.simulation%'
+            $appName: '%app.name%'
+            $appBaseUrl: '%app.base_url%'

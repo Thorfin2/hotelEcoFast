@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -v)",
+      "Bash(composer --version)",
+      "Read(//usr/local/bin/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(chmod +x /Users/mehdi/Desktop/ecofastHotel/bin/console)",
+      "Bash(chmod +x /Users/mehdi/Desktop/ecofastHotel/setup.sh)",
+      "Read(//Applications/**)",
+      "Read(//Applications/MAMP/bin/php/**)",
+      "Read(//Applications/MAMP/Library/bin/**)",
+      "Bash(/Applications/MAMP/bin/php/php8.4.17/bin/php -v)",
+      "Bash(ls /Applications/MAMP/Library/bin/mysql*)",
+      "Bash(ls /Applications/MAMP/bin/mysql*)",
+      "Bash(export PATH=\"/Applications/MAMP/bin/php/php8.4.17/bin:/Applications/MAMP/Library/bin/mysql80/bin:$PATH\")",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -e \"SELECT 1\")",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -e \"CREATE DATABASE IF NOT EXISTS ecofasthotel CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
+      "Bash(export PATH=\"/Applications/MAMP/bin/php/php8.4.17/bin:$PATH\")",
+      "Bash(curl -sS https://getcomposer.org/installer)",
+      "Bash(php)",
+      "Bash(php composer.phar install --optimize-autoloader)",
+      "Bash(export PATH=\"/Applications/MAMP/bin/php/php8.3.30/bin:/Applications/MAMP/Library/bin/mysql80/bin:$PATH\")",
+      "Bash(php bin/console doctrine:migrations:migrate --no-interaction)",
+      "Bash(php bin/console doctrine:fixtures:load --no-interaction)",
+      "Bash(php /Users/mehdi/Desktop/ecofastHotel/bin/console cache:clear)",
+      "WebFetch(domain:www.ecofastvtc.com)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.1/bin/php bin/console doctrine:schema:update --force)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php bin/console doctrine:schema:update --force)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php bin/console doctrine:fixtures:load --no-interaction)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /Users/mehdi/Desktop/ecofastHotel/bin/console debug:container --parameter=google_maps.api_key)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /Users/mehdi/Desktop/ecofastHotel/bin/console cache:clear)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(lsof -ti:8000)",
+      "Bash(xargs kill:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

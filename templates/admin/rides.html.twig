@@ -1,0 +1,91 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des courses{% endblock %}
+{% block page_title %}Toutes les courses{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">{{ rides|length }} course(s){{ currentStatus ? ' · filtre : ' ~ currentStatus : '' }}</p>{% endblock %}
+
+{% block content %}
+<div class="flex gap-2 mb-5 flex-wrap stagger-in">
+  {% set statuses = {'' : 'Toutes', 'pending': 'En attente', 'assigned': 'Assignée', 'confirmed': 'Confirmée', 'in_progress': 'En cours', 'completed': 'Terminée', 'cancelled': 'Annulée'} %}
+  {% for value, label in statuses %}
+    <a href="{{ path('admin_rides', value ? {status: value} : {}) }}"
+       class="filter-pill px-4 py-2 rounded-full text-sm font-medium
+         {% if currentStatus == value or (value == '' and currentStatus is null) %}
+           bg-dark-900 text-gold-300 shadow-sm
+         {% else %}bg-white text-dark-500 border border-dark-200 hover:bg-gold-50 hover:border-gold-300{% endif %}">
+      {{ label }}
+    </a>
+  {% endfor %}
+</div>
+
+{% if rides is empty %}
+  <div class="card p-12 text-center">
+    <div class="text-5xl mb-4">🚗</div>
+    <p class="text-dark-400">Aucune course</p>
+  </div>
+{% else %}
+  <div class="card overflow-hidden">
+    <table class="w-full">
+      <thead>
+        <tr class="bg-dark-50 border-b border-dark-100">
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider">Réf.</th>
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider">Hôtel</th>
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider">Client</th>
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider hidden lg:table-cell">Trajet</th>
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider">Date</th>
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider">Chauffeur</th>
+          <th class="text-left px-4 py-3 text-xs font-semibold text-dark-400 uppercase tracking-wider">Statut</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for ride in rides %}
+          <tr class="hover:bg-gold-50/50 transition-colors">
+            <td class="px-4 py-3.5">
+              <span class="font-mono text-xs bg-dark-100 text-dark-600 px-2 py-1 rounded font-semibold">{{ ride.reference }}</span>
+            </td>
+            <td class="px-4 py-3.5 text-sm text-dark-600">{{ ride.hotel.name }}</td>
+            <td class="px-4 py-3.5">
+              <div class="text-sm font-display font-semibold text-dark-900">{{ ride.clientName }}</div>
+              {% if ride.clientPhone %}<div class="text-xs text-dark-300">{{ ride.clientPhone }}</div>{% endif %}
+            </td>
+            <td class="px-4 py-3.5 hidden lg:table-cell">
+              <div class="text-xs text-dark-500 max-w-48 truncate"><span class="text-green-500">●</span> {{ ride.pickupAddress|split(',')|first }}</div>
+              <div class="text-xs text-dark-300 max-w-48 truncate"><span class="text-red-400">●</span> {{ ride.destinationAddress|split(',')|first }}</div>
+            </td>
+            <td class="px-4 py-3.5">
+              <div class="text-sm font-display font-medium text-dark-900">{{ ride.pickupDatetime|date('d/m') }}</div>
+              <div class="text-xs text-dark-300">{{ ride.pickupDatetime|date('H:i') }}</div>
+            </td>
+            <td class="px-4 py-3.5">
+              {% if ride.driver %}
+                <div class="text-sm text-dark-900">{{ ride.driver.fullName }}</div>
+                <div class="text-xs text-dark-300">{{ ride.driver.licensePlate }}</div>
+              {% else %}
+                <a href="{{ path('admin_assign_driver', {id: ride.id}) }}"
+                   class="text-xs text-amber-600 font-semibold hover:underline flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Assigner
+                </a>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3.5">
+              <span class="badge
+                {% if ride.status == 'pending' %}bg-amber-100 text-amber-800
+                {% elseif ride.status == 'completed' %}bg-green-100 text-green-800
+                {% elseif ride.status == 'in_progress' %}bg-purple-100 text-purple-800
+                {% elseif ride.status == 'cancelled' %}bg-red-100 text-red-800
+                {% elseif ride.status == 'confirmed' %}bg-indigo-100 text-indigo-800
+                {% else %}bg-blue-100 text-blue-800{% endif %}">
+                {{ ride.statusLabel }}
+              </span>
+            </td>
+            <td class="px-4 py-3.5 text-right">
+              <a href="{{ path('admin_ride_detail', {id: ride.id}) }}" class="text-gold-600 hover:text-gold-800 text-sm font-medium">Gérer →</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouveau chauffeur{% endblock %}
+{% block page_title %}Nouveau chauffeur{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Un compte sera créé automatiquement</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('admin_drivers') }}" class="btn-secondary">← Retour</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+  <div class="card p-6">
+    {{ form_start(form) }}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for field in form %}
+        <div class="{{ loop.first ? 'md:col-span-1' : '' }}">
+          <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(field) }}</label>
+          {{ form_widget(field) }}
+          {{ form_errors(field) }}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="mt-4 p-3 bg-gold-50 border border-gold-200 rounded-lg text-xs text-gold-700">
+      ℹ️ Un compte sera créé avec l'email renseigné et le mot de passe par défaut <strong>ecofasthotel</strong>
+    </div>
+    <button type="submit" class="btn-primary mt-4">Créer le chauffeur</button>
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouvel utilisateur{% endblock %}
+{% block page_title %}Créer un compte{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Hôtel, Chauffeur ou Administrateur</p>{% endblock %}
+
+{% block header_actions %}
+  <a href="{{ path('admin_users') }}" class="btn-secondary">← Retour</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-lg">
+  <div class="card p-6">
+    {{ form_start(form) }}
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.firstName) }}</label>
+          {{ form_widget(form.firstName) }}
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.lastName) }}</label>
+          {{ form_widget(form.lastName) }}
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.email) }}</label>
+        {{ form_widget(form.email) }}
+        {{ form_errors(form.email) }}
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.phone) }}</label>
+        {{ form_widget(form.phone) }}
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.roles) }}</label>
+        {{ form_widget(form.roles) }}
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.plainPassword.first) }}</label>
+        {{ form_widget(form.plainPassword.first) }}
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-dark-700 mb-1.5">{{ form_label(form.plainPassword.second) }}</label>
+        {{ form_widget(form.plainPassword.second) }}
+        {{ form_errors(form.plainPassword) }}
+      </div>
+      <button type="submit" class="btn-primary w-full justify-center">Créer le compte</button>
+    </div>
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}
