@@ -121,3 +121,4 @@ PENDING → ASSIGNED → CONFIRMED → IN_PROGRESS → COMPLETED
    ↓          ↓           ↓                        ↓
 CANCELLED  CANCELLED   (hôtel notifié)      (commission calculée)
 ```
+# hotelEcoFast
