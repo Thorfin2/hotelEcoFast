@@ -34,7 +34,6 @@ RUN printf "opcache.enable=1\nopcache.memory_consumption=256\nopcache.max_accele
     && printf "memory_limit=256M\nupload_max_filesize=10M\npost_max_size=10M\n" \
     > /usr/local/etc/php/conf.d/app.ini
 
-ENV APP_ENV=prod
 ENV PORT=8080
 
 # Entrypoint script

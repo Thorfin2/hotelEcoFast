@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-export APP_ENV=prod
-
 echo "==> Starting EcoFast Hotel..."
 
 # Ensure var directory exists
