@@ -35,13 +35,12 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 # Copy the rest of the application
 COPY . .
 
-# Create var directory and run post-install scripts
-RUN mkdir -p var/cache var/log
-RUN composer run-script post-install-cmd --no-interaction 2>/dev/null || true
-
-# Set permissions
-RUN chown -R www-data:www-data var/ public/
-RUN chmod -R 775 var/
+# Create var directory, run scripts, set permissions
+RUN mkdir -p var/cache var/log \
+    && composer run-script post-install-cmd --no-interaction 2>/dev/null || true \
+    && mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var/ public/ \
+    && chmod -R 775 var/
 
 # PHP production config
 RUN echo "opcache.enable=1\n\
