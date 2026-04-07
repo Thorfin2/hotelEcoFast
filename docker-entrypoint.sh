@@ -3,19 +3,9 @@ set -e
 
 echo "==> Starting EcoFast Hotel..."
 
-# Fix Apache MPM at runtime - force only prefork
-rm -f /etc/apache2/mods-enabled/mpm_event.conf /etc/apache2/mods-enabled/mpm_event.load
-rm -f /etc/apache2/mods-enabled/mpm_worker.conf /etc/apache2/mods-enabled/mpm_worker.load
-ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf 2>/dev/null || true
-ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load 2>/dev/null || true
-
-# Set Apache to listen on Railway's PORT
-sed -i "s/Listen 80/Listen ${PORT:-8080}/g" /etc/apache2/ports.conf
-sed -i "s/:80/:${PORT:-8080}/g" /etc/apache2/sites-available/000-default.conf
-
 # Ensure var directory exists
 mkdir -p var/cache var/log
-chown -R www-data:www-data var/ 2>/dev/null || true
+chmod -R 777 var/ 2>/dev/null || true
 
 # Clear cache
 php bin/console cache:clear --env=prod --no-debug 2>/dev/null || true
@@ -35,7 +25,5 @@ else
     echo "==> No DATABASE_URL set, skipping database setup"
 fi
 
-chown -R www-data:www-data var/ 2>/dev/null || true
-
-echo "==> Starting Apache on port ${PORT:-8080}..."
-exec "$@"
+echo "==> Starting PHP server on port ${PORT:-8080}..."
+exec php -S 0.0.0.0:${PORT:-8080} -t public/
