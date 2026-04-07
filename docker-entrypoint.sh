@@ -3,6 +3,10 @@ set -e
 
 echo "==> Starting EcoFast Hotel..."
 
+# Set Apache to listen on Railway's PORT
+sed -i "s/Listen 80/Listen ${PORT:-8080}/g" /etc/apache2/ports.conf
+sed -i "s/:80/:${PORT:-8080}/g" /etc/apache2/sites-available/000-default.conf
+
 # Ensure var directory exists
 mkdir -p var/cache var/log
 chown -R www-data:www-data var/ 2>/dev/null || true

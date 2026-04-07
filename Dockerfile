@@ -7,8 +7,11 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_mysql intl zip gd opcache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Fix Apache MPM: disable event, enable prefork
-RUN a2dismod mpm_event && a2enmod mpm_prefork && a2enmod rewrite
+# Fix Apache MPM: force only prefork (required for mod_php)
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.* /etc/apache2/mods-enabled/mpm_worker.* \
+    && ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf \
+    && ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load \
+    && a2enmod rewrite
 
 # Set Apache document root to Symfony's public/
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
@@ -48,9 +51,7 @@ RUN printf "opcache.enable=1\nopcache.memory_consumption=256\nopcache.max_accele
 RUN printf "memory_limit=256M\nupload_max_filesize=10M\npost_max_size=10M\n" \
     > /usr/local/etc/php/conf.d/app.ini
 
-# Use PORT env variable from Railway (default 8080)
-RUN sed -i 's/Listen 80/Listen ${PORT}/g' /etc/apache2/ports.conf \
-    && sed -i 's/:80/:${PORT}/g' /etc/apache2/sites-available/000-default.conf
+# Default port for Railway
 ENV PORT=8080
 
 # Entrypoint script
