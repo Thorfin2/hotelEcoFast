@@ -226,132 +226,79 @@ function priceCalculator() {
 </script>
 
 <script>
-(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.googleapis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-  key: "{{ googleMapsApiKey }}",
-  v: "weekly"
-});
+var pickupAutocomplete, destinationAutocomplete;
+var pickupPlace, destinationPlace;
 
-var pickupPlace = null;
-var destinationPlace = null;
-
-async function initGoogleMaps() {
-  try {
-    var { PlaceAutocompleteElement } = await google.maps.importLibrary('places');
-    await google.maps.importLibrary('routes');
-  } catch (e) {
-    console.error('Erreur chargement Google Maps:', e);
-    enableFallback('Impossible de charger Google Maps. Utilisez la saisie manuelle.');
-    return;
-  }
-
+function initGoogleMaps() {
   var pickupInput = document.getElementById('ride_pickupAddress');
   var destinationInput = document.getElementById('ride_destinationAddress');
   if (!pickupInput || !destinationInput) return;
 
-  // Create pickup autocomplete
-  var pickupAC = new PlaceAutocompleteElement({
+  var options = {
     componentRestrictions: { country: 'fr' },
-  });
-  pickupAC.setAttribute('style', 'width:100%;');
-  pickupAC.setAttribute('placeholder', 'Adresse de d\u00e9part...');
-  pickupInput.style.display = 'none';
-  pickupInput.parentNode.insertBefore(pickupAC, pickupInput.nextSibling);
+    fields: ['formatted_address', 'geometry', 'name']
+  };
 
-  // Create destination autocomplete
-  var destAC = new PlaceAutocompleteElement({
-    componentRestrictions: { country: 'fr' },
-  });
-  destAC.setAttribute('style', 'width:100%;');
-  destAC.setAttribute('placeholder', 'Adresse de destination...');
-  destinationInput.style.display = 'none';
-  destinationInput.parentNode.insertBefore(destAC, destinationInput.nextSibling);
+  pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, options);
+  destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, options);
 
-  // Style the autocomplete elements
-  var style = document.createElement('style');
-  style.textContent = 'gmp-place-autocomplete { --gmpac-color-surface: #fff; --gmpac-color-on-surface: #1a1a2e; --gmpac-color-on-surface-variant: #6b7280; --gmpac-color-outline: #d1d5db; --gmpac-color-primary: #c8a951; border-radius: 0.5rem; font-size: 0.875rem; }';
-  document.head.appendChild(style);
-
-  // Pickup place selection
-  pickupAC.addEventListener('gmp-placeselect', async function(event) {
-    var place = event.place;
-    try {
-      await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
-      pickupInput.value = place.formattedAddress || place.displayName;
-      pickupPlace = place;
-      tryCalculateDistance();
-    } catch (e) {
-      console.error('Erreur pickup:', e);
+  pickupAutocomplete.addListener('place_changed', function() {
+    pickupPlace = pickupAutocomplete.getPlace();
+    if (pickupPlace.formatted_address) {
+      pickupInput.value = pickupPlace.formatted_address;
     }
+    tryCalculateDistance();
   });
 
-  // Destination place selection
-  destAC.addEventListener('gmp-placeselect', async function(event) {
-    var place = event.place;
-    try {
-      await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
-      destinationInput.value = place.formattedAddress || place.displayName;
-      destinationPlace = place;
-      tryCalculateDistance();
-    } catch (e) {
-      console.error('Erreur destination:', e);
+  destinationAutocomplete.addListener('place_changed', function() {
+    destinationPlace = destinationAutocomplete.getPlace();
+    if (destinationPlace.formatted_address) {
+      destinationInput.value = destinationPlace.formatted_address;
     }
+    tryCalculateDistance();
   });
 }
 
-function enableFallback(msg) {
-  var calcEl = document.querySelector('[x-data="priceCalculator()"]');
-  if (calcEl) {
-    var calculator = Alpine.$data(calcEl);
-    calculator.error = msg;
-    calculator.manualMode = true;
-  }
-}
-
-async function tryCalculateDistance() {
+function tryCalculateDistance() {
   if (!pickupPlace || !destinationPlace) return;
-  if (!pickupPlace.location || !destinationPlace.location) return;
+  if (!pickupPlace.geometry || !destinationPlace.geometry) return;
 
   var calcEl = document.querySelector('[x-data="priceCalculator()"]');
   var calculator = Alpine.$data(calcEl);
   calculator.loading = true;
   calculator.error = '';
 
-  try {
-    var service = new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix({
-      origins: [pickupPlace.location],
-      destinations: [destinationPlace.location],
-      travelMode: google.maps.TravelMode.DRIVING,
-      unitSystem: google.maps.UnitSystem.METRIC,
-    }, function(response, status) {
-      calculator.loading = false;
-
-      if (status !== 'OK') {
-        calculator.error = 'Erreur API Distance Matrix (' + status + '). V\u00e9rifiez que l\'API est activ\u00e9e.';
-        calculator.manualMode = true;
-        return;
-      }
-
-      var result = response.rows[0].elements[0];
-      if (result.status !== 'OK') {
-        calculator.error = 'Impossible de calculer la distance entre ces adresses (' + result.status + ').';
-        calculator.manualMode = true;
-        return;
-      }
-
-      calculator.distance = result.distance.value / 1000;
-      calculator.duration = result.duration.text;
-      calculator.manualMode = false;
-      calculator.calculatePrice();
-    });
-  } catch (e) {
+  var service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix({
+    origins: [pickupPlace.geometry.location],
+    destinations: [destinationPlace.geometry.location],
+    travelMode: google.maps.TravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.METRIC,
+  }, function(response, status) {
     calculator.loading = false;
-    calculator.error = 'Erreur: ' + e.message;
-    calculator.manualMode = true;
-  }
-}
 
-// Init once DOM is ready
-document.addEventListener('DOMContentLoaded', initGoogleMaps);
+    if (status !== 'OK') {
+      calculator.error = 'Erreur API Distance Matrix. V\u00e9rifiez que l\'API est activ\u00e9e.';
+      calculator.manualMode = true;
+      return;
+    }
+
+    var result = response.rows[0].elements[0];
+    if (result.status !== 'OK') {
+      calculator.error = 'Impossible de calculer la distance entre ces adresses.';
+      calculator.manualMode = true;
+      return;
+    }
+
+    calculator.distance = result.distance.value / 1000;
+    calculator.duration = result.duration.text;
+    calculator.manualMode = false;
+    calculator.calculatePrice();
+  });
+}
+</script>
+
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key={{ googleMapsApiKey }}&libraries=places&callback=initGoogleMaps">
 </script>
 {% endblock %}
