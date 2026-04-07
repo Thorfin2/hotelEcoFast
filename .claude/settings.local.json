@@ -35,7 +35,13 @@
       "Bash(xargs kill:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh auth:*)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /usr/local/bin/composer require doctrine/doctrine-fixtures-bundle:^3.5 --no-interaction)",
+      "Bash(find /Applications/MAMP -name composer* -type f)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -r \"copy\\(''https://getcomposer.org/installer'', ''composer-setup.php''\\);\")",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php composer-setup.php --install-dir=/Users/mehdi/Desktop/ecofastHotel --filename=composer)",
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /Users/mehdi/Desktop/ecofastHotel/composer update doctrine/doctrine-fixtures-bundle --no-interaction)"
     ]
   }
 }
