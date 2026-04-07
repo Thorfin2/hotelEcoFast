@@ -35,7 +35,8 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interactio
 # Copy the rest of the application
 COPY . .
 
-# Run post-install scripts
+# Create var directory and run post-install scripts
+RUN mkdir -p var/cache var/log
 RUN composer run-script post-install-cmd --no-interaction 2>/dev/null || true
 
 # Set permissions
