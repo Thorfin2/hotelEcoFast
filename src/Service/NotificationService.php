@@ -25,7 +25,6 @@ class NotificationService
         private readonly string $mailerFromEmail,
         private readonly string $mailerFromName,
         private readonly string $mailerEncryption,
-        private readonly bool $smsSimulation,
         private readonly string $appName,
         private readonly string $appBaseUrl,
     ) {}

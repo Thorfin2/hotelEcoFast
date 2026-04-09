@@ -8,7 +8,6 @@ parameters:
     mailer.from_email: '%env(MAILER_FROM_EMAIL)%'
     mailer.from_name: '%env(MAILER_FROM_NAME)%'
     mailer.encryption: '%env(MAILER_ENCRYPTION)%'
-    sms.simulation: '%env(bool:SMS_SIMULATION)%'
     google_maps.api_key: '%env(GOOGLE_MAPS_API_KEY)%'
 
 services:
@@ -32,6 +31,5 @@ services:
             $mailerFromEmail: '%mailer.from_email%'
             $mailerFromName: '%mailer.from_name%'
             $mailerEncryption: '%mailer.encryption%'
-            $smsSimulation: '%sms.simulation%'
             $appName: '%app.name%'
             $appBaseUrl: '%app.base_url%'
