@@ -12,6 +12,9 @@ use Psr\Log\LoggerInterface;
 
 class NotificationService
 {
+    /** @var array Queue of emails to send */
+    private array $emailQueue = [];
+
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly LoggerInterface $logger,
@@ -34,7 +37,7 @@ class NotificationService
         // 1. Email to admin(s)
         $admins = $this->em->getRepository(\App\Entity\User::class)->findActiveAdmins();
         foreach ($admins as $admin) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_CREATED,
                 Notification::RECIPIENT_ADMIN,
@@ -46,7 +49,7 @@ class NotificationService
 
         // 2. Email to hotel
         if ($ride->getHotel()->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_CREATED,
                 Notification::RECIPIENT_HOTEL,
@@ -58,7 +61,7 @@ class NotificationService
 
         // 3. Confirmation email to client if email provided
         if ($ride->getClientEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_CREATED,
                 Notification::RECIPIENT_CLIENT,
@@ -76,7 +79,7 @@ class NotificationService
 
         // 1. Email to driver
         if ($driver->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_DRIVER_ASSIGNED,
                 Notification::RECIPIENT_DRIVER,
@@ -88,7 +91,7 @@ class NotificationService
 
         // 2. Email to hotel
         if ($ride->getHotel()->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_DRIVER_ASSIGNED,
                 Notification::RECIPIENT_HOTEL,
@@ -100,7 +103,7 @@ class NotificationService
 
         // 3. Update client if available
         if ($ride->getClientEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_DRIVER_ASSIGNED,
                 Notification::RECIPIENT_CLIENT,
@@ -113,9 +116,8 @@ class NotificationService
 
     public function onRideConfirmed(Ride $ride): void
     {
-        // Email to hotel
         if ($ride->getHotel()->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_CONFIRMED,
                 Notification::RECIPIENT_HOTEL,
@@ -128,9 +130,8 @@ class NotificationService
 
     public function onRideStarted(Ride $ride): void
     {
-        // Email to client
         if ($ride->getClientEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_STARTED,
                 Notification::RECIPIENT_CLIENT,
@@ -140,9 +141,8 @@ class NotificationService
             );
         }
 
-        // Email to hotel
         if ($ride->getHotel()->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_STARTED,
                 Notification::RECIPIENT_HOTEL,
@@ -155,9 +155,8 @@ class NotificationService
 
     public function onRideCompleted(Ride $ride): void
     {
-        // Email to hotel with commission details
         if ($ride->getHotel()->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_COMPLETED,
                 Notification::RECIPIENT_HOTEL,
@@ -167,9 +166,8 @@ class NotificationService
             );
         }
 
-        // Email to client
         if ($ride->getClientEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_COMPLETED,
                 Notification::RECIPIENT_CLIENT,
@@ -182,9 +180,8 @@ class NotificationService
 
     public function onRideCancelled(Ride $ride): void
     {
-        // Email to driver if assigned
         if ($ride->getDriver() && $ride->getDriver()->getEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_CANCELLED,
                 Notification::RECIPIENT_DRIVER,
@@ -194,9 +191,8 @@ class NotificationService
             );
         }
 
-        // Email to client
         if ($ride->getClientEmail()) {
-            $this->sendEmail(
+            $this->queueEmail(
                 $ride,
                 Notification::TYPE_RIDE_CANCELLED,
                 Notification::RECIPIENT_CLIENT,
@@ -211,7 +207,7 @@ class NotificationService
     {
         if (!$ride->getHotel()->getEmail()) return;
 
-        $this->sendEmail(
+        $this->queueEmail(
             $ride,
             Notification::TYPE_COMMISSION_REPORT,
             Notification::RECIPIENT_HOTEL,
@@ -221,26 +217,51 @@ class NotificationService
         );
     }
 
-    // ─── Core send method ────────────────────────────────────────────────────
+    // ─── Queue & Flush ───────────────────────────────────────────────────────
 
-    private function sendEmail(
+    /**
+     * Add an email to the queue (does NOT send yet)
+     */
+    private function queueEmail(
         ?Ride $ride,
         string $type,
         string $recipientType,
         string $recipientEmail,
         string $subject,
         string $htmlBody
-    ): Notification {
-        $notification = new Notification();
-        $notification->setRide($ride);
-        $notification->setType($type);
-        $notification->setChannel(Notification::CHANNEL_EMAIL);
-        $notification->setRecipientType($recipientType);
-        $notification->setRecipientEmail($recipientEmail);
-        $notification->setSubject($subject);
-        $notification->setContent($htmlBody);
+    ): void {
+        $this->emailQueue[] = [
+            'ride' => $ride,
+            'type' => $type,
+            'recipientType' => $recipientType,
+            'recipientEmail' => $recipientEmail,
+            'subject' => $subject,
+            'htmlBody' => $htmlBody,
+        ];
+    }
+
+    /**
+     * Check if there are emails waiting to be sent
+     */
+    public function hasPendingEmails(): bool
+    {
+        return !empty($this->emailQueue);
+    }
+
+    /**
+     * Send all queued emails using a SINGLE SMTP connection
+     * Called by the EventSubscriber after the response is sent
+     */
+    public function flushQueue(): void
+    {
+        if (empty($this->emailQueue)) {
+            return;
+        }
+
+        $mail = null;
 
         try {
+            // Open ONE SMTP connection for all emails
             $mail = new PHPMailer(true);
             $mail->isSMTP();
             $mail->Host       = $this->mailerHost;
@@ -251,29 +272,68 @@ class NotificationService
             $mail->Port       = $this->mailerPort;
             $mail->CharSet    = 'UTF-8';
             $mail->Timeout    = 30;
+            $mail->SMTPKeepAlive = true; // Reuse connection
 
             $mail->setFrom($this->mailerFromEmail, $this->mailerFromName);
-            $mail->addAddress($recipientEmail);
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $htmlBody;
-            $mail->AltBody = strip_tags($htmlBody);
 
-            $mail->send();
+            foreach ($this->emailQueue as $item) {
+                $notification = new Notification();
+                $notification->setRide($item['ride']);
+                $notification->setType($item['type']);
+                $notification->setChannel(Notification::CHANNEL_EMAIL);
+                $notification->setRecipientType($item['recipientType']);
+                $notification->setRecipientEmail($item['recipientEmail']);
+                $notification->setSubject($item['subject']);
+                $notification->setContent($item['htmlBody']);
 
-            $notification->setStatus(Notification::STATUS_SENT);
-            $notification->setSentAt(new \DateTimeImmutable());
-            $this->logger->info("Email sent: {$subject} → {$recipientEmail}");
-        } catch (MailerException $e) {
-            $notification->setStatus(Notification::STATUS_FAILED);
-            $notification->setErrorMessage($e->getMessage());
-            $this->logger->error("Email failed: {$subject} → {$recipientEmail}: " . $e->getMessage());
+                try {
+                    $mail->clearAddresses();
+                    $mail->addAddress($item['recipientEmail']);
+                    $mail->isHTML(true);
+                    $mail->Subject = $item['subject'];
+                    $mail->Body    = $item['htmlBody'];
+                    $mail->AltBody = strip_tags($item['htmlBody']);
+
+                    $mail->send();
+
+                    $notification->setStatus(Notification::STATUS_SENT);
+                    $notification->setSentAt(new \DateTimeImmutable());
+                    $this->logger->info("Email sent: {$item['subject']} -> {$item['recipientEmail']}");
+                } catch (MailerException $e) {
+                    $notification->setStatus(Notification::STATUS_FAILED);
+                    $notification->setErrorMessage($e->getMessage());
+                    $this->logger->error("Email failed: {$item['subject']} -> {$item['recipientEmail']}: " . $e->getMessage());
+                }
+
+                $this->em->persist($notification);
+            }
+
+            $this->em->flush();
+
+        } catch (\Throwable $e) {
+            $this->logger->error("SMTP connection failed: " . $e->getMessage());
+
+            // Save all as failed
+            foreach ($this->emailQueue as $item) {
+                $notification = new Notification();
+                $notification->setRide($item['ride']);
+                $notification->setType($item['type']);
+                $notification->setChannel(Notification::CHANNEL_EMAIL);
+                $notification->setRecipientType($item['recipientType']);
+                $notification->setRecipientEmail($item['recipientEmail']);
+                $notification->setSubject($item['subject']);
+                $notification->setContent($item['htmlBody']);
+                $notification->setStatus(Notification::STATUS_FAILED);
+                $notification->setErrorMessage($e->getMessage());
+                $this->em->persist($notification);
+            }
+            $this->em->flush();
+        } finally {
+            if ($mail) {
+                $mail->smtpClose();
+            }
+            $this->emailQueue = [];
         }
-
-        $this->em->persist($notification);
-        $this->em->flush();
-
-        return $notification;
     }
 
     // ─── Email templates ─────────────────────────────────────────────────────
