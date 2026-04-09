@@ -40,8 +40,23 @@ class TestSmtpCommand extends Command
 
         $io->note("Envoi via Resend API -> {$to}");
 
+        $fromEmail = $this->mailerFromEmail;
+        $result = $this->sendViaResend($to, $fromEmail, $io);
+
+        // If domain not verified, retry with Resend default sender
+        if ($result === 403) {
+            $io->warning("Domaine non verifie, envoi avec onboarding@resend.dev...");
+            $fromEmail = 'onboarding@resend.dev';
+            $result = $this->sendViaResend($to, $fromEmail, $io);
+        }
+
+        return $result === true ? Command::SUCCESS : Command::FAILURE;
+    }
+
+    private function sendViaResend(string $to, string $fromEmail, SymfonyStyle $io): true|int
+    {
         $payload = json_encode([
-            'from' => "{$this->mailerFromName} <{$this->mailerFromEmail}>",
+            'from' => "{$this->mailerFromName} <{$fromEmail}>",
             'to' => [$to],
             'subject' => 'Test EcoFast - Email fonctionne !',
             'html' => '<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)"><div style="background:linear-gradient(135deg,#0d9488,#0f766e);padding:32px;text-align:center"><h1 style="color:#fff;margin:0">EcoFast VTC</h1></div><div style="padding:32px;text-align:center"><h2 style="color:#1e293b">Ca marche !</h2><p style="color:#64748b">La configuration email est correcte.</p></div></div>',
@@ -66,16 +81,16 @@ class TestSmtpCommand extends Command
 
         if ($error) {
             $io->error("cURL: {$error}");
-            return Command::FAILURE;
+            return 0;
         }
 
         if ($httpCode >= 200 && $httpCode < 300) {
-            $io->success("Email envoye vers {$to}");
-            return Command::SUCCESS;
+            $io->success("Email envoye vers {$to} (from: {$fromEmail})");
+            return true;
         }
 
         $body = json_decode($response, true);
         $io->error("HTTP {$httpCode}: " . ($body['message'] ?? $response));
-        return Command::FAILURE;
+        return $httpCode;
     }
 }

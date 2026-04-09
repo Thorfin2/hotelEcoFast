@@ -71,10 +71,11 @@ class SendPendingEmailsCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function sendViaResend(string $to, string $subject, string $html): true|string
+    private function sendViaResend(string $to, string $subject, string $html, string $fromEmail = null): true|string
     {
+        $from = $fromEmail ?? $this->mailerFromEmail;
         $payload = json_encode([
-            'from' => "{$this->mailerFromName} <{$this->mailerFromEmail}>",
+            'from' => "{$this->mailerFromName} <{$from}>",
             'to' => [$to],
             'subject' => $subject,
             'html' => $html,
@@ -103,6 +104,11 @@ class SendPendingEmailsCommand extends Command
 
         if ($httpCode >= 200 && $httpCode < 300) {
             return true;
+        }
+
+        // If domain not verified yet, retry with Resend's default sender
+        if ($httpCode === 403 && $fromEmail === null) {
+            return $this->sendViaResend($to, $subject, $html, 'onboarding@resend.dev');
         }
 
         $body = json_decode($response, true);
