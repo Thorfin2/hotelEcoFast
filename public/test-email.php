@@ -2,6 +2,25 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
+use Symfony\Component\Dotenv\Dotenv;
+
+// Ce fichier est hors du front controller Symfony : il faut charger .env explicitement,
+// sinon $_ENV reste vide et le mot de passe SMTP n'est jamais lu.
+$envPath = dirname(__DIR__) . '/.env';
+if (is_readable($envPath)) {
+    (new Dotenv())->loadEnv($envPath);
+}
+
+// Sur PHP-FPM / hébergeurs, les secrets sont souvent dans le processus (getenv) mais pas dans $_ENV.
+$mailerKeys = ['MAILER_HOST', 'MAILER_PORT', 'MAILER_USERNAME', 'MAILER_PASSWORD', 'MAILER_FROM_EMAIL', 'MAILER_FROM_NAME', 'MAILER_ENCRYPTION'];
+foreach ($mailerKeys as $key) {
+    if (!isset($_ENV[$key]) || $_ENV[$key] === '') {
+        $v = getenv($key);
+        if ($v !== false && $v !== '') {
+            $_ENV[$key] = $v;
+        }
+    }
+}
 
 $sent = false;
 $error = '';
@@ -15,12 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $to) {
         $mail->SMTPDebug = 2;
         $mail->Debugoutput = function($str) use (&$debug) { $debug .= $str . "\n"; };
 
+        $encryption = $_ENV['MAILER_ENCRYPTION'] ?? 'ssl';
+
         $mail->isSMTP();
         $mail->Host       = $_ENV['MAILER_HOST'] ?? 'smtp.hostinger.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = $_ENV['MAILER_USERNAME'] ?? 'contact@ecofast-vtc.fr';
         $mail->Password   = $_ENV['MAILER_PASSWORD'] ?? '';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->SMTPSecure = $encryption === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = (int)($_ENV['MAILER_PORT'] ?? 465);
         $mail->CharSet    = 'UTF-8';
         $mail->Timeout    = 30;
