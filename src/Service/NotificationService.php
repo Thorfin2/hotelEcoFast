@@ -6,14 +6,11 @@ use App\Entity\Notification;
 use App\Entity\Ride;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception as MailerException;
 use Psr\Log\LoggerInterface;
 
 class NotificationService
 {
-    private ?PHPMailer $mailer = null;
-    private bool $smtpEnabled;
+    private string $projectDir;
 
     public function __construct(
         private readonly EntityManagerInterface $em,
@@ -29,237 +26,186 @@ class NotificationService
         private readonly string $appBaseUrl,
         bool $mailerEnabled = true,
     ) {
-        $this->smtpEnabled = $mailerEnabled && $mailerPassword !== '' && $mailerPassword !== 'change_me_in_railway';
+        $this->projectDir = dirname(__DIR__, 2);
     }
 
     /**
-     * Get or create a reusable SMTP connection
+     * Lance la commande d'envoi d'emails en arrière-plan
      */
-    private function getMailer(): PHPMailer
+    private function dispatchEmailSending(): void
     {
-        if ($this->mailer === null) {
-            $this->mailer = new PHPMailer(true);
-            $this->mailer->isSMTP();
-            $this->mailer->Host       = $this->mailerHost;
-            $this->mailer->SMTPAuth   = true;
-            $this->mailer->Username   = $this->mailerUsername;
-            $this->mailer->Password   = $this->mailerPassword;
-            $this->mailer->SMTPSecure = $this->mailerEncryption === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
-            $this->mailer->Port       = $this->mailerPort;
-            $this->mailer->CharSet    = 'UTF-8';
-            $this->mailer->Timeout    = 10;
-            $this->mailer->SMTPKeepAlive = true;
-            $this->mailer->setFrom($this->mailerFromEmail, $this->mailerFromName);
-        }
-        return $this->mailer;
-    }
-
-    private function closeMailer(): void
-    {
-        if ($this->mailer) {
-            $this->mailer->smtpClose();
-            $this->mailer = null;
-        }
+        $cmd = 'php ' . $this->projectDir . '/bin/console app:send-pending-emails > /dev/null 2>&1 &';
+        @exec($cmd);
     }
 
     // ─── Trigger points ──────────────────────────────────────────────────────
 
     public function onRideCreated(Ride $ride): void
     {
-        try {
-            $admins = $this->em->getRepository(\App\Entity\User::class)->findActiveAdmins();
-            foreach ($admins as $admin) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_CREATED, Notification::RECIPIENT_ADMIN,
-                    $admin->getEmail(),
-                    "Nouvelle course #{$ride->getReference()}",
-                    $this->buildAdminNewRideEmail($ride, $admin)
-                );
-            }
-
-            if ($ride->getHotel()->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_CREATED, Notification::RECIPIENT_HOTEL,
-                    $ride->getHotel()->getEmail(),
-                    "Confirmation de creation — Course #{$ride->getReference()}",
-                    $this->buildHotelRideCreatedEmail($ride)
-                );
-            }
-
-            if ($ride->getClientEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_CREATED, Notification::RECIPIENT_CLIENT,
-                    $ride->getClientEmail(),
-                    "Votre reservation de transport #{$ride->getReference()}",
-                    $this->buildClientConfirmationEmail($ride)
-                );
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('onRideCreated notification error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
+        $admins = $this->em->getRepository(\App\Entity\User::class)->findActiveAdmins();
+        foreach ($admins as $admin) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_CREATED, Notification::RECIPIENT_ADMIN,
+                $admin->getEmail(),
+                "Nouvelle course #{$ride->getReference()}",
+                $this->buildAdminNewRideEmail($ride, $admin)
+            );
         }
+
+        if ($ride->getHotel()->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_CREATED, Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Confirmation de creation — Course #{$ride->getReference()}",
+                $this->buildHotelRideCreatedEmail($ride)
+            );
+        }
+
+        if ($ride->getClientEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_CREATED, Notification::RECIPIENT_CLIENT,
+                $ride->getClientEmail(),
+                "Votre reservation de transport #{$ride->getReference()}",
+                $this->buildClientConfirmationEmail($ride)
+            );
+        }
+
+        $this->dispatchEmailSending();
     }
 
     public function onDriverAssigned(Ride $ride): void
     {
-        try {
-            $driver = $ride->getDriver();
-            if (!$driver) return;
+        $driver = $ride->getDriver();
+        if (!$driver) return;
 
-            if ($driver->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_DRIVER_ASSIGNED, Notification::RECIPIENT_DRIVER,
-                    $driver->getEmail(),
-                    "Nouvelle mission assignee — #{$ride->getReference()}",
-                    $this->buildDriverAssignmentEmail($ride)
-                );
-            }
-
-            if ($ride->getHotel()->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_DRIVER_ASSIGNED, Notification::RECIPIENT_HOTEL,
-                    $ride->getHotel()->getEmail(),
-                    "Chauffeur assigne — Course #{$ride->getReference()}",
-                    $this->buildHotelDriverAssignedEmail($ride)
-                );
-            }
-
-            if ($ride->getClientEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_DRIVER_ASSIGNED, Notification::RECIPIENT_CLIENT,
-                    $ride->getClientEmail(),
-                    "Votre chauffeur a ete assigne — #{$ride->getReference()}",
-                    $this->buildClientDriverAssignedEmail($ride)
-                );
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('onDriverAssigned notification error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
+        if ($driver->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_DRIVER_ASSIGNED, Notification::RECIPIENT_DRIVER,
+                $driver->getEmail(),
+                "Nouvelle mission assignee — #{$ride->getReference()}",
+                $this->buildDriverAssignmentEmail($ride)
+            );
         }
+
+        if ($ride->getHotel()->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_DRIVER_ASSIGNED, Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Chauffeur assigne — Course #{$ride->getReference()}",
+                $this->buildHotelDriverAssignedEmail($ride)
+            );
+        }
+
+        if ($ride->getClientEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_DRIVER_ASSIGNED, Notification::RECIPIENT_CLIENT,
+                $ride->getClientEmail(),
+                "Votre chauffeur a ete assigne — #{$ride->getReference()}",
+                $this->buildClientDriverAssignedEmail($ride)
+            );
+        }
+
+        $this->dispatchEmailSending();
     }
 
     public function onRideConfirmed(Ride $ride): void
     {
-        try {
-            if ($ride->getHotel()->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_CONFIRMED, Notification::RECIPIENT_HOTEL,
-                    $ride->getHotel()->getEmail(),
-                    "Course confirmee par le chauffeur — #{$ride->getReference()}",
-                    $this->buildStatusUpdateEmail($ride, 'confirmée')
-                );
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('onRideConfirmed notification error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
+        if ($ride->getHotel()->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_CONFIRMED, Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Course confirmee par le chauffeur — #{$ride->getReference()}",
+                $this->buildStatusUpdateEmail($ride, 'confirmée')
+            );
         }
+        $this->dispatchEmailSending();
     }
 
     public function onRideStarted(Ride $ride): void
     {
-        try {
-            if ($ride->getClientEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_STARTED, Notification::RECIPIENT_CLIENT,
-                    $ride->getClientEmail(),
-                    "Votre chauffeur est en route — #{$ride->getReference()}",
-                    $this->buildClientRideStartedEmail($ride)
-                );
-            }
-
-            if ($ride->getHotel()->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_STARTED, Notification::RECIPIENT_HOTEL,
-                    $ride->getHotel()->getEmail(),
-                    "Course demarree — #{$ride->getReference()}",
-                    $this->buildHotelRideStartedEmail($ride)
-                );
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('onRideStarted notification error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
+        if ($ride->getClientEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_STARTED, Notification::RECIPIENT_CLIENT,
+                $ride->getClientEmail(),
+                "Votre chauffeur est en route — #{$ride->getReference()}",
+                $this->buildClientRideStartedEmail($ride)
+            );
         }
+
+        if ($ride->getHotel()->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_STARTED, Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Course demarree — #{$ride->getReference()}",
+                $this->buildHotelRideStartedEmail($ride)
+            );
+        }
+        $this->dispatchEmailSending();
     }
 
     public function onRideCompleted(Ride $ride): void
     {
-        try {
-            if ($ride->getHotel()->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_COMPLETED, Notification::RECIPIENT_HOTEL,
-                    $ride->getHotel()->getEmail(),
-                    "Course terminee — Commission #{$ride->getReference()}",
-                    $this->buildRideCompletedEmail($ride)
-                );
-            }
-
-            if ($ride->getClientEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_COMPLETED, Notification::RECIPIENT_CLIENT,
-                    $ride->getClientEmail(),
-                    "Votre trajet est termine — #{$ride->getReference()}",
-                    $this->buildClientRideCompletedEmail($ride)
-                );
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('onRideCompleted notification error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
+        if ($ride->getHotel()->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_COMPLETED, Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Course terminee — Commission #{$ride->getReference()}",
+                $this->buildRideCompletedEmail($ride)
+            );
         }
+
+        if ($ride->getClientEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_COMPLETED, Notification::RECIPIENT_CLIENT,
+                $ride->getClientEmail(),
+                "Votre trajet est termine — #{$ride->getReference()}",
+                $this->buildClientRideCompletedEmail($ride)
+            );
+        }
+        $this->dispatchEmailSending();
     }
 
     public function onRideCancelled(Ride $ride): void
     {
-        try {
-            if ($ride->getDriver() && $ride->getDriver()->getEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_CANCELLED, Notification::RECIPIENT_DRIVER,
-                    $ride->getDriver()->getEmail(),
-                    "Course annulee — #{$ride->getReference()}",
-                    $this->buildStatusUpdateEmail($ride, 'annulée')
-                );
-            }
-
-            if ($ride->getClientEmail()) {
-                $this->sendEmail(
-                    $ride, Notification::TYPE_RIDE_CANCELLED, Notification::RECIPIENT_CLIENT,
-                    $ride->getClientEmail(),
-                    "Annulation de votre reservation #{$ride->getReference()}",
-                    $this->buildStatusUpdateEmail($ride, 'annulée')
-                );
-            }
-        } catch (\Throwable $e) {
-            $this->logger->error('onRideCancelled notification error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
+        if ($ride->getDriver() && $ride->getDriver()->getEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_CANCELLED, Notification::RECIPIENT_DRIVER,
+                $ride->getDriver()->getEmail(),
+                "Course annulee — #{$ride->getReference()}",
+                $this->buildStatusUpdateEmail($ride, 'annulée')
+            );
         }
+
+        if ($ride->getClientEmail()) {
+            $this->saveNotification(
+                $ride, Notification::TYPE_RIDE_CANCELLED, Notification::RECIPIENT_CLIENT,
+                $ride->getClientEmail(),
+                "Annulation de votre reservation #{$ride->getReference()}",
+                $this->buildStatusUpdateEmail($ride, 'annulée')
+            );
+        }
+        $this->dispatchEmailSending();
     }
 
     public function sendMonthlyCommissionReport(Ride $ride, array $rides, float $total, \DateTimeInterface $month): void
     {
-        try {
-            if (!$ride->getHotel()->getEmail()) return;
+        if (!$ride->getHotel()->getEmail()) return;
 
-            $this->sendEmail(
-                $ride, Notification::TYPE_COMMISSION_REPORT, Notification::RECIPIENT_HOTEL,
-                $ride->getHotel()->getEmail(),
-                "Releve de commissions — " . $month->format('F Y'),
-                $this->buildCommissionReportEmail($ride->getHotel(), $rides, $total, $month)
-            );
-        } catch (\Throwable $e) {
-            $this->logger->error('sendMonthlyCommissionReport error: ' . $e->getMessage());
-        } finally {
-            $this->closeMailer();
-        }
+        $this->saveNotification(
+            $ride, Notification::TYPE_COMMISSION_REPORT, Notification::RECIPIENT_HOTEL,
+            $ride->getHotel()->getEmail(),
+            "Releve de commissions — " . $month->format('F Y'),
+            $this->buildCommissionReportEmail($ride->getHotel(), $rides, $total, $month)
+        );
+        $this->dispatchEmailSending();
     }
 
     // ─── Core send method ────────────────────────────────────────────────────
 
-    private function sendEmail(
+    /**
+     * Sauvegarde la notification en base (status: pending). L'envoi SMTP se fait en arrière-plan.
+     */
+    private function saveNotification(
         ?Ride $ride,
         string $type,
         string $recipientType,
@@ -275,28 +221,7 @@ class NotificationService
         $notification->setRecipientEmail($recipientEmail);
         $notification->setSubject($subject);
         $notification->setContent($htmlBody);
-
-        if ($this->smtpEnabled) {
-            try {
-                $mail = $this->getMailer();
-                $mail->clearAddresses();
-                $mail->addAddress($recipientEmail);
-                $mail->isHTML(true);
-                $mail->Subject = $subject;
-                $mail->Body    = $htmlBody;
-                $mail->AltBody = strip_tags($htmlBody);
-                $mail->send();
-
-                $notification->setStatus(Notification::STATUS_SENT);
-                $notification->setSentAt(new \DateTimeImmutable());
-            } catch (\Throwable $e) {
-                $notification->setStatus(Notification::STATUS_FAILED);
-                $notification->setErrorMessage($e->getMessage());
-            }
-        } else {
-            // SMTP désactivé, on enregistre juste en base
-            $notification->setStatus(Notification::STATUS_PENDING);
-        }
+        $notification->setStatus(Notification::STATUS_PENDING);
 
         $this->em->persist($notification);
         $this->em->flush();
