@@ -91,8 +91,8 @@ class DriverController extends AbstractController
         $ride->setStatus(Ride::STATUS_CONFIRMED);
         $em->flush();
 
-        $notifications->onRideConfirmed($ride);
-        $this->addFlash('success', "Mission #{$ride->getReference()} confirmée. L'hôtel a été notifié.");
+        try { $notifications->onRideConfirmed($ride); } catch (\Throwable $e) {}
+        $this->addFlash('success', "Mission #{$ride->getReference()} confirmée.");
 
         return $this->redirectToRoute('driver_mission_detail', ['id' => $id]);
     }
@@ -115,8 +115,8 @@ class DriverController extends AbstractController
         $ride->setStartedAt(new \DateTimeImmutable());
         $em->flush();
 
-        $notifications->onRideStarted($ride);
-        $this->addFlash('success', "Mission #{$ride->getReference()} démarrée. Client et hôtel notifiés.");
+        try { $notifications->onRideStarted($ride); } catch (\Throwable $e) {}
+        $this->addFlash('success', "Mission #{$ride->getReference()} démarrée.");
 
         return $this->redirectToRoute('driver_mission_detail', ['id' => $id]);
     }
@@ -140,7 +140,7 @@ class DriverController extends AbstractController
         $driver->setStatus(Driver::STATUS_AVAILABLE);
         $em->flush();
 
-        $notifications->onRideCompleted($ride);
+        try { $notifications->onRideCompleted($ride); } catch (\Throwable $e) {}
         $this->addFlash('success', "Mission #{$ride->getReference()} terminée avec succès.");
 
         return $this->redirectToRoute('driver_missions');

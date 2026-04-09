@@ -100,9 +100,9 @@ class AdminController extends AbstractController
             $driver->setStatus(Driver::STATUS_BUSY);
 
             $em->flush();
-            $notifications->onDriverAssigned($ride);
+            try { $notifications->onDriverAssigned($ride); } catch (\Throwable $e) {}
 
-            $this->addFlash('success', "Chauffeur {$driver->getFullName()} assigné à la course #{$ride->getReference()}. Notifications envoyées.");
+            $this->addFlash('success', "Chauffeur {$driver->getFullName()} assigné à la course #{$ride->getReference()}.");
             return $this->redirectToRoute('admin_ride_detail', ['id' => $id]);
         }
 
@@ -152,11 +152,13 @@ class AdminController extends AbstractController
 
         $em->flush();
 
-        match($status) {
-            Ride::STATUS_COMPLETED => $notifications->onRideCompleted($ride),
-            Ride::STATUS_CANCELLED => $notifications->onRideCancelled($ride),
-            default => null,
-        };
+        try {
+            match($status) {
+                Ride::STATUS_COMPLETED => $notifications->onRideCompleted($ride),
+                Ride::STATUS_CANCELLED => $notifications->onRideCancelled($ride),
+                default => null,
+            };
+        } catch (\Throwable $e) {}
 
         $this->addFlash('success', "Statut mis à jour : {$ride->getStatusLabel()}");
         return $this->redirectToRoute('admin_ride_detail', ['id' => $id]);

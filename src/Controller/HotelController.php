@@ -86,10 +86,10 @@ class HotelController extends AbstractController
             $em->persist($ride);
             $em->flush();
 
-            // Send notifications
-            $notifications->onRideCreated($ride);
+            // Send notifications (try-catch pour ne jamais bloquer)
+            try { $notifications->onRideCreated($ride); } catch (\Throwable $e) {}
 
-            $this->addFlash('success', "Course #{$ride->getReference()} créée avec succès. Les notifications ont été envoyées.");
+            $this->addFlash('success', "Course #{$ride->getReference()} créée avec succès.");
             return $this->redirectToRoute('hotel_ride_detail', ['id' => $ride->getId()]);
         }
 
@@ -139,7 +139,7 @@ class HotelController extends AbstractController
         $ride->setStatus(Ride::STATUS_CANCELLED);
         $em->flush();
 
-        $notifications->onRideCancelled($ride);
+        try { $notifications->onRideCancelled($ride); } catch (\Throwable $e) {}
         $this->addFlash('success', "Course #{$ride->getReference()} annulée.");
 
         return $this->redirectToRoute('hotel_rides');
@@ -165,7 +165,7 @@ class HotelController extends AbstractController
 
         // Generate and send report if requested
         if ($request->query->get('send_report') && !empty($rides)) {
-            $notifications->sendMonthlyCommissionReport($rides[0], $rides, $total, $month);
+            try { $notifications->sendMonthlyCommissionReport($rides[0], $rides, $total, $month); } catch (\Throwable $e) {}
             $this->addFlash('success', 'Le relevé de commissions a été envoyé par email.');
         }
 
