@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 class NotificationService
 {
     private ?PHPMailer $mailer = null;
+    private bool $smtpEnabled;
 
     public function __construct(
         private readonly EntityManagerInterface $em,
@@ -26,7 +27,10 @@ class NotificationService
         private readonly string $mailerEncryption,
         private readonly string $appName,
         private readonly string $appBaseUrl,
-    ) {}
+        bool $mailerEnabled = true,
+    ) {
+        $this->smtpEnabled = $mailerEnabled && $mailerPassword !== '' && $mailerPassword !== 'change_me_in_railway';
+    }
 
     /**
      * Get or create a reusable SMTP connection
@@ -272,24 +276,26 @@ class NotificationService
         $notification->setSubject($subject);
         $notification->setContent($htmlBody);
 
-        try {
-            $mail = $this->getMailer();
-            $mail->clearAddresses();
-            $mail->addAddress($recipientEmail);
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body    = $htmlBody;
-            $mail->AltBody = strip_tags($htmlBody);
+        if ($this->smtpEnabled) {
+            try {
+                $mail = $this->getMailer();
+                $mail->clearAddresses();
+                $mail->addAddress($recipientEmail);
+                $mail->isHTML(true);
+                $mail->Subject = $subject;
+                $mail->Body    = $htmlBody;
+                $mail->AltBody = strip_tags($htmlBody);
+                $mail->send();
 
-            $mail->send();
-
-            $notification->setStatus(Notification::STATUS_SENT);
-            $notification->setSentAt(new \DateTimeImmutable());
-            $this->logger->info("Email sent: {$subject} -> {$recipientEmail}");
-        } catch (\Throwable $e) {
-            $notification->setStatus(Notification::STATUS_FAILED);
-            $notification->setErrorMessage($e->getMessage());
-            $this->logger->error("Email failed: {$subject} -> {$recipientEmail}: " . $e->getMessage());
+                $notification->setStatus(Notification::STATUS_SENT);
+                $notification->setSentAt(new \DateTimeImmutable());
+            } catch (\Throwable $e) {
+                $notification->setStatus(Notification::STATUS_FAILED);
+                $notification->setErrorMessage($e->getMessage());
+            }
+        } else {
+            // SMTP désactivé, on enregistre juste en base
+            $notification->setStatus(Notification::STATUS_PENDING);
         }
 
         $this->em->persist($notification);

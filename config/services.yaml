@@ -31,5 +31,6 @@ services:
             $mailerFromEmail: '%mailer.from_email%'
             $mailerFromName: '%mailer.from_name%'
             $mailerEncryption: '%mailer.encryption%'
+            $mailerEnabled: '%env(bool:MAILER_ENABLED)%'
             $appName: '%app.name%'
             $appBaseUrl: '%app.base_url%'
