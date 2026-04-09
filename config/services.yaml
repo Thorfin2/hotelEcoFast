@@ -37,6 +37,10 @@ services:
 
     App\Command\SendPendingEmailsCommand:
         arguments:
-            $resendApiKey: '%env(RESEND_API_KEY)%'
+            $mailerHost: '%mailer.host%'
+            $mailerPort: '%mailer.port%'
+            $mailerUsername: '%mailer.username%'
+            $mailerPassword: '%mailer.password%'
             $mailerFromEmail: '%mailer.from_email%'
             $mailerFromName: '%mailer.from_name%'
+            $mailerEncryption: '%mailer.encryption%'
