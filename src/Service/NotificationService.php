@@ -39,20 +39,22 @@ class NotificationService
                 Notification::TYPE_RIDE_CREATED,
                 Notification::RECIPIENT_ADMIN,
                 $admin->getEmail(),
-                "🚗 Nouvelle course #{$ride->getReference()}",
+                "Nouvelle course #{$ride->getReference()}",
                 $this->buildAdminNewRideEmail($ride, $admin)
             );
         }
 
-        // 2. SMS simulation to hotel
-        $this->sendSmsSimulation(
-            $ride,
-            Notification::TYPE_RIDE_CREATED,
-            Notification::RECIPIENT_HOTEL,
-            $ride->getHotel()->getPhone(),
-            "[{$this->appName}] Course #{$ride->getReference()} créée pour {$ride->getClientName()} le " .
-            $ride->getPickupDatetime()->format('d/m/Y à H:i') . ". En attente d'assignation."
-        );
+        // 2. Email to hotel
+        if ($ride->getHotel()->getEmail()) {
+            $this->sendEmail(
+                $ride,
+                Notification::TYPE_RIDE_CREATED,
+                Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Confirmation de creation — Course #{$ride->getReference()}",
+                $this->buildHotelRideCreatedEmail($ride)
+            );
+        }
 
         // 3. Confirmation email to client if email provided
         if ($ride->getClientEmail()) {
@@ -61,7 +63,7 @@ class NotificationService
                 Notification::TYPE_RIDE_CREATED,
                 Notification::RECIPIENT_CLIENT,
                 $ride->getClientEmail(),
-                "✅ Votre réservation de transport #{$ride->getReference()}",
+                "Votre reservation de transport #{$ride->getReference()}",
                 $this->buildClientConfirmationEmail($ride)
             );
         }
@@ -79,41 +81,31 @@ class NotificationService
                 Notification::TYPE_DRIVER_ASSIGNED,
                 Notification::RECIPIENT_DRIVER,
                 $driver->getEmail(),
-                "📋 Nouvelle mission assignée — #{$ride->getReference()}",
+                "Nouvelle mission assignee — #{$ride->getReference()}",
                 $this->buildDriverAssignmentEmail($ride)
             );
         }
 
-        // 2. SMS to driver
-        $this->sendSmsSimulation(
-            $ride,
-            Notification::TYPE_DRIVER_ASSIGNED,
-            Notification::RECIPIENT_DRIVER,
-            $driver->getPhone(),
-            "[{$this->appName}] Mission #{$ride->getReference()}: {$ride->getClientName()}, " .
-            $ride->getPickupDatetime()->format('d/m/Y H:i') . ". Départ: {$ride->getPickupAddress()}. Connectez-vous pour confirmer."
-        );
-
-        // 3. Email to hotel
+        // 2. Email to hotel
         if ($ride->getHotel()->getEmail()) {
             $this->sendEmail(
                 $ride,
                 Notification::TYPE_DRIVER_ASSIGNED,
                 Notification::RECIPIENT_HOTEL,
                 $ride->getHotel()->getEmail(),
-                "👤 Chauffeur assigné — Course #{$ride->getReference()}",
+                "Chauffeur assigne — Course #{$ride->getReference()}",
                 $this->buildHotelDriverAssignedEmail($ride)
             );
         }
 
-        // 4. Update client if available
+        // 3. Update client if available
         if ($ride->getClientEmail()) {
             $this->sendEmail(
                 $ride,
                 Notification::TYPE_DRIVER_ASSIGNED,
                 Notification::RECIPIENT_CLIENT,
                 $ride->getClientEmail(),
-                "🚗 Votre chauffeur a été assigné — #{$ride->getReference()}",
+                "Votre chauffeur a ete assigne — #{$ride->getReference()}",
                 $this->buildClientDriverAssignedEmail($ride)
             );
         }
@@ -121,15 +113,6 @@ class NotificationService
 
     public function onRideConfirmed(Ride $ride): void
     {
-        // SMS to hotel
-        $this->sendSmsSimulation(
-            $ride,
-            Notification::TYPE_RIDE_CONFIRMED,
-            Notification::RECIPIENT_HOTEL,
-            $ride->getHotel()->getPhone(),
-            "[{$this->appName}] Course #{$ride->getReference()} confirmée par {$ride->getDriver()?->getFullName()}."
-        );
-
         // Email to hotel
         if ($ride->getHotel()->getEmail()) {
             $this->sendEmail(
@@ -137,7 +120,7 @@ class NotificationService
                 Notification::TYPE_RIDE_CONFIRMED,
                 Notification::RECIPIENT_HOTEL,
                 $ride->getHotel()->getEmail(),
-                "✅ Course confirmée par le chauffeur — #{$ride->getReference()}",
+                "Course confirmee par le chauffeur — #{$ride->getReference()}",
                 $this->buildStatusUpdateEmail($ride, 'confirmée')
             );
         }
@@ -145,25 +128,29 @@ class NotificationService
 
     public function onRideStarted(Ride $ride): void
     {
-        // SMS to client
-        if ($ride->getClientPhone()) {
-            $this->sendSmsSimulation(
+        // Email to client
+        if ($ride->getClientEmail()) {
+            $this->sendEmail(
                 $ride,
                 Notification::TYPE_RIDE_STARTED,
                 Notification::RECIPIENT_CLIENT,
-                $ride->getClientPhone(),
-                "[{$this->appName}] Votre chauffeur {$ride->getDriver()?->getFullName()} ({$ride->getDriver()?->getLicensePlate()}) est en route. Course #{$ride->getReference()}."
+                $ride->getClientEmail(),
+                "Votre chauffeur est en route — #{$ride->getReference()}",
+                $this->buildClientRideStartedEmail($ride)
             );
         }
 
-        // SMS to hotel
-        $this->sendSmsSimulation(
-            $ride,
-            Notification::TYPE_RIDE_STARTED,
-            Notification::RECIPIENT_HOTEL,
-            $ride->getHotel()->getPhone(),
-            "[{$this->appName}] Course #{$ride->getReference()} démarrée par {$ride->getDriver()?->getFullName()}."
-        );
+        // Email to hotel
+        if ($ride->getHotel()->getEmail()) {
+            $this->sendEmail(
+                $ride,
+                Notification::TYPE_RIDE_STARTED,
+                Notification::RECIPIENT_HOTEL,
+                $ride->getHotel()->getEmail(),
+                "Course demarree — #{$ride->getReference()}",
+                $this->buildHotelRideStartedEmail($ride)
+            );
+        }
     }
 
     public function onRideCompleted(Ride $ride): void
@@ -175,19 +162,20 @@ class NotificationService
                 Notification::TYPE_RIDE_COMPLETED,
                 Notification::RECIPIENT_HOTEL,
                 $ride->getHotel()->getEmail(),
-                "🏁 Course terminée — Commission #{$ride->getReference()}",
+                "Course terminee — Commission #{$ride->getReference()}",
                 $this->buildRideCompletedEmail($ride)
             );
         }
 
-        // SMS to client
-        if ($ride->getClientPhone()) {
-            $this->sendSmsSimulation(
+        // Email to client
+        if ($ride->getClientEmail()) {
+            $this->sendEmail(
                 $ride,
                 Notification::TYPE_RIDE_COMPLETED,
                 Notification::RECIPIENT_CLIENT,
-                $ride->getClientPhone(),
-                "[{$this->appName}] Votre trajet est terminé. Merci de votre confiance. Course #{$ride->getReference()}."
+                $ride->getClientEmail(),
+                "Votre trajet est termine — #{$ride->getReference()}",
+                $this->buildClientRideCompletedEmail($ride)
             );
         }
     }
@@ -201,7 +189,7 @@ class NotificationService
                 Notification::TYPE_RIDE_CANCELLED,
                 Notification::RECIPIENT_DRIVER,
                 $ride->getDriver()->getEmail(),
-                "❌ Course annulée — #{$ride->getReference()}",
+                "Course annulee — #{$ride->getReference()}",
                 $this->buildStatusUpdateEmail($ride, 'annulée')
             );
         }
@@ -213,7 +201,7 @@ class NotificationService
                 Notification::TYPE_RIDE_CANCELLED,
                 Notification::RECIPIENT_CLIENT,
                 $ride->getClientEmail(),
-                "❌ Annulation de votre réservation #{$ride->getReference()}",
+                "Annulation de votre reservation #{$ride->getReference()}",
                 $this->buildStatusUpdateEmail($ride, 'annulée')
             );
         }
@@ -228,12 +216,12 @@ class NotificationService
             Notification::TYPE_COMMISSION_REPORT,
             Notification::RECIPIENT_HOTEL,
             $ride->getHotel()->getEmail(),
-            "📊 Relevé de commissions — " . $month->format('F Y'),
+            "Releve de commissions — " . $month->format('F Y'),
             $this->buildCommissionReportEmail($ride->getHotel(), $rides, $total, $month)
         );
     }
 
-    // ─── Core send methods ────────────────────────────────────────────────────
+    // ─── Core send method ────────────────────────────────────────────────────
 
     private function sendEmail(
         ?Ride $ride,
@@ -288,32 +276,6 @@ class NotificationService
         return $notification;
     }
 
-    private function sendSmsSimulation(
-        Ride $ride,
-        string $type,
-        string $recipientType,
-        ?string $phone,
-        string $message
-    ): Notification {
-        $notification = new Notification();
-        $notification->setRide($ride);
-        $notification->setType($type);
-        $notification->setChannel(Notification::CHANNEL_SMS);
-        $notification->setRecipientType($recipientType);
-        $notification->setRecipientPhone($phone);
-        $notification->setSubject('SMS — ' . $message);
-        $notification->setContent($message);
-        $notification->setStatus($this->smsSimulation ? Notification::STATUS_SENT : Notification::STATUS_PENDING);
-        $notification->setSentAt(new \DateTimeImmutable());
-
-        $this->em->persist($notification);
-        $this->em->flush();
-
-        $this->logger->info("SMS [SIMULATION] → {$phone}: {$message}");
-
-        return $notification;
-    }
-
     // ─── Email templates ─────────────────────────────────────────────────────
 
     private function emailWrapper(string $title, string $body): string
@@ -347,7 +309,7 @@ class NotificationService
 <body>
 <div class="container">
   <div class="header">
-    <h1>🚗 {$this->appName}</h1>
+    <h1>{$this->appName}</h1>
     <p>Système de transport hôtelier haut de gamme</p>
   </div>
   <div class="content">
@@ -387,6 +349,28 @@ HTML;
         return $this->emailWrapper("Nouvelle course #{$ride->getReference()}", $body);
     }
 
+    private function buildHotelRideCreatedEmail(Ride $ride): string
+    {
+        $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
+        $body = <<<HTML
+<h2 style="color:#1e293b;margin-top:0">Course créée avec succès</h2>
+<p>Bonjour,</p>
+<p>La course <strong>#{$ride->getReference()}</strong> a bien été enregistrée pour votre client <strong>{$ride->getClientName()}</strong>.</p>
+<div class="card">
+  <div class="label">Référence</div><div class="value">#{$ride->getReference()}</div><br>
+  <div class="label">Client</div><div class="value">{$ride->getClientName()}</div><br>
+  <div class="label">Prise en charge</div><div class="value">{$ride->getPickupAddress()}</div><br>
+  <div class="label">Destination</div><div class="value">{$ride->getDestinationAddress()}</div><br>
+  <div class="label">Date & Heure</div><div class="value">{$pickupDate}</div>
+</div>
+<div class="highlight">
+  Un chauffeur sera assigné prochainement. Vous recevrez un email de confirmation.
+</div>
+<a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a>
+HTML;
+        return $this->emailWrapper("Course créée — #{$ride->getReference()}", $body);
+    }
+
     private function buildDriverAssignmentEmail(Ride $ride): string
     {
         $driver = $ride->getDriver();
@@ -408,9 +392,9 @@ HTML;
 </div>
 HTML;
         if ($ride->getNotes()) {
-            $body .= "<div class=\"highlight\">📝 <strong>Notes :</strong> {$ride->getNotes()}</div>";
+            $body .= "<div class=\"highlight\"><strong>Notes :</strong> {$ride->getNotes()}</div>";
         }
-        $body .= "<a href=\"{$this->appBaseUrl}/chauffeur/missions/{$ride->getId()}\" class=\"btn\">Voir la mission →</a>";
+        $body .= "<a href=\"{$this->appBaseUrl}/chauffeur/missions/{$ride->getId()}\" class=\"btn\">Voir la mission</a>";
         return $this->emailWrapper("Mission #{$ride->getReference()}", $body);
     }
 
@@ -474,10 +458,68 @@ HTML;
   <div class="label">Immatriculation</div><div class="value">{$driver->getLicensePlate()}</div>
 </div>
 <div class="highlight">
-  📍 Retrouvez votre chauffeur à : <strong>{$ride->getPickupAddress()}</strong>
+  Retrouvez votre chauffeur à : <strong>{$ride->getPickupAddress()}</strong>
 </div>
 HTML;
         return $this->emailWrapper("Votre chauffeur est assigné — #{$ride->getReference()}", $body);
+    }
+
+    private function buildClientRideStartedEmail(Ride $ride): string
+    {
+        $driverName = $ride->getDriver()?->getFullName() ?? 'Votre chauffeur';
+        $licensePlate = $ride->getDriver()?->getLicensePlate() ?? '';
+        $vehicleModel = $ride->getDriver()?->getVehicleModel() ?? '';
+        $body = <<<HTML
+<h2 style="color:#1e293b;margin-top:0">Votre chauffeur est en route !</h2>
+<p>Bonjour {$ride->getClientName()},</p>
+<p>Votre chauffeur <strong>{$driverName}</strong> est en route vers le point de prise en charge.</p>
+<div class="card">
+  <div class="label">Chauffeur</div><div class="value">{$driverName}</div><br>
+  <div class="label">Véhicule</div><div class="value">{$vehicleModel} — {$licensePlate}</div><br>
+  <div class="label">Point de prise en charge</div><div class="value">{$ride->getPickupAddress()}</div><br>
+  <div class="label">Destination</div><div class="value">{$ride->getDestinationAddress()}</div>
+</div>
+<div class="highlight">
+  Référence de votre course : <strong>#{$ride->getReference()}</strong>
+</div>
+HTML;
+        return $this->emailWrapper("Chauffeur en route — #{$ride->getReference()}", $body);
+    }
+
+    private function buildHotelRideStartedEmail(Ride $ride): string
+    {
+        $driverName = $ride->getDriver()?->getFullName() ?? 'Le chauffeur';
+        $body = <<<HTML
+<h2 style="color:#1e293b;margin-top:0">Course démarrée</h2>
+<p>Bonjour,</p>
+<p>La course <strong>#{$ride->getReference()}</strong> a été démarrée par <strong>{$driverName}</strong>.</p>
+<div class="card">
+  <div class="label">Référence</div><div class="value">#{$ride->getReference()}</div><br>
+  <div class="label">Client</div><div class="value">{$ride->getClientName()}</div><br>
+  <div class="label">Chauffeur</div><div class="value">{$driverName}</div><br>
+  <div class="label">Trajet</div><div class="value">{$ride->getPickupAddress()} &rarr; {$ride->getDestinationAddress()}</div>
+</div>
+<a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a>
+HTML;
+        return $this->emailWrapper("Course démarrée — #{$ride->getReference()}", $body);
+    }
+
+    private function buildClientRideCompletedEmail(Ride $ride): string
+    {
+        $body = <<<HTML
+<h2 style="color:#1e293b;margin-top:0">Votre trajet est terminé</h2>
+<p>Bonjour {$ride->getClientName()},</p>
+<p>Votre trajet est bien arrivé à destination. Merci de votre confiance !</p>
+<div class="card">
+  <div class="label">Référence</div><div class="value">#{$ride->getReference()}</div><br>
+  <div class="label">Trajet</div><div class="value">{$ride->getPickupAddress()} &rarr; {$ride->getDestinationAddress()}</div><br>
+  <div class="label">Date</div><div class="value">{$ride->getPickupDatetime()->format('d/m/Y')}</div>
+</div>
+<div class="highlight">
+  Merci d'avoir choisi <strong>{$this->appName}</strong>. Nous espérons vous revoir bientôt !
+</div>
+HTML;
+        return $this->emailWrapper("Trajet terminé — #{$ride->getReference()}", $body);
     }
 
     private function buildStatusUpdateEmail(Ride $ride, string $statusFr): string
@@ -532,9 +574,9 @@ HTML;
         $monthFr = $month->format('F Y');
         $commRate = $hotel->getCommissionRate();
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Releve de commissions — {$monthFr}</h2>
+<h2 style="color:#1e293b;margin-top:0">Relevé de commissions — {$monthFr}</h2>
 <p>Bonjour,</p>
-<p>Voici votre releve de commissions pour <strong>{$hotel->getName()}</strong> du mois de <strong>{$monthFr}</strong>.</p>
+<p>Voici votre relevé de commissions pour <strong>{$hotel->getName()}</strong> du mois de <strong>{$monthFr}</strong>.</p>
 <div class="card" style="background:#f0fdf4;border-color:#bbf7d0;text-align:center">
   <div class="label">Total commissions ce mois</div>
   <div style="font-size:32px;font-weight:700;color:#0d9488;margin-top:8px">{$total} EUR</div>
@@ -554,11 +596,11 @@ HTML;
   <tfoot>
     <tr style="background:#f0fdf4">
       <td colspan="4" style="padding:12px;font-weight:700;color:#0d9488">Total</td>
-      <td style="padding:12px;font-weight:700;color:#0d9488;text-align:right">{$total} €</td>
+      <td style="padding:12px;font-weight:700;color:#0d9488;text-align:right">{$total} EUR</td>
     </tr>
   </tfoot>
 </table>
-<a href="{$this->appBaseUrl}/hotel/commissions" class="btn">Voir l'historique complet →</a>
+<a href="{$this->appBaseUrl}/hotel/commissions" class="btn">Voir l'historique complet</a>
 HTML;
         return $this->emailWrapper("Relevé commissions {$monthFr} — {$hotel->getName()}", $body);
     }
