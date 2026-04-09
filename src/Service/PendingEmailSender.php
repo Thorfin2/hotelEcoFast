@@ -4,26 +4,23 @@ namespace App\Service;
 
 use App\Entity\Notification;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPMailer\PHPMailer\PHPMailer;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 /**
- * Envoie les notifications email en attente via SMTP (PHPMailer).
- * Utilisé par la commande console et directement après les actions HTTP
- * (évite exec/php en arrière-plan, souvent indisponible sous PHP-FPM).
+ * Envoie les notifications email en attente via Symfony Mailer (SMTP).
  */
 class PendingEmailSender
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly LoggerInterface $logger,
-        private readonly string $mailerHost,
-        private readonly int $mailerPort,
-        private readonly string $mailerUsername,
-        private readonly string $mailerPassword,
+        private readonly MailerInterface $mailer,
         private readonly string $mailerFromEmail,
         private readonly string $mailerFromName,
-        private readonly string $mailerEncryption,
         private readonly bool $mailerEnabled,
     ) {
     }
@@ -46,42 +43,33 @@ class PendingEmailSender
             return ['sent' => 0, 'failed' => 0, 'skipped' => false];
         }
 
-        $mail = new PHPMailer(true);
-
-        try {
-            $mail->isSMTP();
-            $mail->Host = $this->mailerHost;
-            $mail->SMTPAuth = true;
-            $mail->Username = $this->mailerUsername;
-            $mail->Password = $this->mailerPassword;
-            $mail->SMTPSecure = $this->mailerEncryption === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = $this->mailerPort;
-            $mail->CharSet = 'UTF-8';
-            $mail->Timeout = 30;
-            $mail->SMTPKeepAlive = true;
-            $mail->setFrom($this->mailerFromEmail, $this->mailerFromName);
-        } catch (\Throwable $e) {
-            $this->logger->error('SMTP configuration failed: {message}', ['message' => $e->getMessage()]);
-
-            return ['sent' => 0, 'failed' => \count($notifications), 'skipped' => false];
-        }
-
         $sent = 0;
         $failed = 0;
+        $from = new Address($this->mailerFromEmail, $this->mailerFromName);
 
         foreach ($notifications as $notification) {
             try {
-                $mail->clearAddresses();
-                $mail->addAddress($notification->getRecipientEmail());
-                $mail->isHTML(true);
-                $mail->Subject = $notification->getSubject();
-                $mail->Body = $notification->getContent();
-                $mail->AltBody = strip_tags($notification->getContent());
-                $mail->send();
+                $html = $notification->getContent();
+                $email = (new Email())
+                    ->from($from)
+                    ->to($notification->getRecipientEmail())
+                    ->subject($notification->getSubject())
+                    ->html($html)
+                    ->text(trim(strip_tags($html)));
+
+                $this->mailer->send($email);
 
                 $notification->setStatus(Notification::STATUS_SENT);
                 $notification->setSentAt(new \DateTimeImmutable());
                 ++$sent;
+            } catch (TransportExceptionInterface $e) {
+                $notification->setStatus(Notification::STATUS_FAILED);
+                $notification->setErrorMessage($e->getMessage());
+                ++$failed;
+                $this->logger->warning('Email send failed for {email}: {message}', [
+                    'email' => $notification->getRecipientEmail(),
+                    'message' => $e->getMessage(),
+                ]);
             } catch (\Throwable $e) {
                 $notification->setStatus(Notification::STATUS_FAILED);
                 $notification->setErrorMessage($e->getMessage());
@@ -94,8 +82,6 @@ class PendingEmailSender
 
             $this->em->flush();
         }
-
-        $mail->smtpClose();
 
         return ['sent' => $sent, 'failed' => $failed, 'skipped' => false];
     }

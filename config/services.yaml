@@ -22,15 +22,21 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    app.mailer:
+        class: Symfony\Component\Mailer\Mailer
+        factory: ['App\Mail\SmtpMailerFactory', 'create']
+        arguments:
+            - '%mailer.host%'
+            - '%mailer.port%'
+            - '%mailer.username%'
+            - '%mailer.password%'
+            - '%mailer.encryption%'
+
     App\Service\PendingEmailSender:
         arguments:
-            $mailerHost: '%mailer.host%'
-            $mailerPort: '%mailer.port%'
-            $mailerUsername: '%mailer.username%'
-            $mailerPassword: '%mailer.password%'
+            $mailer: '@app.mailer'
             $mailerFromEmail: '%mailer.from_email%'
             $mailerFromName: '%mailer.from_name%'
-            $mailerEncryption: '%mailer.encryption%'
             $mailerEnabled: '%env(bool:MAILER_ENABLED)%'
 
     App\Service\NotificationService:

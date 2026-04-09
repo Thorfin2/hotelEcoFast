@@ -26,4 +26,5 @@ else
 fi
 
 echo "==> Starting PHP server on port ${PORT:-8080}..."
-exec php -S 0.0.0.0:${PORT:-8080} -t public/
+# public/index.php comme routeur : sinon les URLs Symfony (/admin, /login, etc.) ne passent pas par le front controller.
+exec php -S 0.0.0.0:${PORT:-8080} -t public public/index.php
