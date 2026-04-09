@@ -370,15 +370,14 @@ class AdminController extends AbstractController
             }
         }
 
+        $resendKey = $_ENV['RESEND_API_KEY'] ?? '';
+
         return $this->render('admin/test_email.html.twig', [
             'sent' => $sent,
             'error' => $error,
             'to' => $to,
-            'mailerHost' => $this->getParameter('mailer.host'),
-            'mailerPort' => $this->getParameter('mailer.port'),
-            'mailerUsername' => $this->getParameter('mailer.username'),
-            'mailerPassword' => $this->getParameter('mailer.password'),
-            'mailerEncryption' => $this->getParameter('mailer.encryption'),
+            'resendConfigured' => !empty($resendKey) && $resendKey !== 'change_me',
+            'fromEmail' => $this->getParameter('mailer.from_email'),
         ]);
     }
 

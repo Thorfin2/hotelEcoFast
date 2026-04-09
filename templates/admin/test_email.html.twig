@@ -1,8 +1,8 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Test email SMTP{% endblock %}
-{% block page_title %}Test email SMTP{% endblock %}
-{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Envoie un email de test pour verifier la configuration SMTP</p>{% endblock %}
+{% block title %}Test email{% endblock %}
+{% block page_title %}Test email{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Envoie un email de test via Resend API</p>{% endblock %}
 
 {% block content %}
 <div class="max-w-lg">
@@ -19,7 +19,7 @@
 
   {% if sent %}
     <div class="mt-6 rounded-lg border border-green-200 bg-green-50 text-green-800 px-4 py-3 text-sm">
-      Email envoye avec succes ! Verifie la boite de reception (et les spams).
+      Email envoye avec succes ! Verifie ta boite de reception (et les spams).
     </div>
   {% elseif error %}
     <div class="mt-6 rounded-lg border border-red-200 bg-red-50 text-red-800 px-4 py-3 text-sm whitespace-pre-wrap">
@@ -28,12 +28,10 @@
   {% endif %}
 
   <div class="mt-8 card p-4 text-xs text-dark-600 space-y-1">
-    <p class="font-semibold text-dark-800">Configuration SMTP actuelle</p>
-    <p>Host : {{ mailerHost }}</p>
-    <p>Port : {{ mailerPort }}</p>
-    <p>Encryption : {{ mailerEncryption }}</p>
-    <p>Username : {{ mailerUsername }}</p>
-    <p>Password : {% if mailerPassword %}****** (configure){% else %}<span class="text-red-600 font-medium">NON CONFIGURE</span>{% endif %}</p>
+    <p class="font-semibold text-dark-800">Configuration</p>
+    <p>Methode : Resend API (HTTP)</p>
+    <p>API Key : {% if resendConfigured %}<span class="text-green-600">configuree</span>{% else %}<span class="text-red-600 font-medium">NON CONFIGUREE</span> (ajouter RESEND_API_KEY sur Railway){% endif %}</p>
+    <p>From : {{ fromEmail }}</p>
   </div>
 </div>
 {% endblock %}

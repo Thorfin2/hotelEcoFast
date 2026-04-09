@@ -2,32 +2,23 @@
 
 namespace App\Command;
 
-use App\Mail\SmtpMailerFactory;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport;
-use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
 
 #[AsCommand(
     name: 'app:mail:test',
-    description: 'Envoie un email de test SMTP (debug Railway / CLI)',
+    description: 'Envoie un email de test via Resend API',
 )]
 class TestSmtpCommand extends Command
 {
     public function __construct(
-        private readonly string $mailerHost,
-        private readonly int $mailerPort,
-        private readonly string $mailerUsername,
-        private readonly string $mailerPassword,
+        private readonly string $resendApiKey,
         private readonly string $mailerFromEmail,
         private readonly string $mailerFromName,
-        private readonly string $mailerEncryption,
     ) {
         parent::__construct();
     }
@@ -42,46 +33,49 @@ class TestSmtpCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $to = (string) $input->getArgument('to');
 
-        if ($this->mailerPassword === '') {
-            $io->error('MAILER_PASSWORD est vide. Définis-le dans .env.local ou sur Railway.');
-
+        if (empty($this->resendApiKey) || $this->resendApiKey === 'change_me') {
+            $io->error('RESEND_API_KEY non configuree.');
             return Command::FAILURE;
         }
 
-        $dsn = SmtpMailerFactory::buildDsn(
-            $this->mailerHost,
-            $this->mailerPort,
-            $this->mailerUsername,
-            $this->mailerPassword,
-            $this->mailerEncryption
-        );
-        $io->note(sprintf(
-            'SMTP %s:%d — user %s — schéma %s',
-            $this->mailerHost,
-            $this->mailerPort,
-            $this->mailerUsername,
-            str_starts_with($dsn, 'smtps://') ? 'smtps (TLS implicite)' : 'smtp+STARTTLS'
-        ));
+        $io->note("Envoi via Resend API -> {$to}");
 
-        try {
-            $mailer = new Mailer(Transport::fromDsn($dsn));
-            $mailer->send(
-                (new Email())
-                    ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
-                    ->to($to)
-                    ->subject('Test CLI EcoFast SMTP')
-                    ->text('Si tu reçois ce message, SMTP fonctionne.')
-            );
-            $io->success('Email envoyé vers ' . $to);
+        $payload = json_encode([
+            'from' => "{$this->mailerFromName} <{$this->mailerFromEmail}>",
+            'to' => [$to],
+            'subject' => 'Test EcoFast - Email fonctionne !',
+            'html' => '<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)"><div style="background:linear-gradient(135deg,#0d9488,#0f766e);padding:32px;text-align:center"><h1 style="color:#fff;margin:0">EcoFast VTC</h1></div><div style="padding:32px;text-align:center"><h2 style="color:#1e293b">Ca marche !</h2><p style="color:#64748b">La configuration email est correcte.</p></div></div>',
+        ]);
 
+        $ch = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $this->resendApiKey,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($error) {
+            $io->error("cURL: {$error}");
+            return Command::FAILURE;
+        }
+
+        if ($httpCode >= 200 && $httpCode < 300) {
+            $io->success("Email envoye vers {$to}");
             return Command::SUCCESS;
-        } catch (\Throwable $e) {
-            $io->error($e->getMessage());
-            if (method_exists($e, 'getDebug') && $e->getDebug()) {
-                $io->block($e->getDebug(), 'DEBUG', 'fg=white;bg=red', ' ', true);
-            }
-
-            return Command::FAILURE;
         }
+
+        $body = json_decode($response, true);
+        $io->error("HTTP {$httpCode}: " . ($body['message'] ?? $response));
+        return Command::FAILURE;
     }
 }
