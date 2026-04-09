@@ -50,11 +50,11 @@
 
     {% if ride.status == 'assigned' %}
       <div class="mt-3 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
-        💬 En confirmant, un email et SMS seront envoyés à l'hôtel.
+        💬 En confirmant, un email sera envoyé à l'hôtel.
       </div>
     {% elseif ride.status == 'confirmed' %}
       <div class="mt-3 p-3 bg-indigo-50 rounded-lg text-sm text-indigo-700">
-        💬 En démarrant, le client et l'hôtel seront notifiés par SMS.
+        💬 En démarrant, le client et l'hôtel seront notifiés par email.
       </div>
     {% elseif ride.status == 'in_progress' %}
       <div class="mt-3 p-3 bg-purple-50 rounded-lg text-sm text-purple-700">

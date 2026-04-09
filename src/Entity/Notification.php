@@ -17,7 +17,6 @@ class Notification
     public const TYPE_COMMISSION_REPORT = 'commission_report';
 
     public const CHANNEL_EMAIL = 'email';
-    public const CHANNEL_SMS   = 'sms';
 
     public const RECIPIENT_ADMIN  = 'admin';
     public const RECIPIENT_HOTEL  = 'hotel';

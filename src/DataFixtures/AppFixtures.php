@@ -152,13 +152,13 @@ class AppFixtures extends Fixture
                     ->setSentAt(new \DateTimeImmutable());
                 $manager->persist($notif);
 
-                if ($data[11]) {
+                if ($data[11] && $data[11]->getEmail()) {
                     $notif2 = new Notification();
                     $notif2->setRide($ride)->setType(Notification::TYPE_DRIVER_ASSIGNED)
-                        ->setChannel(Notification::CHANNEL_SMS)
+                        ->setChannel(Notification::CHANNEL_EMAIL)
                         ->setRecipientType(Notification::RECIPIENT_DRIVER)
-                        ->setRecipientPhone($data[11]->getPhone())
-                        ->setSubject("SMS Mission #{$ride->getReference()}")
+                        ->setRecipientEmail($data[11]->getEmail())
+                        ->setSubject("Mission assignée #{$ride->getReference()}")
                         ->setContent("Mission assignée : {$ride->getClientName()}")
                         ->setStatus(Notification::STATUS_SENT)
                         ->setSentAt(new \DateTimeImmutable());
