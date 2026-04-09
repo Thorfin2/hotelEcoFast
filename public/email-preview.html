@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aperçu des emails EcoFast</title>
+<style>
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #1a1a2e; margin: 0; padding: 40px 20px; }
+  .preview-title { text-align: center; color: #c8a951; font-size: 28px; margin-bottom: 10px; }
+  .preview-subtitle { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 40px; }
+  .email-section { margin-bottom: 60px; }
+  .section-label { background: #c8a951; color: #1a1a2e; display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+
+  /* Email styles */
+  .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  .header { background: linear-gradient(135deg, #0d9488, #0f766e); padding: 32px; text-align: center; }
+  .header h1 { color: white; margin: 0; font-size: 24px; font-weight: 700; }
+  .header p { color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px; }
+  .content { padding: 32px; }
+  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 16px 0; }
+  .label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+  .value { font-size: 15px; color: #1e293b; margin-top: 2px; font-weight: 500; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #dcfce7; color: #166534; }
+  .btn { display: inline-block; padding: 12px 28px; background: #0d9488; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 16px 0; }
+  .footer { background: #f8fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #e2e8f0; }
+  .footer p { color: #94a3b8; font-size: 12px; margin: 4px 0; }
+  .highlight { background: #f0fdf4; border-left: 4px solid #0d9488; padding: 12px 16px; border-radius: 4px; }
+  .card-green { background: #f0fdf4; border-color: #bbf7d0; }
+  hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="preview-title">Apercu des templates email</div>
+<div class="preview-subtitle">EcoFast Hotel - Systeme de notifications</div>
+
+<!-- EMAIL 1: Nouvelle course (Admin) -->
+<div class="email-section">
+  <div style="text-align:center"><span class="section-label">1. Email Admin - Nouvelle course</span></div>
+  <div class="container">
+    <div class="header">
+      <h1>EcoFast Hotel</h1>
+      <p>Systeme de transport hotelier haut de gamme</p>
+    </div>
+    <div class="content">
+      <h2 style="color:#1e293b;margin-top:0">Nouvelle course a assigner</h2>
+      <p>Bonjour Mehdi,</p>
+      <p>Une nouvelle course a ete creee et necessite l'assignation d'un chauffeur.</p>
+      <div class="card">
+        <div class="label">Reference</div><div class="value">#ECF-20260409-001</div><br>
+        <div class="label">Hotel demandeur</div><div class="value">Hotel Le Marais Paris</div><br>
+        <div class="label">Client</div><div class="value">Jean Dupont</div><br>
+        <div class="label">Prise en charge</div><div class="value">Hotel Le Marais, 15 Rue de Rivoli, 75004 Paris</div><br>
+        <div class="label">Destination</div><div class="value">Aeroport Charles de Gaulle, Terminal 2E</div><br>
+        <div class="label">Date &amp; Heure</div><div class="value">09/04/2026 a 14:30</div>
+      </div>
+      <div class="highlight">
+        Action requise : Connectez-vous pour assigner un chauffeur disponible.
+      </div>
+      <a href="#" class="btn">Assigner un chauffeur</a>
+    </div>
+    <div class="footer">
+      <p>EcoFast Hotel - Plateforme de gestion de transport</p>
+      <p>Cet email a ete genere automatiquement, merci de ne pas repondre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL 2: Confirmation client -->
+<div class="email-section">
+  <div style="text-align:center"><span class="section-label">2. Email Client - Confirmation reservation</span></div>
+  <div class="container">
+    <div class="header">
+      <h1>EcoFast Hotel</h1>
+      <p>Systeme de transport hotelier haut de gamme</p>
+    </div>
+    <div class="content">
+      <h2 style="color:#1e293b;margin-top:0">Votre reservation est confirmee !</h2>
+      <p>Bonjour Jean Dupont,</p>
+      <p>Votre reservation de transport a bien ete enregistree. Voici le recapitulatif :</p>
+      <div class="card">
+        <div class="label">Reference</div><div class="value">#ECF-20260409-001</div><br>
+        <div class="label">Date &amp; Heure</div><div class="value">09/04/2026 a 14:30</div><br>
+        <div class="label">Adresse de depart</div><div class="value">Hotel Le Marais, 15 Rue de Rivoli, 75004 Paris</div><br>
+        <div class="label">Destination</div><div class="value">Aeroport Charles de Gaulle, Terminal 2E</div><br>
+        <div class="label">Passagers</div><div class="value">2</div>
+      </div>
+      <div class="highlight">
+        Vous recevrez une notification des qu'un chauffeur sera assigne a votre course.
+      </div>
+    </div>
+    <div class="footer">
+      <p>EcoFast Hotel - Plateforme de gestion de transport</p>
+      <p>Cet email a ete genere automatiquement, merci de ne pas repondre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL 3: Chauffeur assigne (Hotel) -->
+<div class="email-section">
+  <div style="text-align:center"><span class="section-label">3. Email Hotel - Chauffeur assigne</span></div>
+  <div class="container">
+    <div class="header">
+      <h1>EcoFast Hotel</h1>
+      <p>Systeme de transport hotelier haut de gamme</p>
+    </div>
+    <div class="content">
+      <h2 style="color:#1e293b;margin-top:0">Chauffeur assigne a votre course</h2>
+      <p>Bonjour,</p>
+      <p>Un chauffeur a ete assigne a la course <strong>#ECF-20260409-001</strong> pour votre client <strong>Jean Dupont</strong>.</p>
+      <div class="card">
+        <div class="label">Chauffeur</div><div class="value">Karim Benali</div><br>
+        <div class="label">Telephone</div><div class="value">+33 6 12 34 56 78</div><br>
+        <div class="label">Vehicule</div><div class="value">Mercedes Classe E - AB-123-CD</div>
+      </div>
+      <div class="card">
+        <div class="label">Client</div><div class="value">Jean Dupont</div><br>
+        <div class="label">Prise en charge</div><div class="value">09/04/2026 a 14:30</div><br>
+        <div class="label">Depart</div><div class="value">Hotel Le Marais, 15 Rue de Rivoli, 75004 Paris</div><br>
+        <div class="label">Destination</div><div class="value">Aeroport Charles de Gaulle, Terminal 2E</div>
+      </div>
+      <a href="#" class="btn">Suivre la course</a>
+    </div>
+    <div class="footer">
+      <p>EcoFast Hotel - Plateforme de gestion de transport</p>
+      <p>Cet email a ete genere automatiquement, merci de ne pas repondre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL 4: Mission chauffeur -->
+<div class="email-section">
+  <div style="text-align:center"><span class="section-label">4. Email Chauffeur - Nouvelle mission</span></div>
+  <div class="container">
+    <div class="header">
+      <h1>EcoFast Hotel</h1>
+      <p>Systeme de transport hotelier haut de gamme</p>
+    </div>
+    <div class="content">
+      <h2 style="color:#1e293b;margin-top:0">Nouvelle mission assignee</h2>
+      <p>Bonjour Karim,</p>
+      <p>Une nouvelle course vous a ete assignee. Veuillez confirmer votre disponibilite.</p>
+      <div class="card">
+        <div class="label">Reference</div><div class="value">#ECF-20260409-001</div><br>
+        <div class="label">Client</div><div class="value">Jean Dupont</div><br>
+        <div class="label">Telephone client</div><div class="value">+33 6 98 76 54 32</div><br>
+        <div class="label">Prise en charge</div><div class="value">Hotel Le Marais, 15 Rue de Rivoli, 75004 Paris</div><br>
+        <div class="label">Destination</div><div class="value">Aeroport Charles de Gaulle, Terminal 2E</div><br>
+        <div class="label">Date &amp; Heure</div><div class="value">09/04/2026 a 14:30</div><br>
+        <div class="label">Passagers</div><div class="value">2</div><br>
+        <div class="label">Bagages</div><div class="value">3</div>
+      </div>
+      <div class="highlight">Notes : Client VIP, merci de preparer une bouteille d'eau.</div>
+      <a href="#" class="btn">Voir la mission</a>
+    </div>
+    <div class="footer">
+      <p>EcoFast Hotel - Plateforme de gestion de transport</p>
+      <p>Cet email a ete genere automatiquement, merci de ne pas repondre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL 5: Course terminee -->
+<div class="email-section">
+  <div style="text-align:center"><span class="section-label">5. Email Hotel - Course terminee + Commission</span></div>
+  <div class="container">
+    <div class="header">
+      <h1>EcoFast Hotel</h1>
+      <p>Systeme de transport hotelier haut de gamme</p>
+    </div>
+    <div class="content">
+      <h2 style="color:#1e293b;margin-top:0">Course terminee avec succes</h2>
+      <p>La course <strong>#ECF-20260409-001</strong> est terminee. Voici le recapitulatif financier :</p>
+      <div class="card">
+        <div class="label">Client</div><div class="value">Jean Dupont</div><br>
+        <div class="label">Trajet</div><div class="value">Hotel Le Marais &rarr; Aeroport CDG T2E</div><br>
+        <div class="label">Date</div><div class="value">09/04/2026</div>
+      </div>
+      <div class="card card-green">
+        <div class="label">Prix total</div><div class="value" style="font-size:20px;color:#0d9488;font-weight:700">85.00 EUR</div><br>
+        <div class="label">Votre commission (10%)</div>
+        <div class="value" style="font-size:18px;color:#166534;font-weight:700">8.50 EUR</div>
+      </div>
+      <a href="#" class="btn">Voir mes commissions</a>
+    </div>
+    <div class="footer">
+      <p>EcoFast Hotel - Plateforme de gestion de transport</p>
+      <p>Cet email a ete genere automatiquement, merci de ne pas repondre.</p>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL 6: Releve commissions -->
+<div class="email-section">
+  <div style="text-align:center"><span class="section-label">6. Email Hotel - Releve mensuel commissions</span></div>
+  <div class="container">
+    <div class="header">
+      <h1>EcoFast Hotel</h1>
+      <p>Systeme de transport hotelier haut de gamme</p>
+    </div>
+    <div class="content">
+      <h2 style="color:#1e293b;margin-top:0">Releve de commissions - Avril 2026</h2>
+      <p>Bonjour,</p>
+      <p>Voici votre releve de commissions pour <strong>Hotel Le Marais Paris</strong> du mois de <strong>Avril 2026</strong>.</p>
+      <div class="card card-green" style="text-align:center">
+        <div class="label">Total commissions ce mois</div>
+        <div style="font-size:32px;font-weight:700;color:#0d9488;margin-top:8px">42.50 EUR</div>
+        <div style="color:#64748b;font-size:13px;margin-top:4px">sur Avril 2026 - Taux 10%</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#f8fafc">
+            <th style="padding:8px;text-align:left;color:#64748b">Ref.</th>
+            <th style="padding:8px;text-align:left;color:#64748b">Client</th>
+            <th style="padding:8px;text-align:left;color:#64748b">Date</th>
+            <th style="padding:8px;text-align:right;color:#64748b">Prix</th>
+            <th style="padding:8px;text-align:right;color:#64748b">Commission</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">#ECF-001</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">Jean Dupont</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">02/04</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right">85.00 EUR</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;color:#0d9488;font-weight:600">8.50 EUR</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">#ECF-002</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">Marie Laurent</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">05/04</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right">120.00 EUR</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;color:#0d9488;font-weight:600">12.00 EUR</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">#ECF-003</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">Pierre Martin</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">08/04</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right">65.00 EUR</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;color:#0d9488;font-weight:600">6.50 EUR</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">#ECF-004</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">Sophie Bernard</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0">09/04</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right">155.00 EUR</td>
+            <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;color:#0d9488;font-weight:600">15.50 EUR</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr style="background:#f0fdf4">
+            <td colspan="4" style="padding:12px;font-weight:700;color:#0d9488">Total</td>
+            <td style="padding:12px;font-weight:700;color:#0d9488;text-align:right">42.50 EUR</td>
+          </tr>
+        </tfoot>
+      </table>
+      <a href="#" class="btn">Voir l'historique complet</a>
+    </div>
+    <div class="footer">
+      <p>EcoFast Hotel - Plateforme de gestion de transport</p>
+      <p>Cet email a ete genere automatiquement, merci de ne pas repondre.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

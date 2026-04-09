@@ -41,7 +41,10 @@
       "Bash(find /Applications/MAMP -name composer* -type f)",
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php -r \"copy\\(''https://getcomposer.org/installer'', ''composer-setup.php''\\);\")",
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php composer-setup.php --install-dir=/Users/mehdi/Desktop/ecofastHotel --filename=composer)",
-      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /Users/mehdi/Desktop/ecofastHotel/composer update doctrine/doctrine-fixtures-bundle --no-interaction)"
+      "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /Users/mehdi/Desktop/ecofastHotel/composer update doctrine/doctrine-fixtures-bundle --no-interaction)",
+      "Bash(git push:*)",
+      "Bash(railway --version)",
+      "Bash(git revert:*)"
     ]
   }
 }
