@@ -250,7 +250,7 @@ class NotificationService
             $mail->SMTPSecure = $this->mailerEncryption === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port       = $this->mailerPort;
             $mail->CharSet    = 'UTF-8';
-            $mail->Timeout    = 5; // 5 secondes max pour éviter de bloquer
+            $mail->Timeout    = 30;
 
             $mail->setFrom($this->mailerFromEmail, $this->mailerFromName);
             $mail->addAddress($recipientEmail);
