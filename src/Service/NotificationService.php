@@ -10,32 +10,26 @@ use Psr\Log\LoggerInterface;
 
 class NotificationService
 {
-    private string $projectDir;
-
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly LoggerInterface $logger,
-        private readonly string $mailerHost,
-        private readonly int $mailerPort,
-        private readonly string $mailerUsername,
-        private readonly string $mailerPassword,
-        private readonly string $mailerFromEmail,
-        private readonly string $mailerFromName,
-        private readonly string $mailerEncryption,
+        private readonly PendingEmailSender $pendingEmailSender,
         private readonly string $appName,
         private readonly string $appBaseUrl,
-        bool $mailerEnabled = true,
     ) {
-        $this->projectDir = dirname(__DIR__, 2);
     }
 
     /**
-     * Lance la commande d'envoi d'emails en arrière-plan
+     * Envoie immédiatement les notifications en attente (même processus que la requête HTTP).
+     * Évite exec()/sous-processus, souvent indisponibles ou mal configurés sous PHP-FPM.
      */
     private function dispatchEmailSending(): void
     {
-        $cmd = 'php ' . $this->projectDir . '/bin/console app:send-pending-emails > /dev/null 2>&1 &';
-        @exec($cmd);
+        try {
+            $this->pendingEmailSender->sendPendingBatch(20);
+        } catch (\Throwable $e) {
+            $this->logger->error('Pending email batch failed: {message}', ['message' => $e->getMessage()]);
+        }
     }
 
     // ─── Trigger points ──────────────────────────────────────────────────────

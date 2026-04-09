@@ -22,7 +22,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Service\NotificationService:
+    App\Service\PendingEmailSender:
         arguments:
             $mailerHost: '%mailer.host%'
             $mailerPort: '%mailer.port%'
@@ -32,15 +32,8 @@ services:
             $mailerFromName: '%mailer.from_name%'
             $mailerEncryption: '%mailer.encryption%'
             $mailerEnabled: '%env(bool:MAILER_ENABLED)%'
+
+    App\Service\NotificationService:
+        arguments:
             $appName: '%app.name%'
             $appBaseUrl: '%app.base_url%'
-
-    App\Command\SendPendingEmailsCommand:
-        arguments:
-            $mailerHost: '%mailer.host%'
-            $mailerPort: '%mailer.port%'
-            $mailerUsername: '%mailer.username%'
-            $mailerPassword: '%mailer.password%'
-            $mailerFromEmail: '%mailer.from_email%'
-            $mailerFromName: '%mailer.from_name%'
-            $mailerEncryption: '%mailer.encryption%'
