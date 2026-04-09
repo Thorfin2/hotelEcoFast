@@ -13,23 +13,19 @@ class NotificationService
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly LoggerInterface $logger,
-        private readonly PendingEmailSender $pendingEmailSender,
         private readonly string $appName,
         private readonly string $appBaseUrl,
     ) {
     }
 
     /**
-     * Envoie immédiatement les notifications en attente (même processus que la requête HTTP).
-     * Évite exec()/sous-processus, souvent indisponibles ou mal configurés sous PHP-FPM.
+     * Lance l'envoi des emails en arrière-plan pour ne pas bloquer la requête HTTP.
      */
     private function dispatchEmailSending(): void
     {
-        try {
-            $this->pendingEmailSender->sendPendingBatch(20);
-        } catch (\Throwable $e) {
-            $this->logger->error('Pending email batch failed: {message}', ['message' => $e->getMessage()]);
-        }
+        $consolePath = dirname(__DIR__, 2) . '/bin/console';
+        $cmd = 'php ' . escapeshellarg($consolePath) . ' app:send-pending-emails > /dev/null 2>&1 &';
+        @exec($cmd);
     }
 
     // ─── Trigger points ──────────────────────────────────────────────────────

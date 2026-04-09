@@ -28,15 +28,22 @@ final class SmtpMailerFactory
         string $password,
         string $encryption,
     ): string {
-        $enc = strtolower($encryption) === 'ssl' ? 'ssl' : 'tls';
+        $user = rawurlencode($username);
+        $pass = rawurlencode($password);
+        $enc = strtolower(trim($encryption));
 
-        return sprintf(
-            'smtp://%s:%s@%s:%d?encryption=%s',
-            rawurlencode($username),
-            rawurlencode($password),
-            $host,
-            $port,
-            $enc
-        );
+        // Port 465 sans MAILER_ENCRYPTION explicite → souvent SMTPS
+        if ($enc === '' && $port === 465) {
+            $enc = 'ssl';
+        }
+
+        // Port 465 + SSL = TLS implicite (SMTPS). Avec Hostinger / beaucoup de SMTP,
+        // "smtp://...?encryption=ssl" échoue ; il faut le schéma smtps:// (comme PHPMailer ENCRYPTION_SMTPS).
+        if ($enc === 'ssl' || $enc === 'smtps') {
+            return sprintf('smtps://%s:%s@%s:%d?timeout=30', $user, $pass, $host, $port);
+        }
+
+        // STARTTLS (souvent port 587)
+        return sprintf('smtp://%s:%s@%s:%d?encryption=tls&timeout=30', $user, $pass, $host, $port);
     }
 }

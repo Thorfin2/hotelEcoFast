@@ -43,3 +43,13 @@ services:
         arguments:
             $appName: '%app.name%'
             $appBaseUrl: '%app.base_url%'
+
+    App\Command\TestSmtpCommand:
+        arguments:
+            $mailerHost: '%mailer.host%'
+            $mailerPort: '%mailer.port%'
+            $mailerUsername: '%mailer.username%'
+            $mailerPassword: '%mailer.password%'
+            $mailerFromEmail: '%mailer.from_email%'
+            $mailerFromName: '%mailer.from_name%'
+            $mailerEncryption: '%mailer.encryption%'

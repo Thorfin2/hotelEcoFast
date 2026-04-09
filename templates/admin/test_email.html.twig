@@ -1,8 +1,8 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block title %}Test email SMTP{% endblock %}
-{% block page_title %}Test email (Symfony Mailer){% endblock %}
-{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Même configuration <code class="text-xs">MAILER_*</code> que les notifications.</p>{% endblock %}
+{% block page_title %}Test email SMTP{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Envoie un email de test pour verifier la configuration SMTP</p>{% endblock %}
 
 {% block content %}
 <div class="max-w-lg">
@@ -19,25 +19,21 @@
 
   {% if sent %}
     <div class="mt-6 rounded-lg border border-green-200 bg-green-50 text-green-800 px-4 py-3 text-sm">
-      Email envoyé. Vérifie la boîte de réception (et les spams).
+      Email envoye avec succes ! Verifie la boite de reception (et les spams).
     </div>
   {% elseif error %}
-    <div class="mt-6 rounded-lg border border-red-200 bg-red-50 text-red-800 px-4 py-3 text-sm">
+    <div class="mt-6 rounded-lg border border-red-200 bg-red-50 text-red-800 px-4 py-3 text-sm whitespace-pre-wrap">
       <strong>Erreur :</strong> {{ error }}
     </div>
   {% endif %}
 
-  {% if transport_debug %}
-    <pre class="mt-4 text-xs bg-dark-900 text-dark-300 p-4 rounded-lg overflow-auto max-h-64 whitespace-pre-wrap">{{ transport_debug }}</pre>
-  {% endif %}
-
   <div class="mt-8 card p-4 text-xs text-dark-600 space-y-1">
-    <p class="font-semibold text-dark-800">Configuration lue par l’app</p>
-    <p>MAILER_ENABLED : {{ mailer_enabled ? 'oui' : 'non' }}</p>
-    <p>Host : {{ mailer_host }} — Port : {{ mailer_port }} — Encryption : {{ mailer_encryption }}</p>
-    <p>Username : {{ mailer_username }}</p>
-    <p>Password : {% if mailer_password_configured %}présent{% else %}<span class="text-red-600 font-medium">absent</span> (Railway ou .env.local){% endif %}</p>
-    <p>From : {{ mailer_from_email }}</p>
+    <p class="font-semibold text-dark-800">Configuration SMTP actuelle</p>
+    <p>Host : {{ mailerHost }}</p>
+    <p>Port : {{ mailerPort }}</p>
+    <p>Encryption : {{ mailerEncryption }}</p>
+    <p>Username : {{ mailerUsername }}</p>
+    <p>Password : {% if mailerPassword %}****** (configure){% else %}<span class="text-red-600 font-medium">NON CONFIGURE</span>{% endif %}</p>
   </div>
 </div>
 {% endblock %}

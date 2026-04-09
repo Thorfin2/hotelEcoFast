@@ -343,4 +343,43 @@ class AdminController extends AbstractController
         ]);
     }
 
+    // ─── TEST EMAIL ──────────────────────────────────────────────────────────
+
+    #[Route('/test-email', name: 'test_email')]
+    public function testEmail(Request $request): Response
+    {
+        $sent = false;
+        $error = '';
+        $to = '';
+
+        if ($request->isMethod('POST')) {
+            $to = $request->request->get('to', '');
+
+            $consolePath = $this->getParameter('kernel.project_dir') . '/bin/console';
+            $cmd = 'php ' . escapeshellarg($consolePath) . ' app:mail:test ' . escapeshellarg($to) . ' 2>&1';
+
+            $output = [];
+            $exitCode = 0;
+            exec($cmd, $output, $exitCode);
+            $debug = implode("\n", $output);
+
+            if ($exitCode === 0) {
+                $sent = true;
+            } else {
+                $error = $debug ?: 'Erreur inconnue';
+            }
+        }
+
+        return $this->render('admin/test_email.html.twig', [
+            'sent' => $sent,
+            'error' => $error,
+            'to' => $to,
+            'mailerHost' => $this->getParameter('mailer.host'),
+            'mailerPort' => $this->getParameter('mailer.port'),
+            'mailerUsername' => $this->getParameter('mailer.username'),
+            'mailerPassword' => $this->getParameter('mailer.password'),
+            'mailerEncryption' => $this->getParameter('mailer.encryption'),
+        ]);
+    }
+
 }
