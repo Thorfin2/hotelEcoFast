@@ -41,6 +41,11 @@
       {{ app.request.attributes.get('_route') == 'admin_settings' ? 'text-gold-700 bg-gold-50' : 'text-dark-500 hover:text-dark-900 hover:bg-gray-50' }}">
     Paramètres
   </a>
+  <a href="{{ path('admin_profile') }}"
+    class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+      {{ app.request.attributes.get('_route') == 'admin_profile' ? 'text-gold-700 bg-gold-50' : 'text-dark-500 hover:text-dark-900 hover:bg-gray-50' }}">
+    Mon profil
+  </a>
 {% endblock %}
 
 {% block mobile_nav %}
@@ -52,4 +57,5 @@
   <a href="{{ path('admin_commissions') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_commissions' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Commissions</a>
   <a href="{{ path('admin_notifications') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_notifications' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Notifications</a>
   <a href="{{ path('admin_settings') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_settings' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Paramètres</a>
+  <a href="{{ path('admin_profile') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_profile' ? 'text-gold-700 bg-gold-50' : 'text-dark-600 hover:bg-gray-50' }}">Mon profil</a>
 {% endblock %}

@@ -343,6 +343,35 @@ class AdminController extends AbstractController
         ]);
     }
 
+    // ─── PROFIL ADMIN ────────────────────────────────────────────────────────
+
+    #[Route('/profil', name: 'profile')]
+    public function profile(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($request->isMethod('POST')) {
+            $user->setFirstName($request->request->get('firstName', $user->getFirstName()));
+            $user->setLastName($request->request->get('lastName', $user->getLastName()));
+            $user->setEmail($request->request->get('email', $user->getEmail()));
+            $user->setPhone($request->request->get('phone', $user->getPhone()));
+
+            $newPassword = $request->request->get('newPassword', '');
+            if (!empty($newPassword)) {
+                $user->setPassword($hasher->hashPassword($user, $newPassword));
+            }
+
+            $em->flush();
+            $this->addFlash('success', 'Profil mis à jour avec succès.');
+            return $this->redirectToRoute('admin_profile');
+        }
+
+        return $this->render('admin/profile.html.twig', [
+            'user' => $user,
+        ]);
+    }
+
     // ─── TEST EMAIL ──────────────────────────────────────────────────────────
 
     #[Route('/test-email', name: 'test_email')]
