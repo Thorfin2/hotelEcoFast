@@ -44,7 +44,26 @@
       "Bash(/Applications/MAMP/bin/php/php8.3.30/bin/php /Users/mehdi/Desktop/ecofastHotel/composer update doctrine/doctrine-fixtures-bundle --no-interaction)",
       "Bash(git push:*)",
       "Bash(railway --version)",
-      "Bash(git revert:*)"
+      "Bash(git revert:*)",
+      "Bash(docker run:*)",
+      "Bash(php -m)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s -X POST https://api.resend.com/domains -H 'Authorization: Bearer re_gNxbVagU_FmiPmZgjxyFSL7Hoq1Qy3FFN' -H 'Content-Type: application/json' -d '{\"\"\"\"name\"\"\"\": \"\"\"\"ecofast-vtc.fr\"\"\"\"}')",
+      "Bash(curl -s -X POST \"https://api.resend.com/domains/3a057943-ff56-47b9-bbb5-0f9813fa3240/verify\" -H \"Authorization: Bearer re_gNxbVagU_FmiPmZgjxyFSL7Hoq1Qy3FFN\")",
+      "Bash(curl -s -X POST https://api.resend.com/domains/3a057943-ff56-47b9-bbb5-0f9813fa3240/verify -H 'Authorization: Bearer re_gNxbVagU_FmiPmZgjxyFSL7Hoq1Qy3FFN')",
+      "Bash(curl -s \"https://api.resend.com/domains/3a057943-ff56-47b9-bbb5-0f9813fa3240\" -H \"Authorization: Bearer re_gNxbVagU_FmiPmZgjxyFSL7Hoq1Qy3FFN\")",
+      "Bash(python3 -c \":*)",
+      "Bash(dig TXT send.ecofast-vtc.fr +short)",
+      "Bash(dig MX send.ecofast-vtc.fr +short)",
+      "Bash(curl -s https://api.resend.com/domains/3a057943-ff56-47b9-bbb5-0f9813fa3240 -H 'Authorization: Bearer re_gNxbVagU_FmiPmZgjxyFSL7Hoq1Qy3FFN')",
+      "Bash(php bin/console doctrine:query:sql \"SELECT COUNT\\(*\\) as total_rides FROM ride\")",
+      "Bash(php bin/console doctrine:query:sql \"SELECT COUNT\\(*\\) as total_notifications FROM notification\")",
+      "Bash(php bin/console doctrine:query:sql \"SELECT COUNT\\(*\\) as total FROM ride\")",
+      "Bash(php bin/console doctrine:query:sql \"SELECT COUNT\\(*\\) as total FROM notification\")",
+      "Bash(/Applications/MAMP/Library/bin/mysql --version)",
+      "Bash(/usr/local/mysql/bin/mysql --version)",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -P 8889 -h 127.0.0.1 ecofasthotel -e \"SELECT COUNT\\(*\\) as courses FROM ride; SELECT COUNT\\(*\\) as notifications FROM notification;\")",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -P 8889 -h 127.0.0.1 ecofasthotel -e \"DELETE FROM notification; DELETE FROM ride; SELECT COUNT\\(*\\) as courses_restantes FROM ride; SELECT COUNT\\(*\\) as notifications_restantes FROM notification;\")"
     ]
   }
 }

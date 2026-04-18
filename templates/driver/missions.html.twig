@@ -20,7 +20,7 @@
 
 {% if rides is empty %}
   <div class="card p-12 text-center">
-    <div class="text-5xl mb-4">🚗</div>
+    <div class="text-5xl mb-4"><i class="fas fa-car"></i></div>
     <p class="text-dark-400">Aucune mission {{ currentStatus ? 'avec ce statut' : '' }}</p>
   </div>
 {% else %}
@@ -39,9 +39,9 @@
               <div><span class="text-red-400">●</span> {{ ride.destinationAddress }}</div>
             </div>
             <div class="flex items-center gap-4 text-xs text-dark-300">
-              <span>📅 {{ ride.pickupDatetime|date('d/m/Y H:i') }}</span>
-              <span>👥 {{ ride.passengers }} pers.</span>
-              {% if ride.price %}<span>💰 {{ ride.driverAmount }} €</span>{% endif %}
+              <span><i class="fas fa-calendar-days mr-1"></i>{{ ride.pickupDatetime|date('d/m/Y H:i') }}</span>
+              <span><i class="fas fa-users mr-1"></i>{{ ride.passengers }} pers.</span>
+              {% if ride.price %}<span><i class="fas fa-euro-sign mr-1"></i>{{ ride.driverAmount }} €</span>{% endif %}
             </div>
           </div>
           <div class="flex flex-col items-end gap-2">

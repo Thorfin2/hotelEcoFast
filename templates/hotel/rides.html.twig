@@ -27,7 +27,7 @@
 
 {% if rides is empty %}
   <div class="card p-12 text-center animate-fade-in-up">
-    <div class="text-5xl mb-4 animate-float">🚗</div>
+    <div class="text-5xl mb-4 animate-float"><i class="fas fa-car"></i></div>
     <p class="text-dark-400">Aucune course {{ currentStatus ? 'avec ce statut' : '' }}</p>
     <a href="{{ path('hotel_new_ride') }}" class="btn-primary mt-4 inline-flex">Créer une course</a>
   </div>

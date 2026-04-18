@@ -7,7 +7,7 @@
 {% block header_actions %}
   <a href="{{ path('admin_rides') }}" class="btn-secondary">← Retour</a>
   {% if ride.status in ['pending', 'assigned'] %}
-    <a href="{{ path('admin_assign_driver', {id: ride.id}) }}" class="btn-primary">👤 Assigner chauffeur</a>
+    <a href="{{ path('admin_assign_driver', {id: ride.id}) }}" class="btn-primary"><i class="fas fa-user-plus"></i> Assigner chauffeur</a>
   {% endif %}
 {% endblock %}
 
@@ -28,21 +28,21 @@
         <div class="flex gap-2 flex-wrap" x-data>
           {% if ride.status == 'assigned' %}
             <form method="post" action="{{ path('admin_update_ride_status', {id: ride.id, status: 'in_progress'}) }}">
-              <button class="btn-primary text-xs py-1.5">🚗 Démarrer</button>
+              <button class="btn-primary text-xs py-1.5"><i class="fas fa-car"></i> Démarrer</button>
             </form>
           {% elseif ride.status == 'confirmed' %}
             <form method="post" action="{{ path('admin_update_ride_status', {id: ride.id, status: 'in_progress'}) }}">
-              <button class="btn-primary text-xs py-1.5">🚗 Démarrer la course</button>
+              <button class="btn-primary text-xs py-1.5"><i class="fas fa-car"></i> Démarrer la course</button>
             </form>
           {% elseif ride.status == 'in_progress' %}
             <form method="post" action="{{ path('admin_update_ride_status', {id: ride.id, status: 'completed'}) }}">
-              <button class="btn-primary text-xs py-1.5" style="background:#059669">🏁 Terminer la course</button>
+              <button class="btn-primary text-xs py-1.5" style="background:#059669"><i class="fas fa-flag-checkered"></i> Terminer la course</button>
             </form>
           {% endif %}
           {% if ride.status not in ['completed', 'cancelled'] %}
             <form method="post" action="{{ path('admin_update_ride_status', {id: ride.id, status: 'cancelled'}) }}"
                   @submit.prevent="if(confirm('Confirmer l\'annulation ?')) $el.submit()">
-              <button class="btn-danger text-xs py-1.5">❌ Annuler</button>
+              <button class="btn-danger text-xs py-1.5"><i class="fas fa-xmark"></i> Annuler</button>
             </form>
           {% endif %}
         </div>
@@ -52,18 +52,18 @@
     {# Details #}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="card p-5">
-        <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">👤 Client</h3>
+        <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-user mr-1.5 text-dark-400"></i>Client</h3>
         <dl class="space-y-2 text-sm">
           <div><dt class="text-dark-300 text-xs">Nom</dt><dd class="font-semibold">{{ ride.clientName }}</dd></div>
           {% if ride.clientPhone %}<div><dt class="text-dark-300 text-xs">Tél</dt><dd><a href="tel:{{ ride.clientPhone }}" class="text-gold-600">{{ ride.clientPhone }}</a></dd></div>{% endif %}
           {% if ride.clientEmail %}<div><dt class="text-dark-300 text-xs">Email</dt><dd class="truncate">{{ ride.clientEmail }}</dd></div>{% endif %}
           <div><dt class="text-dark-300 text-xs">Passagers</dt><dd>{{ ride.passengers }}</dd></div>
           {% if ride.luggage %}<div><dt class="text-dark-300 text-xs">Bagages</dt><dd>{{ ride.luggage }}</dd></div>{% endif %}
-          {% if ride.flightNumber %}<div><dt class="text-dark-300 text-xs">Vol</dt><dd>✈️ {{ ride.flightNumber }}</dd></div>{% endif %}
+          {% if ride.flightNumber %}<div><dt class="text-dark-300 text-xs">Vol</dt><dd><i class="fas fa-plane mr-1"></i>{{ ride.flightNumber }}</dd></div>{% endif %}
         </dl>
       </div>
       <div class="card p-5">
-        <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">🏨 Hôtel</h3>
+        <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-hotel mr-1.5 text-dark-400"></i>Hôtel</h3>
         <dl class="space-y-2 text-sm">
           <div><dt class="text-dark-300 text-xs">Nom</dt><dd class="font-semibold">{{ ride.hotel.name }}</dd></div>
           <div><dt class="text-dark-300 text-xs">Ville</dt><dd>{{ ride.hotel.city }}</dd></div>
@@ -73,7 +73,7 @@
     </div>
 
     <div class="card p-5">
-      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">🚗 Trajet</h3>
+      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-car mr-1.5 text-dark-400"></i>Trajet</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
         <div><dt class="text-dark-300 text-xs">Départ</dt><dd class="font-medium mt-0.5">{{ ride.pickupAddress }}</dd></div>
         <div><dt class="text-dark-300 text-xs">Destination</dt><dd class="font-medium mt-0.5">{{ ride.destinationAddress }}</dd></div>
@@ -91,11 +91,11 @@
     {# Notifications #}
     {% if ride.notifications is not empty %}
     <div class="card p-5">
-      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">📬 Historique notifications</h3>
+      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-inbox mr-1.5 text-dark-400"></i>Historique notifications</h3>
       <div class="space-y-2">
         {% for notif in ride.notifications %}
           <div class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-            <span class="text-lg">{{ notif.channel == 'email' ? '✉️' : '💬' }}</span>
+            <span class="text-lg">{{ notif.channel == 'email' ? '<i class="fas fa-envelope"></i>'|raw : '<i class="fas fa-comment-dots"></i>'|raw }}</span>
             <div class="flex-1">
               <div class="text-xs font-medium text-dark-900">{{ notif.typeLabel }} → {{ notif.recipientLabel }}</div>
               <div class="text-xs text-dark-300">{{ notif.recipientEmail ?? notif.recipientPhone }} · {{ notif.createdAt|date('d/m H:i') }}</div>
@@ -115,7 +115,7 @@
     {# Driver #}
     {% if ride.driver %}
     <div class="card p-5">
-      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">🚘 Chauffeur</h3>
+      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-car mr-1.5 text-dark-400"></i>Chauffeur</h3>
       <div class="flex items-center gap-3 mb-3">
         <div class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center text-gold-700 font-bold">
           {{ ride.driver.firstName|first }}{{ ride.driver.lastName|first }}
@@ -126,8 +126,8 @@
         </div>
       </div>
       <div class="space-y-1.5 text-xs text-dark-500">
-        <div>📞 <a href="tel:{{ ride.driver.phone }}" class="text-gold-600">{{ ride.driver.phone }}</a></div>
-        <div>🔑 <span class="font-mono bg-dark-100 px-1.5 py-0.5 rounded">{{ ride.driver.licensePlate }}</span></div>
+        <div><i class="fas fa-phone"></i> <a href="tel:{{ ride.driver.phone }}" class="text-gold-600">{{ ride.driver.phone }}</a></div>
+        <div><i class="fas fa-key"></i> <span class="font-mono bg-dark-100 px-1.5 py-0.5 rounded">{{ ride.driver.licensePlate }}</span></div>
       </div>
       {% if ride.status in ['pending', 'assigned'] %}
         <a href="{{ path('admin_assign_driver', {id: ride.id}) }}" class="btn-secondary text-xs mt-3 inline-flex">Changer le chauffeur</a>
@@ -135,7 +135,7 @@
     </div>
     {% else %}
     <div class="card p-5 border-amber-100 bg-amber-50">
-      <h3 class="font-semibold text-amber-800 mb-2 text-sm">🚘 Aucun chauffeur</h3>
+      <h3 class="font-semibold text-amber-800 mb-2 text-sm"><i class="fas fa-car mr-1.5"></i>Aucun chauffeur</h3>
       <p class="text-amber-600 text-xs mb-3">Cette course nécessite l'assignation d'un chauffeur.</p>
       <a href="{{ path('admin_assign_driver', {id: ride.id}) }}" class="btn-primary text-sm">Assigner maintenant →</a>
     </div>
@@ -144,7 +144,7 @@
     {# Financials #}
     {% if ride.price %}
     <div class="card p-5">
-      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">💰 Financier</h3>
+      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-euro-sign mr-1.5 text-dark-400"></i>Financier</h3>
       <div class="space-y-2 text-sm">
         <div class="flex justify-between"><span class="text-dark-400">Prix total</span><span class="font-bold">{{ ride.price }} €</span></div>
         <div class="flex justify-between pt-1.5 border-t border-gray-100"><span class="text-dark-400">Commission hôtel</span><span class="font-bold text-gold-700">{{ ride.hotelCommission }} €</span></div>
@@ -155,7 +155,7 @@
 
     {# Timeline #}
     <div class="card p-5">
-      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm">📅 Chronologie</h3>
+      <h3 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-calendar-days mr-1.5 text-dark-400"></i>Chronologie</h3>
       <div class="space-y-2.5 text-xs">
         <div class="flex gap-2 text-dark-500"><div class="w-2 h-2 rounded-full bg-gold-500 mt-1 flex-shrink-0"></div><div><span class="font-medium">Créée :</span> {{ ride.createdAt|date('d/m/Y H:i') }}</div></div>
         {% if ride.assignedAt %}<div class="flex gap-2 text-dark-500"><div class="w-2 h-2 rounded-full bg-blue-500 mt-1 flex-shrink-0"></div><div><span class="font-medium">Assignée :</span> {{ ride.assignedAt|date('d/m/Y H:i') }}</div></div>{% endif %}

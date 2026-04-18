@@ -48,8 +48,8 @@
             {% endif %}
           </td>
           <td class="px-5 py-3.5 text-sm text-dark-500">
-            {% if user.hotel %}🏨 {{ user.hotel.name }}
-            {% elseif user.driver %}🚘 {{ user.driver.vehicleModel }}
+            {% if user.hotel %}<i class="fas fa-hotel"></i> {{ user.hotel.name }}
+            {% elseif user.driver %}<i class="fas fa-car"></i> {{ user.driver.vehicleModel }}
             {% else %}—{% endif %}
           </td>
           <td class="px-5 py-3.5">

@@ -3,33 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}{{ app_name }}{% endblock %} — EcoFast Hotel</title>
+  <title>{% block title %}{{ app_name }}{% endblock %} — EcoFast VTC</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            gold:    { 50:'#fdf9ef', 100:'#faf0d4', 200:'#f4dea8', 300:'#edc872', 400:'#e5ad3e', 500:'#d4952a', 600:'#b87a20', 700:'#96601d', 800:'#7a4e1f', 900:'#66411e' },
+            eco:     { 50:'#f2f9eb', 100:'#dff0c3', 200:'#c2e494', 300:'#9dd464', 400:'#7cc73d', 500:'#5ab82e', 600:'#449f21', 700:'#327a17', 800:'#225710', 900:'#153a09' },
+            navy:    { 50:'#e8f1f7', 100:'#c5d8ea', 200:'#9dbdd9', 300:'#6e9fc5', 400:'#4485b3', 500:'#256b9e', 600:'#185383', 700:'#113e66', 800:'#0a2b4a', 900:'#0d2233', 950:'#071522' },
+            gold:    { 50:'#f2f9eb', 100:'#dff0c3', 200:'#c2e494', 300:'#9dd464', 400:'#7cc73d', 500:'#5ab82e', 600:'#449f21', 700:'#327a17', 800:'#225710', 900:'#153a09' },
             dark:    { 50:'#f5f5f6', 100:'#e6e6e8', 200:'#cfd0d4', 300:'#aeb0b6', 400:'#868991', 500:'#6b6e76', 600:'#5a5c63', 700:'#4d4e54', 800:'#434449', 900:'#1a1a1e', 950:'#111113' },
-            primary: { 50:'#fdf9ef', 100:'#faf0d4', 200:'#f4dea8', 300:'#edc872', 400:'#e5ad3e', 500:'#d4952a', 600:'#b87a20', 700:'#96601d', 800:'#7a4e1f', 900:'#66411e' },
+            primary: { 50:'#f2f9eb', 100:'#dff0c3', 200:'#c2e494', 300:'#9dd464', 400:'#7cc73d', 500:'#5ab82e', 600:'#449f21', 700:'#327a17', 800:'#225710', 900:'#153a09' },
           },
           fontFamily: {
-            display: ['Playfair Display', 'Georgia', 'serif'],
+            display: ['Inter', 'system-ui', 'sans-serif'],
             sans: ['Inter', 'system-ui', 'sans-serif'],
           },
           keyframes: {
-            'fade-in': { '0%': { opacity:'0', transform:'translateY(8px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
+            'fade-in':    { '0%': { opacity:'0', transform:'translateY(8px)' },  '100%': { opacity:'1', transform:'translateY(0)' } },
             'fade-in-up': { '0%': { opacity:'0', transform:'translateY(16px)' }, '100%': { opacity:'1', transform:'translateY(0)' } },
-            'scale-in': { '0%': { opacity:'0', transform:'scale(0.96)' }, '100%': { opacity:'1', transform:'scale(1)' } },
-            'float': { '0%,100%': { transform:'translateY(0)' }, '50%': { transform:'translateY(-4px)' } },
-            'glow-pulse': { '0%,100%': { boxShadow:'0 0 12px rgba(212,149,42,0.1)' }, '50%': { boxShadow:'0 0 20px rgba(212,149,42,0.25)' } },
+            'scale-in':   { '0%': { opacity:'0', transform:'scale(0.96)' },      '100%': { opacity:'1', transform:'scale(1)' } },
+            'float':      { '0%,100%': { transform:'translateY(0)' }, '50%': { transform:'translateY(-4px)' } },
+            'glow-pulse': { '0%,100%': { boxShadow:'0 0 12px rgba(90,184,46,0.12)' }, '50%': { boxShadow:'0 0 22px rgba(90,184,46,0.28)' } },
           },
           animation: {
-            'fade-in': 'fade-in 0.35s ease-out both',
+            'fade-in':    'fade-in 0.35s ease-out both',
             'fade-in-up': 'fade-in-up 0.4s ease-out both',
-            'scale-in': 'scale-in 0.25s ease-out both',
-            'float': 'float 3s ease-in-out infinite',
+            'scale-in':   'scale-in 0.25s ease-out both',
+            'float':      'float 3s ease-in-out infinite',
             'glow-pulse': 'glow-pulse 2.5s ease-in-out infinite',
           }
         }
@@ -38,11 +40,12 @@
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body { font-family: 'Inter', sans-serif; }
 
-    /* ── Sidebar (Laravel-style) ───────────────────── */
+    /* ── Sidebar ───────────────────────────────────── */
     .sidebar-link {
       display: flex; align-items: center; gap: 0.75rem;
       padding: 0.5rem 0.875rem; border-radius: 0.375rem;
@@ -51,10 +54,10 @@
     }
     .sidebar-link:hover { background: #f5f5f6; color: #1a1a1e; }
     .sidebar-link.active {
-      background: #fdf9ef; color: #b87a20; font-weight: 600;
-      border-left: 2px solid #d4952a; margin-left: -1px;
+      background: #f2f9eb; color: #327a17; font-weight: 600;
+      border-left: 2px solid #5ab82e; margin-left: -1px;
     }
-    .sidebar-link svg { width: 1.125rem; height: 1.125rem; flex-shrink: 0; }
+    .sidebar-link svg, .sidebar-link i { width: 1.125rem; height: 1.125rem; flex-shrink: 0; font-size: 0.875rem; }
 
     /* ── Forms ──────────────────────────────────────── */
     .form-input {
@@ -62,36 +65,44 @@
       font-size: 0.875rem; transition: border-color 0.15s, box-shadow 0.15s; background: #fff;
       color: #1a1a1e;
     }
-    .form-input:focus { outline: none; border-color: #d4952a; box-shadow: 0 0 0 3px rgba(212,149,42,0.12); }
+    .form-input:focus { outline: none; border-color: #5ab82e; box-shadow: 0 0 0 3px rgba(90,184,46,0.15); }
     .form-select {
       width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cfd0d4; border-radius: 0.375rem;
       font-size: 0.875rem; background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .form-select:focus { outline: none; border-color: #d4952a; box-shadow: 0 0 0 3px rgba(212,149,42,0.12); }
+    .form-select:focus { outline: none; border-color: #5ab82e; box-shadow: 0 0 0 3px rgba(90,184,46,0.15); }
     .form-textarea {
       width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cfd0d4; border-radius: 0.375rem;
       font-size: 0.875rem; resize: vertical; transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .form-textarea:focus { outline: none; border-color: #d4952a; box-shadow: 0 0 0 3px rgba(212,149,42,0.12); }
+    .form-textarea:focus { outline: none; border-color: #5ab82e; box-shadow: 0 0 0 3px rgba(90,184,46,0.15); }
 
-    /* ── Buttons (Laravel-style) ───────────────────── */
+    /* ── Buttons ────────────────────────────────────── */
     .btn-primary {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      padding: 0.5rem 1rem; background: #1a1a1e; color: #fff;
+      padding: 0.5rem 1rem; background: #0d2233; color: #fff;
       border-radius: 0.375rem; font-weight: 500; font-size: 0.8125rem;
       transition: all 0.15s ease; border: 1px solid transparent; cursor: pointer;
     }
-    .btn-primary:hover { background: #434449; }
-    .btn-primary:active { background: #111113; }
-    .btn-primary:focus-visible { outline: 2px solid #d4952a; outline-offset: 2px; }
+    .btn-primary:hover { background: #113e66; }
+    .btn-primary:active { background: #071522; }
+    .btn-primary:focus-visible { outline: 2px solid #5ab82e; outline-offset: 2px; }
 
-    .btn-gold {
+    .btn-eco {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      padding: 0.5rem 1rem; background: #d4952a; color: #fff;
+      padding: 0.5rem 1rem; background: #5ab82e; color: #fff;
       border-radius: 0.375rem; font-weight: 500; font-size: 0.8125rem;
       transition: all 0.15s ease; border: none; cursor: pointer;
     }
-    .btn-gold:hover { background: #b87a20; }
+    .btn-eco:hover { background: #449f21; }
+
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.5rem 1rem; background: #5ab82e; color: #fff;
+      border-radius: 0.375rem; font-weight: 500; font-size: 0.8125rem;
+      transition: all 0.15s ease; border: none; cursor: pointer;
+    }
+    .btn-gold:hover { background: #449f21; }
 
     .btn-secondary {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
@@ -110,7 +121,7 @@
     }
     .btn-danger:hover { background: #b91c1c; }
 
-    /* ── Cards (Laravel-style) ─────────────────────── */
+    /* ── Cards ──────────────────────────────────────── */
     .card {
       background: #fff; border-radius: 0.5rem;
       border: 1px solid #e6e6e8;
@@ -152,8 +163,10 @@
     .filter-pill { transition: all 0.15s ease; }
     .filter-pill:hover { transform: translateY(-1px); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
 
-    /* ── Subtle link hover ─────────────────────────── */
     a, button { transition: all 0.15s ease; }
+
+    /* ── FA icons alignment ─────────────────────────── */
+    .fa-icon { width: 1em; text-align: center; }
   </style>
   {% block stylesheets %}{% endblock %}
 </head>
@@ -172,7 +185,11 @@
          x-transition:leave-end="translate-y-2 opacity-0"
          :class="toast.type === 'success' ? 'border-green-200' : (toast.type === 'error' ? 'border-red-200' : 'border-gray-200')"
          class="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-lg bg-white text-dark-900 shadow-lg border min-w-72 max-w-sm">
-      <span x-text="toast.type === 'success' ? '✅' : (toast.type === 'error' ? '❌' : 'ℹ️')" class="text-base"></span>
+      <span :class="toast.type === 'success' ? 'text-eco-500' : (toast.type === 'error' ? 'text-red-500' : 'text-blue-500')">
+        <i x-show="toast.type === 'success'" class="fas fa-circle-check"></i>
+        <i x-show="toast.type === 'error'" class="fas fa-circle-xmark"></i>
+        <i x-show="toast.type === 'info'" class="fas fa-circle-info"></i>
+      </span>
       <span class="text-sm flex-1" x-text="toast.message"></span>
       <button @click="dismiss(toast.id)" class="text-dark-300 hover:text-dark-600 text-lg leading-none">&times;</button>
     </div>

@@ -8,7 +8,7 @@
   {% if rides is not empty %}
     <a href="{{ path('hotel_commissions', {month: month|date('Y-m'), send_report: 1}) }}"
        class="btn-primary text-sm">
-      📧 Envoyer le relevé par email
+      <i class="fas fa-envelope mr-1"></i>Envoyer le relevé par email
     </a>
   {% endif %}
 {% endblock %}
@@ -45,7 +45,7 @@
 
 {% if rides is empty %}
   <div class="card p-12 text-center">
-    <div class="text-5xl mb-4">📊</div>
+    <div class="text-5xl mb-4"><i class="fas fa-chart-bar"></i></div>
     <p class="text-dark-400">Aucune course terminée ce mois-ci</p>
   </div>
 {% else %}

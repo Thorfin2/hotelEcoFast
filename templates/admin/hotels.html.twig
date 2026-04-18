@@ -14,7 +14,7 @@
     <div class="card p-5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group {{ not hotel.isActive ? 'opacity-60' : '' }}">
       <div class="flex items-start justify-between mb-3">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-gold-50 rounded-xl flex items-center justify-center text-2xl">🏨</div>
+          <div class="w-10 h-10 bg-gold-50 rounded-xl flex items-center justify-center text-2xl"><i class="fas fa-hotel"></i></div>
           <div>
             <h3 class="font-bold font-display text-dark-900">{{ hotel.name }}</h3>
             <p class="text-dark-300 text-xs">{{ hotel.stars ? hotel.stars ~ ' ⭐' : '' }} {{ hotel.city }}</p>
@@ -26,9 +26,9 @@
       </div>
 
       <div class="space-y-1.5 text-xs text-dark-400 mb-4">
-        <div class="flex items-center gap-1.5"><span>📍</span>{{ hotel.address }}, {{ hotel.city }}</div>
-        {% if hotel.phone %}<div class="flex items-center gap-1.5"><span>📞</span>{{ hotel.phone }}</div>{% endif %}
-        {% if hotel.email %}<div class="flex items-center gap-1.5"><span>✉️</span>{{ hotel.email }}</div>{% endif %}
+        <div class="flex items-center gap-1.5"><i class="fas fa-location-dot"></i>{{ hotel.address }}, {{ hotel.city }}</div>
+        {% if hotel.phone %}<div class="flex items-center gap-1.5"><i class="fas fa-phone"></i>{{ hotel.phone }}</div>{% endif %}
+        {% if hotel.email %}<div class="flex items-center gap-1.5"><i class="fas fa-envelope"></i>{{ hotel.email }}</div>{% endif %}
       </div>
 
       <div class="flex items-center justify-between pt-3 border-t border-dark-100">
@@ -52,7 +52,7 @@
     </div>
   {% else %}
     <div class="col-span-3 card p-12 text-center">
-      <div class="text-5xl mb-4">🏨</div>
+      <div class="text-5xl mb-4"><i class="fas fa-hotel"></i></div>
       <p class="text-dark-400">Aucun hôtel partenaire</p>
       <a href="{{ path('admin_user_new') }}" class="btn-primary mt-4 inline-flex">Ajouter un hôtel</a>
     </div>

@@ -30,9 +30,9 @@
   x-data="{ pulse: true }" x-init="setInterval(() => pulse = !pulse, 2000)">
   <div class="flex items-center gap-3">
     <div class="text-3xl transition-transform duration-500" :class="pulse ? 'scale-110' : 'scale-100'">
-      {% if driver.status == 'available' %}✅
-      {% elseif driver.status == 'busy' %}🚗
-      {% else %}😴{% endif %}
+      {% if driver.status == 'available' %}<i class="fas fa-circle-check text-eco-500"></i>
+      {% elseif driver.status == 'busy' %}<i class="fas fa-car"></i>
+      {% else %}<i class="fas fa-moon"></i>{% endif %}
     </div>
     <div>
       <div class="font-bold font-display text-dark-900 text-lg">
@@ -93,7 +93,7 @@
               <div class="flex items-center gap-2"><span class="text-green-500">●</span> {{ ride.pickupAddress }}</div>
               <div class="flex items-center gap-2"><span class="text-red-400">●</span> {{ ride.destinationAddress }}</div>
             </div>
-            <div class="text-gold-700 font-bold mt-2">📅 {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
+            <div class="text-gold-700 font-bold mt-2"><i class="fas fa-calendar-days mr-1"></i>{{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
           </div>
           <a href="{{ path('driver_mission_detail', {id: ride.id}) }}" class="btn-primary text-sm ml-4 transition-all duration-300 group-hover:shadow-lg">Gérer →</a>
         </div>
@@ -102,7 +102,7 @@
   </div>
 {% else %}
   <div class="card p-10 text-center animate-fade-in-up">
-    <div class="text-5xl mb-3 animate-float">🚗</div>
+    <div class="text-5xl mb-3 animate-float"><i class="fas fa-car"></i></div>
     <p class="text-dark-400">Aucune mission active pour le moment</p>
     <p class="text-dark-300 text-sm mt-1">Les nouvelles missions apparaîtront ici</p>
   </div>

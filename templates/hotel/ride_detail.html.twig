@@ -10,7 +10,7 @@
     <form method="post" action="{{ path('hotel_cancel_ride', {id: ride.id}) }}"
           onsubmit="return confirm('Confirmer l\'annulation ?')">
       <input type="hidden" name="_token" value="{{ csrf_token('cancel_ride_' ~ ride.id) }}">
-      <button type="submit" class="btn-danger text-sm">❌ Annuler la course</button>
+      <button type="submit" class="btn-danger text-sm"><i class="fas fa-xmark"></i> Annuler la course</button>
     </form>
   {% endif %}
 {% endblock %}
@@ -45,7 +45,7 @@
 
     {# Client + Trajet #}
     <div class="card p-6">
-      <h3 class="font-semibold text-dark-900 mb-4">👤 Client</h3>
+      <h3 class="font-semibold text-dark-900 mb-4"><i class="fas fa-user mr-1.5 text-dark-400"></i>Client</h3>
       <div class="grid grid-cols-2 gap-4 text-sm">
         <div>
           <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">Nom</div>
@@ -66,7 +66,7 @@
         {% if ride.flightNumber %}
         <div>
           <div class="text-dark-300 text-xs font-semibold uppercase tracking-wider mb-1">N° de vol</div>
-          <div class="font-semibold text-dark-900">✈️ {{ ride.flightNumber }}</div>
+          <div class="font-semibold text-dark-900"><i class="fas fa-plane mr-1"></i>{{ ride.flightNumber }}</div>
         </div>
         {% endif %}
         <div>
@@ -83,7 +83,7 @@
     </div>
 
     <div class="card p-6">
-      <h3 class="font-semibold text-dark-900 mb-4">🚗 Trajet</h3>
+      <h3 class="font-semibold text-dark-900 mb-4"><i class="fas fa-car mr-1.5 text-dark-400"></i>Trajet</h3>
       <div class="space-y-4">
         <div class="flex items-start gap-3">
           <div class="flex flex-col items-center mt-1">
@@ -95,7 +95,7 @@
             <div>
               <div class="text-xs text-dark-300 font-semibold uppercase tracking-wider mb-1">Départ</div>
               <div class="font-semibold text-dark-900">{{ ride.pickupAddress }}</div>
-              <div class="text-gold-600 text-sm font-semibold mt-1">📅 {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
+              <div class="text-gold-600 text-sm font-semibold mt-1"><i class="fas fa-calendar-days mr-1"></i>{{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
             </div>
             <div>
               <div class="text-xs text-dark-300 font-semibold uppercase tracking-wider mb-1">Destination</div>
@@ -115,13 +115,13 @@
     {# Notifications #}
     {% if ride.notifications is not empty %}
     <div class="card p-6">
-      <h3 class="font-semibold text-dark-900 mb-4">📬 Notifications envoyées</h3>
+      <h3 class="font-semibold text-dark-900 mb-4"><i class="fas fa-inbox mr-1.5 text-dark-400"></i>Notifications envoyées</h3>
       <div class="space-y-2">
         {% for notif in ride.notifications %}
           <div class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm
               {% if notif.channel == 'email' %}bg-blue-50 text-blue-600{% else %}bg-green-50 text-green-600{% endif %}">
-              {{ notif.channel == 'email' ? '✉️' : '💬' }}
+              {{ notif.channel == 'email' ? '<i class="fas fa-envelope"></i>'|raw : '<i class="fas fa-comment-dots"></i>'|raw }}
             </div>
             <div class="flex-1">
               <div class="text-sm font-medium text-dark-900">{{ notif.typeLabel }} → {{ notif.recipientLabel }}</div>
@@ -143,7 +143,7 @@
     {# Chauffeur #}
     {% if ride.driver %}
     <div class="card p-5">
-      <h3 class="font-semibold text-dark-900 mb-3">🚘 Chauffeur assigné</h3>
+      <h3 class="font-semibold text-dark-900 mb-3"><i class="fas fa-car mr-1.5 text-dark-400"></i>Chauffeur assigné</h3>
       <div class="flex items-center gap-3 mb-3">
         <div class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center text-gold-700 font-bold">
           {{ ride.driver.firstName|first }}{{ ride.driver.lastName|first }}
@@ -155,24 +155,24 @@
       </div>
       <div class="space-y-2 text-sm">
         <div class="flex items-center gap-2 text-dark-500">
-          <span>📞</span><a href="tel:{{ ride.driver.phone }}" class="text-gold-600 hover:underline">{{ ride.driver.phone }}</a>
+          <i class="fas fa-phone"></i><a href="tel:{{ ride.driver.phone }}" class="text-gold-600 hover:underline">{{ ride.driver.phone }}</a>
         </div>
         <div class="flex items-center gap-2 text-dark-500">
-          <span>🔑</span><span class="font-mono text-xs bg-dark-50 px-2 py-0.5 rounded">{{ ride.driver.licensePlate }}</span>
+          <i class="fas fa-key"></i><span class="font-mono text-xs bg-dark-50 px-2 py-0.5 rounded">{{ ride.driver.licensePlate }}</span>
         </div>
       </div>
     </div>
     {% else %}
     <div class="card p-5 border-amber-100">
-      <h3 class="font-semibold text-dark-900 mb-2">🚘 Chauffeur</h3>
-      <div class="text-amber-600 text-sm">⏳ En attente d'assignation par l'administrateur</div>
+      <h3 class="font-semibold text-dark-900 mb-2"><i class="fas fa-car mr-1.5 text-dark-400"></i>Chauffeur</h3>
+      <div class="text-amber-600 text-sm"><i class="fas fa-hourglass-half mr-1"></i>En attente d'assignation par l'administrateur</div>
     </div>
     {% endif %}
 
     {# Financials #}
     {% if ride.price %}
     <div class="card p-5" style="background: linear-gradient(135deg, #fdf9ef, #ffffff);">
-      <h3 class="font-semibold text-dark-900 mb-3">💰 Financier</h3>
+      <h3 class="font-semibold text-dark-900 mb-3"><i class="fas fa-euro-sign mr-1.5 text-dark-400"></i>Financier</h3>
       <div class="space-y-2 text-sm">
         <div class="flex justify-between">
           <span class="text-dark-400">Prix total</span>
@@ -194,7 +194,7 @@
 
     {# Timeline #}
     <div class="card p-5">
-      <h3 class="font-semibold text-dark-900 mb-3">📅 Chronologie</h3>
+      <h3 class="font-semibold text-dark-900 mb-3"><i class="fas fa-calendar-days mr-1.5 text-dark-400"></i>Chronologie</h3>
       <div class="space-y-3 text-xs">
         <div class="flex items-center gap-2 text-dark-500">
           <div class="w-2 h-2 rounded-full bg-gold-500"></div>

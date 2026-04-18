@@ -22,7 +22,7 @@
       {% for notif in notifications %}
         <tr class="hover:bg-gold-50/50">
           <td class="px-5 py-3.5">
-            <span class="text-xl">{{ notif.channel == 'email' ? '✉️' : '💬' }}</span>
+            <span class="text-xl">{{ notif.channel == 'email' ? '<i class="fas fa-envelope"></i>'|raw : '<i class="fas fa-comment-dots"></i>'|raw }}</span>
           </td>
           <td class="px-5 py-3.5 text-sm text-dark-600 font-medium">{{ notif.typeLabel }}</td>
           <td class="px-5 py-3.5">
@@ -39,7 +39,7 @@
           <td class="px-5 py-3.5 text-xs text-dark-400">{{ notif.createdAt|date('d/m/Y H:i') }}</td>
           <td class="px-5 py-3.5">
             <span class="badge {{ notif.status == 'sent' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-              {{ notif.status == 'sent' ? '✅ Envoyé' : '❌ Échec' }}
+              {{ notif.status == 'sent' ? '<i class="fas fa-circle-check text-eco-500"></i> Envoyé'|raw : '<i class="fas fa-circle-xmark text-red-500"></i> Échec'|raw }}
             </span>
           </td>
         </tr>

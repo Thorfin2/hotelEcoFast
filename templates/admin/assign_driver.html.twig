@@ -13,7 +13,7 @@
 
   {# Ride summary #}
   <div class="card p-5 mb-6">
-    <h2 class="font-display font-semibold text-dark-900 mb-3 text-sm">📋 Résumé de la course</h2>
+    <h2 class="font-display font-semibold text-dark-900 mb-3 text-sm"><i class="fas fa-clipboard-list mr-1.5 text-dark-400"></i>Résumé de la course</h2>
     <div class="grid grid-cols-2 gap-4 text-sm">
       <div><span class="text-dark-300 text-xs block">Client</span><span class="font-semibold">{{ ride.clientName }}</span></div>
       <div><span class="text-dark-300 text-xs block">Date</span><span class="font-semibold text-gold-700">{{ ride.pickupDatetime|date('d/m/Y à H:i') }}</span></div>
@@ -25,7 +25,7 @@
 
   {# Assignment form #}
   <div class="card p-6">
-    <h2 class="font-display font-semibold text-dark-900 mb-4">👤 Sélectionner un chauffeur</h2>
+    <h2 class="font-display font-semibold text-dark-900 mb-4"><i class="fas fa-user mr-1.5 text-dark-400"></i>Sélectionner un chauffeur</h2>
     {{ form_start(form, {action: path('admin_assign_driver', {id: ride.id}), attr: {class: 'space-y-5'}}) }}
       <div>
         <label class="block text-sm font-semibold text-dark-600 mb-2">Chauffeur disponible</label>
@@ -34,17 +34,17 @@
       </div>
 
       <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-        <p class="text-blue-800 text-sm font-semibold mb-2">📬 Notifications automatiques à l'assignation :</p>
+        <p class="text-blue-800 text-sm font-semibold mb-2"><i class="fas fa-inbox mr-1"></i>Notifications automatiques à l'assignation :</p>
         <ul class="text-blue-700 text-xs space-y-1">
-          <li>✉️ Email au chauffeur avec les détails de la mission</li>
-          <li>✉️ Email à l'hôtel pour confirmation</li>
-          <li>✉️ Email au client avec les coordonnées du chauffeur</li>
+          <li><i class="fas fa-envelope mr-1"></i>Email au chauffeur avec les détails de la mission</li>
+          <li><i class="fas fa-envelope mr-1"></i>Email à l'hôtel pour confirmation</li>
+          <li><i class="fas fa-envelope mr-1"></i>Email au client avec les coordonnées du chauffeur</li>
         </ul>
       </div>
 
       <div class="flex gap-3">
         <button type="submit" class="btn-primary">
-          ✅ Confirmer l'assignation et envoyer les notifications
+          <i class="fas fa-circle-check"></i> Confirmer l'assignation et envoyer les notifications
         </button>
         <a href="{{ path('admin_ride_detail', {id: ride.id}) }}" class="btn-secondary">Annuler</a>
       </div>

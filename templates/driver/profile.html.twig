@@ -20,10 +20,10 @@
     </div>
 
     <div class="space-y-3 text-sm mb-6">
-      {% if driver.phone %}<div class="flex items-center gap-2"><span>📞</span><span>{{ driver.phone }}</span></div>{% endif %}
-      {% if driver.email %}<div class="flex items-center gap-2"><span>✉️</span><span>{{ driver.email }}</span></div>{% endif %}
-      <div class="flex items-center gap-2"><span>🚗</span><span>{{ driver.vehicleType }} · {{ driver.vehicleModel }}</span></div>
-      <div class="flex items-center gap-2"><span>🔑</span><span class="font-mono bg-dark-100 px-2 py-0.5 rounded">{{ driver.licensePlate }}</span></div>
+      {% if driver.phone %}<div class="flex items-center gap-2"><i class="fas fa-phone"></i><span>{{ driver.phone }}</span></div>{% endif %}
+      {% if driver.email %}<div class="flex items-center gap-2"><i class="fas fa-envelope"></i><span>{{ driver.email }}</span></div>{% endif %}
+      <div class="flex items-center gap-2"><i class="fas fa-car"></i><span>{{ driver.vehicleType }} · {{ driver.vehicleModel }}</span></div>
+      <div class="flex items-center gap-2"><i class="fas fa-key"></i><span class="font-mono bg-dark-100 px-2 py-0.5 rounded">{{ driver.licensePlate }}</span></div>
     </div>
 
     <form method="post" class="space-y-4">
@@ -33,12 +33,12 @@
           <button name="status" value="available"
             class="py-3 rounded-xl text-sm font-semibold border-2 transition-all
               {% if driver.status == 'available' %}bg-green-50 border-green-500 text-green-700{% else %}bg-white border-dark-200 text-dark-400 hover:border-green-300{% endif %}">
-            ✅ Disponible
+            <i class="fas fa-circle-check text-eco-500"></i> Disponible
           </button>
           <button name="status" value="offline"
             class="py-3 rounded-xl text-sm font-semibold border-2 transition-all
               {% if driver.status == 'offline' %}bg-dark-100 border-dark-500 text-dark-600{% else %}bg-white border-dark-200 text-dark-400 hover:border-dark-400{% endif %}">
-            😴 Hors ligne
+            <i class="fas fa-moon"></i> Hors ligne
           </button>
         </div>
       </div>

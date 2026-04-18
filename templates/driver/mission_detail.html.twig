@@ -32,17 +32,17 @@
         {% if ride.status == 'assigned' %}
           <form method="post" action="{{ path('driver_confirm_mission', {id: ride.id}) }}"
                 @submit.prevent="if(confirm('Confirmer cette mission ?')) $el.submit()">
-            <button class="btn-primary">✅ Confirmer la mission</button>
+            <button class="btn-primary"><i class="fas fa-circle-check"></i> Confirmer la mission</button>
           </form>
         {% elseif ride.status == 'confirmed' %}
           <form method="post" action="{{ path('driver_start_mission', {id: ride.id}) }}"
                 @submit.prevent="if(confirm('Démarrer la course maintenant ?')) $el.submit()">
-            <button class="btn-primary">🚗 Démarrer la course</button>
+            <button class="btn-primary"><i class="fas fa-car"></i> Démarrer la course</button>
           </form>
         {% elseif ride.status == 'in_progress' %}
           <form method="post" action="{{ path('driver_complete_mission', {id: ride.id}) }}"
                 @submit.prevent="if(confirm('Confirmer que la course est terminée ?')) $el.submit()">
-            <button class="btn-primary" style="background:#059669">🏁 Terminer la course</button>
+            <button class="btn-primary" style="background:#059669"><i class="fas fa-flag-checkered"></i> Terminer la course</button>
           </form>
         {% endif %}
       </div>
@@ -50,22 +50,22 @@
 
     {% if ride.status == 'assigned' %}
       <div class="mt-3 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
-        💬 En confirmant, un email sera envoyé à l'hôtel.
+        <i class="fas fa-circle-info mr-1 text-blue-500"></i> En confirmant, un email sera envoyé à l'hôtel.
       </div>
     {% elseif ride.status == 'confirmed' %}
       <div class="mt-3 p-3 bg-indigo-50 rounded-lg text-sm text-indigo-700">
-        💬 En démarrant, le client et l'hôtel seront notifiés par email.
+        <i class="fas fa-circle-info mr-1 text-blue-500"></i> En démarrant, le client et l'hôtel seront notifiés par email.
       </div>
     {% elseif ride.status == 'in_progress' %}
       <div class="mt-3 p-3 bg-purple-50 rounded-lg text-sm text-purple-700">
-        💬 En terminant, une notification de fin de course sera envoyée.
+        <i class="fas fa-circle-info mr-1 text-blue-500"></i> En terminant, une notification de fin de course sera envoyée.
       </div>
     {% endif %}
   </div>
 
   {# Client info #}
   <div class="card p-5 mb-4">
-    <h3 class="font-semibold font-display text-dark-900 mb-3 text-sm">👤 Client</h3>
+    <h3 class="font-semibold font-display text-dark-900 mb-3 text-sm"><i class="fas fa-user mr-1.5 text-dark-400"></i>Client</h3>
     <div class="space-y-2 text-sm">
       <div class="flex items-center justify-between">
         <span class="text-dark-400">Nom</span>
@@ -75,24 +75,24 @@
       <div class="flex items-center justify-between">
         <span class="text-dark-400">Téléphone</span>
         <a href="tel:{{ ride.clientPhone }}" class="font-semibold text-gold-600 text-lg hover:underline">
-          📞 {{ ride.clientPhone }}
+          <i class="fas fa-phone mr-1"></i>{{ ride.clientPhone }}
         </a>
       </div>
       {% endif %}
       {% if ride.flightNumber %}
       <div class="flex items-center justify-between">
         <span class="text-dark-400">N° vol</span>
-        <span class="font-semibold text-dark-900">✈️ {{ ride.flightNumber }}</span>
+        <span class="font-semibold text-dark-900"><i class="fas fa-plane mr-1"></i>{{ ride.flightNumber }}</span>
       </div>
       {% endif %}
       <div class="flex items-center justify-between">
         <span class="text-dark-400">Passagers</span>
-        <span class="font-semibold text-dark-900">{{ ride.passengers }} 👤</span>
+        <span class="font-semibold text-dark-900">{{ ride.passengers }} <i class="fas fa-user"></i></span>
       </div>
       {% if ride.luggage %}
       <div class="flex items-center justify-between">
         <span class="text-dark-400">Bagages</span>
-        <span class="font-semibold text-dark-900">{{ ride.luggage }} 🧳</span>
+        <span class="font-semibold text-dark-900">{{ ride.luggage }} <i class="fas fa-suitcase-rolling"></i></span>
       </div>
       {% endif %}
     </div>
@@ -100,14 +100,14 @@
 
   {# Route #}
   <div class="card p-5 mb-4">
-    <h3 class="font-semibold font-display text-dark-900 mb-4 text-sm">🗺️ Itinéraire</h3>
+    <h3 class="font-semibold font-display text-dark-900 mb-4 text-sm"><i class="fas fa-route mr-1.5 text-dark-400"></i>Itinéraire</h3>
     <div class="relative pl-6">
       <div class="absolute left-2 top-3 bottom-3 w-0.5 bg-dark-200"></div>
       <div class="mb-6">
         <div class="absolute left-0.5 w-4 h-4 bg-gold-500 rounded-full border-2 border-white shadow"></div>
         <div class="text-xs text-dark-300 uppercase tracking-wider font-semibold mb-1">Départ</div>
         <div class="font-semibold font-display text-dark-900">{{ ride.pickupAddress }}</div>
-        <div class="text-gold-700 font-bold mt-1">📅 {{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
+        <div class="text-gold-700 font-bold mt-1"><i class="fas fa-calendar-days mr-1"></i>{{ ride.pickupDatetime|date('d/m/Y à H:i') }}</div>
       </div>
       <div>
         <div class="absolute left-0.5 bottom-0 w-4 h-4 bg-dark-400 rounded-full border-2 border-white shadow"></div>
@@ -117,7 +117,7 @@
     </div>
     {% if ride.notes %}
       <div class="mt-4 p-3 bg-amber-50 border border-amber-100 rounded-xl">
-        <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1">📝 Instructions</div>
+        <div class="text-xs text-amber-600 font-semibold uppercase tracking-wider mb-1"><i class="fas fa-note-sticky mr-1"></i>Instructions</div>
         <div class="text-sm text-dark-600">{{ ride.notes }}</div>
       </div>
     {% endif %}
@@ -126,7 +126,7 @@
   {# Financials #}
   {% if ride.driverAmount %}
   <div class="card p-5" style="background:linear-gradient(135deg,#fdf9ef,#fff)">
-    <h3 class="font-semibold font-display text-dark-900 mb-3 text-sm">💰 Rémunération</h3>
+    <h3 class="font-semibold font-display text-dark-900 mb-3 text-sm"><i class="fas fa-euro-sign mr-1.5 text-dark-400"></i>Rémunération</h3>
     <div class="text-center">
       <div class="text-4xl font-bold text-gold-700">{{ ride.driverAmount }} €</div>
       <div class="text-xs text-dark-300 mt-1">Votre part sur ce trajet</div>
