@@ -14,7 +14,9 @@ php bin/console cache:clear --env=prod --no-debug 2>/dev/null || true
 if [ -n "$DATABASE_URL" ]; then
     echo "==> Running database setup..."
     php bin/console doctrine:database:create --if-not-exists --no-interaction 2>/dev/null || true
-    php bin/console doctrine:migrations:migrate --no-interaction 2>/dev/null || true
+
+    # schema:update gère tout : création initiale ET nouvelles colonnes
+    php bin/console doctrine:schema:update --force --no-interaction 2>/dev/null || true
 
     USER_COUNT=$(php bin/console doctrine:query:sql "SELECT COUNT(*) as c FROM user" --no-interaction 2>/dev/null | grep -o '[0-9]*' | head -1 || echo "0")
     if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
