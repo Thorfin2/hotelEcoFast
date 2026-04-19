@@ -33,6 +33,8 @@ security:
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
+        - { path: ^/reinitialiser-mot-de-passe, roles: PUBLIC_ACCESS }
         - { path: ^/hotel, roles: ROLE_HOTEL }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/chauffeur, roles: ROLE_DRIVER }

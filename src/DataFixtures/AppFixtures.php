@@ -31,10 +31,11 @@ class AppFixtures extends Fixture
 
         // ─── Admin ────────────────────────────────────────────────────────────
         $admin = new User();
-        $admin->setFirstName('Marc')->setLastName('Dupont')
-            ->setEmail('admin@ecofasthotel.com')->setPhone('+33 1 23 45 67 89')
+        $adminPassword = $_ENV['ADMIN_PASSWORD'] ?? 'EcoFast2024!';
+        $admin->setFirstName('Admin')->setLastName('EcoFast')
+            ->setEmail('ecofastvtc@gmail.com')->setPhone('')
             ->setRoles(['ROLE_ADMIN'])
-            ->setPassword($this->hasher->hashPassword($admin, 'ecofasthotel'));
+            ->setPassword($this->hasher->hashPassword($admin, $adminPassword));
         $manager->persist($admin);
 
         // ─── Hotels ───────────────────────────────────────────────────────────
@@ -171,10 +172,7 @@ class AppFixtures extends Fixture
 
         echo "\n✅ Fixtures chargées avec succès !\n";
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-        echo "Comptes de démonstration :\n";
-        echo "  Admin     : admin@ecofasthotel.com    / ecofasthotel\n";
-        echo "  Hôtel     : hotel@ecofasthotel.com    / ecofasthotel\n";
-        echo "  Chauffeur : chauffeur@ecofasthotel.com / ecofasthotel\n";
+        echo "Admin : ecofastvtc@gmail.com / " . $adminPassword . "\n";
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
     }
 }

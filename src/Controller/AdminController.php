@@ -372,32 +372,6 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // ─── RESET D'URGENCE (TEMPORAIRE) ────────────────────────────────────────
-
-    #[Route('/urgence-reset-xK9mP2/ecofast2024', name: 'emergency_reset')]
-    public function emergencyReset(EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
-    {
-        $users = $em->getRepository(User::class)->findAll();
-        $results = [];
-
-        foreach ($users as $user) {
-            if (in_array('ROLE_ADMIN', $user->getRoles())) {
-                $newPassword = 'Admin2024!';
-                $user->setPassword($hasher->hashPassword($user, $newPassword));
-                $results[] = '✅ Mot de passe réinitialisé pour : ' . $user->getEmail();
-            }
-        }
-
-        $em->flush();
-
-        $html = '<pre style="font-family:monospace;padding:20px;font-size:14px;">';
-        $html .= implode("\n", $results ?: ['❌ Aucun admin trouvé']);
-        $html .= "\n\nNouveau mot de passe : Admin2024!";
-        $html .= "\n\nSupprimez cette route après utilisation !</pre>";
-
-        return new Response($html);
-    }
-
     // ─── TEST EMAIL ──────────────────────────────────────────────────────────
 
     #[Route('/test-email', name: 'test_email')]
