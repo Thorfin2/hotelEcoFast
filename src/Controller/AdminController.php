@@ -324,23 +324,33 @@ class AdminController extends AbstractController
     #[Route('/parametres', name: 'settings')]
     public function settings(Request $request, SettingRepository $settingRepo): Response
     {
-        $settings = $settingRepo->getAll();
-
         if ($request->isMethod('POST')) {
-            $pricePerKm = $request->request->get('price_per_km', '2.50');
-            $minimumPrice = $request->request->get('minimum_price', '25.00');
+            $settingRepo->setValue('bracket_0_3_5',  $request->request->get('bracket_0_3_5',  '20'),  'Forfait 0–3,5 km (€)');
+            $settingRepo->setValue('bracket_3_5_5',  $request->request->get('bracket_3_5_5',  '25'),  'Forfait 3,5–5 km (€)');
+            $settingRepo->setValue('bracket_5_10',   $request->request->get('bracket_5_10',   '30'),  'Forfait 5–10 km (€)');
+            $settingRepo->setValue('bracket_10_15',  $request->request->get('bracket_10_15',  '40'),  'Forfait 10–15 km (€)');
+            $settingRepo->setValue('bracket_15_17',  $request->request->get('bracket_15_17',  '45'),  'Forfait 15–17 km (€)');
+            $settingRepo->setValue('rate_per_km',    $request->request->get('rate_per_km',    '3'),   'Tarif au km au-delà de 17 km (€)');
 
-            $settingRepo->setValue('price_per_km', $pricePerKm, 'Prix par kilomètre (€)');
-            $settingRepo->setValue('minimum_price', $minimumPrice, 'Prix minimum (€)');
-
-            $this->addFlash('success', 'Paramètres de tarification mis à jour.');
+            $this->addFlash('success', 'Grille tarifaire mise à jour.');
             return $this->redirectToRoute('admin_settings');
         }
 
         return $this->render('admin/settings.html.twig', [
-            'pricePerKm' => $settingRepo->getValue('price_per_km', '2.50'),
-            'minimumPrice' => $settingRepo->getValue('minimum_price', '25.00'),
+            'brackets' => $this->getPricingBrackets($settingRepo),
         ]);
+    }
+
+    private function getPricingBrackets(SettingRepository $settingRepo): array
+    {
+        return [
+            'bracket_0_3_5' => (float) $settingRepo->getValue('bracket_0_3_5',  '20'),
+            'bracket_3_5_5' => (float) $settingRepo->getValue('bracket_3_5_5',  '25'),
+            'bracket_5_10'  => (float) $settingRepo->getValue('bracket_5_10',   '30'),
+            'bracket_10_15' => (float) $settingRepo->getValue('bracket_10_15',  '40'),
+            'bracket_15_17' => (float) $settingRepo->getValue('bracket_15_17',  '45'),
+            'rate_per_km'   => (float) $settingRepo->getValue('rate_per_km',    '3'),
+        ];
     }
 
     // ─── PROFIL ADMIN ────────────────────────────────────────────────────────

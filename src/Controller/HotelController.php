@@ -68,9 +68,15 @@ class HotelController extends AbstractController
     ): Response {
         $hotel = $this->getHotel();
 
-        $pricePerKm = (float) $settingRepo->getValue('price_per_km', '2.50');
-        $minimumPrice = (float) $settingRepo->getValue('minimum_price', '25.00');
         $googleMapsApiKey = $this->getParameter('google_maps.api_key');
+        $brackets = [
+            'bracket_0_3_5' => (float) $settingRepo->getValue('bracket_0_3_5',  '20'),
+            'bracket_3_5_5' => (float) $settingRepo->getValue('bracket_3_5_5',  '25'),
+            'bracket_5_10'  => (float) $settingRepo->getValue('bracket_5_10',   '30'),
+            'bracket_10_15' => (float) $settingRepo->getValue('bracket_10_15',  '40'),
+            'bracket_15_17' => (float) $settingRepo->getValue('bracket_15_17',  '45'),
+            'rate_per_km'   => (float) $settingRepo->getValue('rate_per_km',    '3'),
+        ];
 
         $ride = new Ride();
         $ride->setHotel($hotel);
@@ -94,11 +100,10 @@ class HotelController extends AbstractController
         }
 
         return $this->render('hotel/new_ride.html.twig', [
-            'hotel' => $hotel,
-            'form' => $form,
-            'pricePerKm' => $pricePerKm,
-            'minimumPrice' => $minimumPrice,
-            'googleMapsApiKey' => $googleMapsApiKey,
+            'hotel'           => $hotel,
+            'form'            => $form,
+            'brackets'        => $brackets,
+            'googleMapsApiKey'=> $googleMapsApiKey,
         ]);
     }
 

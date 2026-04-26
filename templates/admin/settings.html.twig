@@ -1,76 +1,116 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Paramètres{% endblock %}
-{% block page_title %}Paramètres de tarification{% endblock %}
-{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Configurez les prix par kilomètre et le tarif minimum</p>{% endblock %}
+{% block title %}Paramètres de tarification{% endblock %}
+{% block page_title %}Tarification{% endblock %}
+{% block page_subtitle %}<p class="text-dark-400 text-sm mt-0.5">Configurez la grille de prix des courses</p>{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl">
 
-  {% for message in app.flashes('success') %}
-    <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
-      x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0">
-      <span class="text-green-600 text-sm">&#10003;</span>
-      <p class="text-green-800 text-sm">{{ message }}</p>
-    </div>
-  {% endfor %}
-
   <form method="post" class="space-y-6">
 
+    {# Grille tarifaire #}
     <div class="card p-6">
-      <h2 class="font-semibold text-dark-900 mb-4 flex items-center gap-2">
-        <span class="w-7 h-7 bg-gold-100 text-gold-600 rounded-lg flex items-center justify-center text-sm">&#128176;</span>
-        Tarification des courses
+      <h2 class="font-semibold text-dark-900 mb-1 flex items-center gap-2">
+        <i class="fas fa-table-list text-eco-500"></i> Grille tarifaire par tranche
       </h2>
-      <p class="text-dark-400 text-sm mb-6">Ces paramètres sont utilisés pour le calcul automatique du prix lors de la création d'une course.</p>
+      <p class="text-dark-400 text-sm mb-5">Chaque tranche kilométrique a un forfait fixe. Au-delà de 17 km, le tarif au kilomètre s'applique.</p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label for="price_per_km" class="block text-sm font-semibold text-dark-700 mb-1.5">Prix par kilomètre</label>
-          <div class="relative">
-            <input type="number" name="price_per_km" id="price_per_km" step="0.01" min="0"
-              value="{{ pricePerKm }}"
-              class="form-input pr-10"
-              placeholder="2.50">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 text-sm font-medium">EUR/km</span>
+      <div class="space-y-3">
+
+        {% set rows = [
+          ['bracket_0_3_5',  '0 – 3,5 km',  brackets.bracket_0_3_5,  'Forfait plat'],
+          ['bracket_3_5_5',  '3,5 – 5 km',  brackets.bracket_3_5_5,  'Forfait plat'],
+          ['bracket_5_10',   '5 – 10 km',   brackets.bracket_5_10,   'Forfait plat'],
+          ['bracket_10_15',  '10 – 15 km',  brackets.bracket_10_15,  'Forfait plat'],
+          ['bracket_15_17',  '15 – 17 km',  brackets.bracket_15_17,  'Forfait plat'],
+        ] %}
+
+        {% for row in rows %}
+          <div class="flex items-center gap-4 p-3 bg-dark-50 rounded-xl">
+            <div class="w-28 text-sm font-semibold text-dark-700 flex-shrink-0">
+              <i class="fas fa-route text-dark-300 mr-1.5 text-xs"></i>{{ row[1] }}
+            </div>
+            <div class="flex-1 flex items-center gap-2">
+              <input type="number" name="{{ row[0] }}" id="{{ row[0] }}"
+                value="{{ row[2] }}" step="0.5" min="0"
+                class="form-input w-28 text-right font-bold text-dark-900">
+              <span class="text-dark-400 text-sm font-medium">€</span>
+            </div>
+            <span class="text-xs text-dark-300 flex-shrink-0">{{ row[3] }}</span>
           </div>
-          <p class="text-dark-400 text-xs mt-1.5">Utilisé pour calculer : distance x prix/km</p>
+        {% endfor %}
+
+        {# Au-delà #}
+        <div class="flex items-center gap-4 p-3 bg-eco-50 border border-eco-200 rounded-xl">
+          <div class="w-28 text-sm font-semibold text-eco-700 flex-shrink-0">
+            <i class="fas fa-route text-eco-400 mr-1.5 text-xs"></i>&gt; 17 km
+          </div>
+          <div class="flex-1 flex items-center gap-2">
+            <input type="number" name="rate_per_km" id="rate_per_km"
+              value="{{ brackets.rate_per_km }}" step="0.1" min="0"
+              class="form-input w-28 text-right font-bold text-eco-700">
+            <span class="text-eco-600 text-sm font-medium">€ / km</span>
+          </div>
+          <span class="text-xs text-eco-500 flex-shrink-0">Au km</span>
         </div>
 
-        <div>
-          <label for="minimum_price" class="block text-sm font-semibold text-dark-700 mb-1.5">Prix minimum</label>
-          <div class="relative">
-            <input type="number" name="minimum_price" id="minimum_price" step="0.01" min="0"
-              value="{{ minimumPrice }}"
-              class="form-input pr-8"
-              placeholder="25.00">
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 text-sm font-medium">EUR</span>
-          </div>
-          <p class="text-dark-400 text-xs mt-1.5">Prix plancher appliqu&eacute; si le calcul donne un montant inf&eacute;rieur</p>
-        </div>
       </div>
     </div>
 
-    <div class="card p-6 bg-gray-50">
-      <h3 class="font-semibold text-dark-700 text-sm mb-3">Exemple de calcul</h3>
-      <div class="text-sm text-dark-500 space-y-1" x-data="{
-        pricePerKm: {{ pricePerKm }},
-        minPrice: {{ minimumPrice }},
-        exampleKm: 35
-      }">
-        <p>Pour une course de <span class="font-semibold text-dark-800" x-text="exampleKm + ' km'"></span> :</p>
-        <p class="font-mono text-dark-700 mt-2 bg-white px-3 py-2 rounded border border-gray-200">
-          <span x-text="exampleKm"></span> km x <span x-text="pricePerKm.toFixed(2)"></span> EUR = <span class="font-bold text-gold-700" x-text="Math.max(exampleKm * pricePerKm, minPrice).toFixed(2) + ' EUR'"></span>
-        </p>
+    {# Aperçu dynamique #}
+    <div class="card p-6" x-data="{
+      b1: {{ brackets.bracket_0_3_5 }},
+      b2: {{ brackets.bracket_3_5_5 }},
+      b3: {{ brackets.bracket_5_10 }},
+      b4: {{ brackets.bracket_10_15 }},
+      b5: {{ brackets.bracket_15_17 }},
+      rateKm: {{ brackets.rate_per_km }},
+      km: 12,
+      get price() {
+        if (this.km <= 3.5) return this.b1;
+        if (this.km <= 5)   return this.b2;
+        if (this.km <= 10)  return this.b3;
+        if (this.km <= 15)  return this.b4;
+        if (this.km <= 17)  return this.b5;
+        return Math.round(this.km * this.rateKm * 100) / 100;
+      }
+    }"
+    x-init="
+      $watch('$el.querySelectorAll', () => {});
+      document.getElementById('bracket_0_3_5').addEventListener('input', e => b1 = +e.target.value);
+      document.getElementById('bracket_3_5_5').addEventListener('input', e => b2 = +e.target.value);
+      document.getElementById('bracket_5_10').addEventListener('input',  e => b3 = +e.target.value);
+      document.getElementById('bracket_10_15').addEventListener('input', e => b4 = +e.target.value);
+      document.getElementById('bracket_15_17').addEventListener('input', e => b5 = +e.target.value);
+      document.getElementById('rate_per_km').addEventListener('input',   e => rateKm = +e.target.value);
+    ">
+      <h3 class="font-semibold text-dark-700 text-sm mb-3 flex items-center gap-2">
+        <i class="fas fa-calculator text-dark-400"></i> Simulateur de prix
+      </h3>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-dark-500">Distance :</label>
+          <input type="range" min="1" max="50" step="0.5" x-model="km" class="w-32 accent-eco-500">
+          <span class="text-sm font-semibold text-dark-800 w-16" x-text="parseFloat(km).toFixed(1) + ' km'"></span>
+        </div>
+        <div class="flex-1 text-right">
+          <span class="text-2xl font-bold text-eco-700" x-text="price.toFixed(2) + ' €'"></span>
+        </div>
       </div>
+      <div class="mt-2 text-xs text-dark-400" x-text="
+        km <= 3.5 ? 'Forfait 0–3,5 km' :
+        km <= 5   ? 'Forfait 3,5–5 km' :
+        km <= 10  ? 'Forfait 5–10 km' :
+        km <= 15  ? 'Forfait 10–15 km' :
+        km <= 17  ? 'Forfait 15–17 km' :
+        parseFloat(km).toFixed(1) + ' km × ' + rateKm + ' €/km'
+      "></div>
     </div>
 
     <div class="flex items-center gap-3">
-      <button type="submit" class="btn-primary py-2.5 px-6">
-        Enregistrer les paramètres
+      <button type="submit" class="btn-primary py-2.5 px-8">
+        <i class="fas fa-floppy-disk mr-1.5"></i> Enregistrer la grille
       </button>
     </div>
 

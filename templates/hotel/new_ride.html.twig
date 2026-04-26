@@ -154,27 +154,27 @@
         <div class="grid grid-cols-3 gap-1.5 text-xs">
           <div class="bg-white rounded-lg p-2.5 text-center border border-dark-100">
             <div class="text-dark-400">0 – 3,5 km</div>
-            <div class="font-bold text-dark-900 text-sm mt-0.5">20 €</div>
+            <div class="font-bold text-dark-900 text-sm mt-0.5">{{ brackets.bracket_0_3_5|number_format(0) }} €</div>
           </div>
           <div class="bg-white rounded-lg p-2.5 text-center border border-dark-100">
             <div class="text-dark-400">3,5 – 5 km</div>
-            <div class="font-bold text-dark-900 text-sm mt-0.5">25 €</div>
+            <div class="font-bold text-dark-900 text-sm mt-0.5">{{ brackets.bracket_3_5_5|number_format(0) }} €</div>
           </div>
           <div class="bg-white rounded-lg p-2.5 text-center border border-dark-100">
             <div class="text-dark-400">5 – 10 km</div>
-            <div class="font-bold text-dark-900 text-sm mt-0.5">30 €</div>
+            <div class="font-bold text-dark-900 text-sm mt-0.5">{{ brackets.bracket_5_10|number_format(0) }} €</div>
           </div>
           <div class="bg-white rounded-lg p-2.5 text-center border border-dark-100">
             <div class="text-dark-400">10 – 15 km</div>
-            <div class="font-bold text-dark-900 text-sm mt-0.5">40 €</div>
+            <div class="font-bold text-dark-900 text-sm mt-0.5">{{ brackets.bracket_10_15|number_format(0) }} €</div>
           </div>
           <div class="bg-white rounded-lg p-2.5 text-center border border-dark-100">
             <div class="text-dark-400">15 – 17 km</div>
-            <div class="font-bold text-dark-900 text-sm mt-0.5">45 €</div>
+            <div class="font-bold text-dark-900 text-sm mt-0.5">{{ brackets.bracket_15_17|number_format(0) }} €</div>
           </div>
           <div class="bg-eco-50 rounded-lg p-2.5 text-center border border-eco-200">
             <div class="text-eco-600">&gt; 17 km</div>
-            <div class="font-bold text-eco-700 text-sm mt-0.5">3 €/km</div>
+            <div class="font-bold text-eco-700 text-sm mt-0.5">{{ brackets.rate_per_km|number_format(2) }} €/km</div>
           </div>
         </div>
       </div>
@@ -225,6 +225,12 @@ function priceCalculator() {
     loading: false,
     error: '',
     manualMode: false,
+    b1: {{ brackets.bracket_0_3_5 }},
+    b2: {{ brackets.bracket_3_5_5 }},
+    b3: {{ brackets.bracket_5_10 }},
+    b4: {{ brackets.bracket_10_15 }},
+    b5: {{ brackets.bracket_15_17 }},
+    rateKm: {{ brackets.rate_per_km }},
 
     calculatePrice() {
       if (this.distance <= 0) return;
@@ -232,23 +238,23 @@ function priceCalculator() {
       var p, label;
 
       if (km <= 3.5) {
-        p = 20;
-        label = 'Forfait 0–3,5 km : 20 €';
+        p = this.b1;
+        label = 'Forfait 0–3,5 km : ' + p + ' €';
       } else if (km <= 5) {
-        p = 25;
-        label = 'Forfait 3,5–5 km : 25 €';
+        p = this.b2;
+        label = 'Forfait 3,5–5 km : ' + p + ' €';
       } else if (km <= 10) {
-        p = 30;
-        label = 'Forfait 5–10 km : 30 €';
+        p = this.b3;
+        label = 'Forfait 5–10 km : ' + p + ' €';
       } else if (km <= 15) {
-        p = 40;
-        label = 'Forfait 10–15 km : 40 €';
+        p = this.b4;
+        label = 'Forfait 10–15 km : ' + p + ' €';
       } else if (km <= 17) {
-        p = 45;
-        label = 'Forfait 15–17 km : 45 €';
+        p = this.b5;
+        label = 'Forfait 15–17 km : ' + p + ' €';
       } else {
-        p = Math.round(km * 3 * 100) / 100;
-        label = km.toFixed(1) + ' km × 3 €/km = ' + p.toFixed(2) + ' €';
+        p = Math.round(km * this.rateKm * 100) / 100;
+        label = km.toFixed(1) + ' km × ' + this.rateKm + ' €/km = ' + p.toFixed(2) + ' €';
       }
 
       this.price = p;
