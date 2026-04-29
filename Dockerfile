@@ -29,14 +29,13 @@ RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-interaction \
     --prefer-dist
 
-# 2) dump-autoload AVEC scripts → déclenche POST_AUTOLOAD_DUMP
-#    → symfony/runtime génère vendor/autoload_runtime.php
+# 2) Optimise l'autoloader (vendor/autoload.php suffit – index.php n'utilise plus autoload_runtime.php)
 RUN COMPOSER_MEMORY_LIMIT=-1 composer dump-autoload \
     --no-dev \
     --optimize \
     --no-interaction \
-    && test -f vendor/autoload_runtime.php \
-    && echo "✅ vendor/autoload_runtime.php OK"
+    && test -f vendor/autoload.php \
+    && echo "✅ vendor/autoload.php OK"
 
 # 3) Pre-warm cache Symfony (best-effort)
 RUN mkdir -p var/cache var/log \
