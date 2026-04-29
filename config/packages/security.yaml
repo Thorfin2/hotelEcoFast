@@ -42,7 +42,7 @@ security:
         - { path: ^/hotel, roles: ROLE_HOTEL_EMPLOYEE }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/chauffeur, roles: ROLE_DRIVER }
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_REMEMBERED }
 
 when@test:
     security:
