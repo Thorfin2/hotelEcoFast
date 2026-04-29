@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 175">
+
+  <!-- ═══ PICTOGRAMME (version fond clair) ═══════════════════════════════ -->
+
+  <!-- ── Voiture (vert, profil face droite) ── -->
+  <g stroke="#5ab82e" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 8 153 L 8 137 C 8 125 15 115 24 111 L 53 109 C 62 109 72 114 80 123 L 87 137 L 87 153"/>
+    <path d="M 8 153 L 16 153 A 11 11 0 0 0 38 153 L 54 153 A 11 11 0 0 0 76 153 L 87 153"/>
+    <path d="M 23 126 L 28 111 L 53 110 L 70 119 L 70 127 Z"/>
+    <line x1="49" y1="110" x2="49" y2="147" stroke-width="1.8"/>
+    <line x1="86" y1="132" x2="89" y2="130" stroke-width="2.2"/>
+  </g>
+  <circle cx="27" cy="153" r="11" stroke="#5ab82e" stroke-width="2.6" fill="white"/>
+  <circle cx="65" cy="153" r="11" stroke="#5ab82e" stroke-width="2.6" fill="white"/>
+
+  <!-- ── Route courbée (navy) ── -->
+  <path d="M 58 160 C 90 160 112 100 177 91"
+        stroke="#0d2233" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- ── Bâtiment 1 ── -->
+  <rect x="108" y="87" width="30" height="85" stroke="#0d2233" stroke-width="2.2" fill="none"/>
+  <rect x="113" y="95"  width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="124" y="95"  width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="113" y="109" width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="124" y="109" width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+
+  <!-- ── Bâtiment 2 (grand) ── -->
+  <rect x="142" y="39" width="44" height="133" stroke="#0d2233" stroke-width="2.2" fill="none"/>
+  <rect x="148" y="49"  width="10" height="8" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="162" y="49"  width="10" height="8" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="148" y="63"  width="10" height="8" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="162" y="63"  width="10" height="8" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="148" y="77"  width="10" height="8" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="162" y="77"  width="10" height="8" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <path d="M 153 172 L 153 155 Q 164 147 175 155 L 175 172"
+        stroke="#0d2233" stroke-width="1.8" fill="none"/>
+
+  <!-- ── Bâtiment 3 ── -->
+  <rect x="190" y="67" width="28" height="105" stroke="#0d2233" stroke-width="2.2" fill="none"/>
+  <rect x="195" y="76"  width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="205" y="76"  width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="195" y="91"  width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+  <rect x="205" y="91"  width="8" height="7" stroke="#0d2233" stroke-width="1.3" fill="none"/>
+
+  <!-- ── Épingle (navy) ── -->
+  <path d="M 164 4 C 151 4 140 14 140 27 C 140 43 164 67 164 67 C 164 67 188 43 188 27 C 188 14 177 4 164 4 Z"
+        fill="#0d2233"/>
+  <circle cx="164" cy="27" r="9" fill="white"/>
+
+  <!-- ── Arcs WiFi (vert) ── -->
+  <path d="M 153 19 A 14 14 0 0 1 175 19"
+        stroke="#5ab82e" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+  <path d="M 146 11 A 22 22 0 0 1 182 11"
+        stroke="#5ab82e" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+  <path d="M 139 3  A 30 30 0 0 1 189 3"
+        stroke="#5ab82e" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+
+
+  <!-- ═══ LOGOTYPE (navy + O vert) ══════════════════════════════════════ -->
+
+  <text x="232" y="116"
+        font-family="'Helvetica Neue','Arial Black',Arial,sans-serif"
+        font-size="72" font-weight="900"
+        fill="#0d2233">CABS</text>
+
+  <path d="M 465 77 A 26 26 0 1 0 465 103"
+        stroke="#5ab82e" stroke-width="11" fill="none" stroke-linecap="round"/>
+
+  <text x="494" y="116"
+        font-family="'Helvetica Neue','Arial Black',Arial,sans-serif"
+        font-size="72" font-weight="900"
+        fill="#0d2233">LU</text>
+
+  <text x="232" y="147"
+        font-family="'Helvetica Neue',Arial,sans-serif"
+        font-size="14.5" font-weight="600"
+        fill="#0d2233"
+        letter-spacing="1.8">SOLUTION INFORMATIQUE TAXI · HÔTELLERIE</text>
+
+</svg>

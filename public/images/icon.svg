@@ -1,14 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 
-  <!-- Badge fond marine -->
+  <!-- Fond navy arrondi -->
   <rect width="64" height="64" rx="13" fill="#0d2233"/>
 
-  <!-- Arc du C -->
-  <path d="M 44 20 A 17 17 0 1 0 44 44"
-        stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+  <!-- Épingle de localisation (blanc) -->
+  <path d="M 32 6 C 23 6 16 13 16 22 C 16 33 32 50 32 50 C 32 50 48 33 48 22 C 48 13 41 6 32 6 Z"
+        fill="white"/>
+  <!-- Cercle intérieur -->
+  <circle cx="32" cy="22" r="6.5" fill="#0d2233"/>
 
-  <!-- Points verts -->
-  <circle cx="44" cy="20" r="4.5" fill="#5ab82e"/>
-  <circle cx="44" cy="44" r="4.5" fill="#5ab82e"/>
+  <!-- Arcs WiFi verts -->
+  <path d="M 24 16 A 10 10 0 0 1 40 16"
+        stroke="#5ab82e" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+  <path d="M 19 10 A 16 16 0 0 1 45 10"
+        stroke="#5ab82e" stroke-width="2.8" fill="none" stroke-linecap="round"/>
 
 </svg>
