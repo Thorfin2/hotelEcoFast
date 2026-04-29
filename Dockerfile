@@ -8,8 +8,14 @@ RUN apt-get update && apt-get install -y \
     && (php -m | grep -q curl || docker-php-ext-install curl) \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# PHP config (avant composer pour le memory_limit)
+RUN printf "memory_limit=512M\nupload_max_filesize=10M\npost_max_size=10M\n" \
+    > /usr/local/etc/php/conf.d/app.ini \
+    && printf "opcache.enable=1\nopcache.memory_consumption=256\nopcache.max_accelerated_files=20000\nopcache.validate_timestamps=0\n" \
+    > /usr/local/etc/php/conf.d/opcache.ini
+
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
@@ -17,23 +23,22 @@ WORKDIR /var/www/html
 # Copy composer files first for better caching
 COPY composer.json composer.lock ./
 
-# Install dependencies (no dev)
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+# Install dependencies (no dev) — memory_limit élevé pour éviter les OOM sur Railway
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction \
+    --prefer-dist
 
 # Copy the rest of the application
 COPY . .
 
-# Create var directory and set permissions
+# Create var directory and pre-warm cache (best-effort)
 RUN mkdir -p var/cache var/log \
-    && APP_ENV=prod composer run-script post-install-cmd --no-interaction 2>/dev/null; \
-    mkdir -p var/cache var/log \
+    && chmod -R 777 var/ \
+    && APP_ENV=prod COMPOSER_MEMORY_LIMIT=-1 composer run-script post-install-cmd --no-interaction 2>/dev/null || true \
     && chmod -R 777 var/
-
-# PHP production config
-RUN printf "opcache.enable=1\nopcache.memory_consumption=256\nopcache.max_accelerated_files=20000\nopcache.validate_timestamps=0\n" \
-    > /usr/local/etc/php/conf.d/opcache.ini \
-    && printf "memory_limit=256M\nupload_max_filesize=10M\npost_max_size=10M\n" \
-    > /usr/local/etc/php/conf.d/app.ini
 
 ENV PORT=8080
 

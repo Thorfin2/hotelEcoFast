@@ -3,6 +3,13 @@ set -e
 
 echo "==> Starting Cabsolu..."
 
+# ── Filet de sécurité : vendor manquant (build Docker raté) ──────────────────
+if [ ! -f vendor/autoload.php ]; then
+    echo "==> vendor/ absent — exécution de composer install..."
+    COMPOSER_MEMORY_LIMIT=-1 composer install \
+        --no-dev --optimize-autoloader --no-scripts --no-interaction --prefer-dist
+fi
+
 # Ensure var directory exists
 mkdir -p var/cache var/log
 chmod -R 777 var/ 2>/dev/null || true
