@@ -19,23 +19,29 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy ALL application files first
+# Copy all application files
 COPY . .
 
-# Install dependencies AFTER copy (évite tout écrasement du vendor)
+# 1) Install packages sans scripts (évite cache:clear qui échoue sans DB)
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-dev \
-    --optimize-autoloader \
     --no-scripts \
     --no-interaction \
-    --prefer-dist \
+    --prefer-dist
+
+# 2) dump-autoload AVEC scripts → déclenche POST_AUTOLOAD_DUMP
+#    → symfony/runtime génère vendor/autoload_runtime.php
+RUN COMPOSER_MEMORY_LIMIT=-1 composer dump-autoload \
+    --no-dev \
+    --optimize \
+    --no-interaction \
     && test -f vendor/autoload_runtime.php \
     && echo "✅ vendor/autoload_runtime.php OK"
 
-# Pre-warm Symfony cache (best-effort)
+# 3) Pre-warm cache Symfony (best-effort)
 RUN mkdir -p var/cache var/log \
     && chmod -R 777 var/ \
-    && APP_ENV=prod COMPOSER_MEMORY_LIMIT=-1 composer run-script post-install-cmd --no-interaction 2>/dev/null || true \
+    && APP_ENV=prod php bin/console cache:warmup --no-debug 2>/dev/null || true \
     && chmod -R 777 var/
 
 ENV PORT=8080
