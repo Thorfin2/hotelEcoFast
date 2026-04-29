@@ -51,6 +51,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Hotel $hotel = null;
 
+    /** Hôtel auquel est rattaché un employé (ROLE_HOTEL_EMPLOYEE) */
+    #[ORM\ManyToOne(targetEntity: Hotel::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Hotel $hotelAssignment = null;
+
     #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
     private ?Driver $driver = null;
 
@@ -97,6 +102,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getHotel(): ?Hotel { return $this->hotel; }
     public function setHotel(?Hotel $hotel): static { $this->hotel = $hotel; return $this; }
+
+    public function getHotelAssignment(): ?Hotel { return $this->hotelAssignment; }
+    public function setHotelAssignment(?Hotel $hotel): static { $this->hotelAssignment = $hotel; return $this; }
+
+    /** Retourne l'hôtel lié, quelle que soit la méthode (admin ou employé) */
+    public function getEffectiveHotel(): ?Hotel
+    {
+        return $this->hotel ?? $this->hotelAssignment;
+    }
 
     public function getDriver(): ?Driver { return $this->driver; }
     public function setDriver(?Driver $driver): static { $this->driver = $driver; return $this; }

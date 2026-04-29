@@ -45,11 +45,11 @@
     </div>
 
     {# Rôle #}
-    <div class="card p-6">
+    {% set currentRole = user.roles|filter(r => r != 'ROLE_USER')|first %}
+    <div class="card p-6" x-data="{ role: '{{ currentRole }}' }">
       <h2 class="font-semibold text-dark-900 mb-4 text-sm flex items-center gap-2">
         <i class="fas fa-shield-halved text-dark-400"></i> Rôle
       </h2>
-      {% set currentRole = user.roles|filter(r => r != 'ROLE_USER')|first %}
       <div class="space-y-2">
         {% for label, value in {
           'Administrateur': 'ROLE_ADMIN',
@@ -61,11 +61,30 @@
             {{ currentRole == value ? 'border-eco-400 bg-eco-50' : 'border-dark-100 hover:bg-dark-50' }}">
             <input type="radio" name="role" value="{{ value }}"
               {{ currentRole == value ? 'checked' : '' }}
+              x-model="role"
               class="text-eco-500 focus:ring-eco-400">
             <span class="text-sm font-medium text-dark-800">{{ label }}</span>
           </label>
         {% endfor %}
       </div>
+
+      {# Sélecteur d'hôtel pour les employés #}
+      <div x-show="role === 'ROLE_HOTEL_EMPLOYEE'" x-cloak class="mt-4 pt-4 border-t border-dark-100">
+        <label class="block text-sm font-medium text-dark-700 mb-1.5">
+          <i class="fas fa-hotel mr-1 text-amber-500"></i> Hôtel d'affectation
+        </label>
+        <select name="hotel_assignment" class="form-select">
+          <option value="">— Aucun —</option>
+          {% for hotel in hotels %}
+            <option value="{{ hotel.id }}"
+              {{ user.hotelAssignment and user.hotelAssignment.id == hotel.id ? 'selected' : '' }}>
+              {{ hotel.name }} ({{ hotel.city }})
+            </option>
+          {% endfor %}
+        </select>
+        <p class="text-xs text-dark-400 mt-1">L'employé créera des courses pour cet hôtel.</p>
+      </div>
+
       {% if app.user.id == user.id %}
         <p class="text-xs text-amber-600 mt-3"><i class="fas fa-triangle-exclamation mr-1"></i>Vous modifiez votre propre compte — changer votre rôle vous déconnectera.</p>
       {% endif %}

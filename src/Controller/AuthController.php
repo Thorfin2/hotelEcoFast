@@ -164,6 +164,8 @@ class AuthController extends AbstractController
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
+        $hotels = $em->getRepository(Hotel::class)->findBy([], ['name' => 'ASC']);
+
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
@@ -175,13 +177,21 @@ class AuthController extends AbstractController
 
             $em->persist($user);
 
-            if (in_array($role, ['ROLE_HOTEL', 'ROLE_HOTEL_EMPLOYEE'])) {
+            if ($role === 'ROLE_HOTEL') {
+                // Hôtel admin → crée un nouvel hôtel associé
                 $hotel = new Hotel();
                 $hotel->setName($user->getFullName() . ' Hotel');
                 $hotel->setAddress('À compléter');
                 $hotel->setCity('Paris');
                 $hotel->setUser($user);
                 $em->persist($hotel);
+            } elseif ($role === 'ROLE_HOTEL_EMPLOYEE') {
+                // Employé → rattache à un hôtel existant
+                $hotelId = (int) $request->request->get('hotel_assignment');
+                $assignedHotel = $hotelId ? $em->getRepository(Hotel::class)->find($hotelId) : null;
+                if ($assignedHotel) {
+                    $user->setHotelAssignment($assignedHotel);
+                }
             } elseif ($role === 'ROLE_DRIVER') {
                 $driver = new Driver();
                 $driver->setFirstName($user->getFirstName());
@@ -199,7 +209,10 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
-        return $this->render('admin/user_new.html.twig', ['form' => $form]);
+        return $this->render('admin/user_new.html.twig', [
+            'form'   => $form,
+            'hotels' => $hotels,
+        ]);
     }
 
     #[Route('/admin/utilisateurs', name: 'admin_users')]
@@ -225,6 +238,8 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('admin_users');
         }
 
+        $hotels = $em->getRepository(Hotel::class)->findBy([], ['name' => 'ASC']);
+
         $error = null;
         if ($request->isMethod('POST')) {
             $user->setFirstName($request->request->get('firstName', $user->getFirstName()));
@@ -246,6 +261,13 @@ class AuthController extends AbstractController
                 $user->setRoles([$role]);
             }
 
+            // Hôtel d'affectation pour les employés
+            if ($role === 'ROLE_HOTEL_EMPLOYEE' || $user->hasRole('ROLE_HOTEL_EMPLOYEE')) {
+                $hotelId = (int) $request->request->get('hotel_assignment');
+                $assignedHotel = $hotelId ? $em->getRepository(Hotel::class)->find($hotelId) : null;
+                $user->setHotelAssignment($assignedHotel);
+            }
+
             $newPassword = $request->request->get('newPassword', '');
             if (!empty($newPassword)) {
                 if (strlen($newPassword) < 8) {
@@ -263,8 +285,9 @@ class AuthController extends AbstractController
         }
 
         return $this->render('admin/user_edit.html.twig', [
-            'user'  => $user,
-            'error' => $error,
+            'user'   => $user,
+            'hotels' => $hotels,
+            'error'  => $error,
         ]);
     }
 

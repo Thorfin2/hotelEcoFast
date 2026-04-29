@@ -21,7 +21,7 @@ class HotelController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $hotel = $user->getHotel();
+        $hotel = $user->getEffectiveHotel();
         if (!$hotel) {
             throw $this->createAccessDeniedException('Aucun hôtel associé à ce compte.');
         }

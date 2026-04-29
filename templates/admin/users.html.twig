@@ -54,6 +54,7 @@
           </td>
           <td class="px-5 py-3.5 text-sm text-dark-500">
             {% if user.hotel %}<i class="fas fa-hotel text-dark-300 mr-1"></i>{{ user.hotel.name }}
+            {% elseif user.hotelAssignment %}<i class="fas fa-hotel text-amber-400 mr-1"></i>{{ user.hotelAssignment.name }}
             {% elseif user.driver %}<i class="fas fa-car text-dark-300 mr-1"></i>{{ user.driver.vehicleModel }}
             {% else %}—{% endif %}
           </td>
