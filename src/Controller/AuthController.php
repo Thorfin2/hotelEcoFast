@@ -59,6 +59,9 @@ class AuthController extends AbstractController
         if ($user->hasRole('ROLE_HOTEL')) {
             return $this->redirectToRoute('hotel_dashboard');
         }
+        if ($user->hasRole('ROLE_HOTEL_EMPLOYEE')) {
+            return $this->redirectToRoute('hotel_new_ride');
+        }
         if ($user->hasRole('ROLE_DRIVER')) {
             return $this->redirectToRoute('driver_dashboard');
         }
@@ -172,7 +175,7 @@ class AuthController extends AbstractController
 
             $em->persist($user);
 
-            if ($role === 'ROLE_HOTEL') {
+            if (in_array($role, ['ROLE_HOTEL', 'ROLE_HOTEL_EMPLOYEE'])) {
                 $hotel = new Hotel();
                 $hotel->setName($user->getFullName() . ' Hotel');
                 $hotel->setAddress('À compléter');
@@ -205,6 +208,64 @@ class AuthController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
         $users = $em->getRepository(User::class)->findAll();
         return $this->render('admin/users.html.twig', ['users' => $users]);
+    }
+
+    #[Route('/admin/utilisateurs/{id}/modifier', name: 'admin_user_edit')]
+    public function editUser(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $user = $em->getRepository(User::class)->find($id);
+        if (!$user) {
+            $this->addFlash('error', 'Utilisateur introuvable.');
+            return $this->redirectToRoute('admin_users');
+        }
+
+        $error = null;
+        if ($request->isMethod('POST')) {
+            $user->setFirstName($request->request->get('firstName', $user->getFirstName()));
+            $user->setLastName($request->request->get('lastName', $user->getLastName()));
+            $user->setPhone($request->request->get('phone', $user->getPhone()));
+
+            $newEmail = trim($request->request->get('email', ''));
+            if ($newEmail && $newEmail !== $user->getEmail()) {
+                $existing = $em->getRepository(User::class)->findOneBy(['email' => $newEmail]);
+                if ($existing && $existing->getId() !== $user->getId()) {
+                    $error = "Cet email est déjà utilisé par un autre compte.";
+                } else {
+                    $user->setEmail($newEmail);
+                }
+            }
+
+            $role = $request->request->get('role');
+            if ($role && in_array($role, ['ROLE_ADMIN', 'ROLE_HOTEL', 'ROLE_HOTEL_EMPLOYEE', 'ROLE_DRIVER'])) {
+                $user->setRoles([$role]);
+            }
+
+            $newPassword = $request->request->get('newPassword', '');
+            if (!empty($newPassword)) {
+                if (strlen($newPassword) < 8) {
+                    $error = 'Le mot de passe doit contenir au moins 8 caractères.';
+                } else {
+                    $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+                }
+            }
+
+            if (!$error) {
+                $em->flush();
+                $this->addFlash('success', "Compte « {$user->getFullName()} » mis à jour.");
+                return $this->redirectToRoute('admin_users');
+            }
+        }
+
+        return $this->render('admin/user_edit.html.twig', [
+            'user'  => $user,
+            'error' => $error,
+        ]);
     }
 
     #[Route('/admin/utilisateurs/{id}/supprimer', name: 'admin_user_delete', methods: ['POST'])]
@@ -242,7 +303,7 @@ class AuthController extends AbstractController
             return;
         }
 
-        $appName = 'EcoFast VTC';
+        $appName = 'Cabsolu';
         $subject = 'Réinitialisation de votre mot de passe';
 
         $html = <<<HTML

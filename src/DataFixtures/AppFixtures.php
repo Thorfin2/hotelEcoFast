@@ -32,7 +32,7 @@ class AppFixtures extends Fixture
         // ─── Admin ────────────────────────────────────────────────────────────
         $admin = new User();
         $adminPassword = $_ENV['ADMIN_PASSWORD'] ?? 'EcoFast2024!';
-        $admin->setFirstName('Admin')->setLastName('EcoFast')
+        $admin->setFirstName('Admin')->setLastName('Cabsolu')
             ->setEmail('ecofastvtc@gmail.com')->setPhone('')
             ->setRoles(['ROLE_ADMIN'])
             ->setPassword($this->hasher->hashPassword($admin, $adminPassword));

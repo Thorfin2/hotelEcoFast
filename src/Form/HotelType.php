@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Hotel;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -21,18 +22,23 @@ class HotelType extends AbstractType
             ->add('address', TextType::class, ['label' => 'Adresse', 'attr' => ['class' => 'form-input']])
             ->add('city', TextType::class, ['label' => 'Ville', 'attr' => ['class' => 'form-input']])
             ->add('phone', TelType::class, ['label' => 'Téléphone', 'required' => false, 'attr' => ['class' => 'form-input']])
-            ->add('email', EmailType::class, ['label' => 'Email', 'required' => false, 'attr' => ['class' => 'form-input']])
+            ->add('email', EmailType::class, ['label' => 'Email de contact', 'required' => false, 'attr' => ['class' => 'form-input']])
             ->add('stars', ChoiceType::class, [
                 'label' => 'Étoiles',
-                'choices' => ['5 étoiles' => '5', '4 étoiles' => '4', '3 étoiles' => '3', '2 étoiles' => '2'],
-                'placeholder' => '--',
+                'choices' => ['5 étoiles' => '5', '4 étoiles' => '4', '3 étoiles' => '3', '2 étoiles' => '2', '1 étoile' => '1'],
+                'placeholder' => 'Non classé',
                 'required' => false,
                 'attr' => ['class' => 'form-select'],
+            ])
+            ->add('commissionEnabled', CheckboxType::class, [
+                'label'    => 'Activer les commissions',
+                'required' => false,
+                'attr'     => ['class' => 'rounded border-gray-300 text-eco-500 focus:ring-eco-400'],
             ])
             ->add('commissionRate', NumberType::class, [
                 'label' => 'Taux de commission (%)',
                 'scale' => 2,
-                'attr' => ['min' => 0, 'max' => 100, 'step' => '0.5', 'class' => 'form-input'],
+                'attr'  => ['min' => 0, 'max' => 100, 'step' => '0.5', 'class' => 'form-input'],
             ]);
     }
 

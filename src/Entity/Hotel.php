@@ -37,6 +37,9 @@ class Hotel
     private string $commissionRate = '10.00';
 
     #[ORM\Column]
+    private bool $commissionEnabled = true;
+
+    #[ORM\Column]
     private bool $isActive = true;
 
     #[ORM\Column]
@@ -77,6 +80,11 @@ class Hotel
 
     public function getCommissionRate(): string { return $this->commissionRate; }
     public function setCommissionRate(string $commissionRate): static { $this->commissionRate = $commissionRate; return $this; }
+
+    public function isCommissionEnabled(): bool { return $this->commissionEnabled; }
+    public function setCommissionEnabled(bool $commissionEnabled): static { $this->commissionEnabled = $commissionEnabled; return $this; }
+    /** True si la commission doit être affichée (activée ET taux > 0) */
+    public function hasVisibleCommission(): bool { return $this->commissionEnabled && (float)$this->commissionRate > 0; }
 
     public function isActive(): bool { return $this->isActive; }
     public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }

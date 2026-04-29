@@ -157,6 +157,7 @@ class HotelController extends AbstractController
         EntityManagerInterface $em,
         NotificationService $notifications
     ): Response {
+        $this->denyAccessUnlessGranted('ROLE_HOTEL');
         $hotel = $this->getHotel();
 
         $monthParam = $request->query->get('month', date('Y-m'));

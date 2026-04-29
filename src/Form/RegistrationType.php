@@ -27,7 +27,8 @@ class RegistrationType extends AbstractType
             ->add('roles', ChoiceType::class, [
                 'label' => 'Rôle',
                 'choices' => [
-                    'Hôtel' => 'ROLE_HOTEL',
+                    'Hôtel (Admin complet)' => 'ROLE_HOTEL',
+                    'Hôtel (Employé — création de course uniquement)' => 'ROLE_HOTEL_EMPLOYEE',
                     'Chauffeur' => 'ROLE_DRIVER',
                     'Administrateur' => 'ROLE_ADMIN',
                 ],

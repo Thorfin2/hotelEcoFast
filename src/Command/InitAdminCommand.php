@@ -49,7 +49,7 @@ class InitAdminCommand extends Command
         if (!$user) {
             $user = new User();
             $user->setFirstName('Admin')
-                 ->setLastName('EcoFast')
+                 ->setLastName('Cabsolu')
                  ->setRoles(['ROLE_ADMIN'])
                  ->setIsActive(true);
             $this->em->persist($user);

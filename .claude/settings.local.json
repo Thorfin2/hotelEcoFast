@@ -63,7 +63,11 @@
       "Bash(/Applications/MAMP/Library/bin/mysql --version)",
       "Bash(/usr/local/mysql/bin/mysql --version)",
       "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -P 8889 -h 127.0.0.1 ecofasthotel -e \"SELECT COUNT\\(*\\) as courses FROM ride; SELECT COUNT\\(*\\) as notifications FROM notification;\")",
-      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -P 8889 -h 127.0.0.1 ecofasthotel -e \"DELETE FROM notification; DELETE FROM ride; SELECT COUNT\\(*\\) as courses_restantes FROM ride; SELECT COUNT\\(*\\) as notifications_restantes FROM notification;\")"
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -P 8889 -h 127.0.0.1 ecofasthotel -e \"DELETE FROM notification; DELETE FROM ride; SELECT COUNT\\(*\\) as courses_restantes FROM ride; SELECT COUNT\\(*\\) as notifications_restantes FROM notification;\")",
+      "Bash(php bin/console debug:router)",
+      "Bash(/Applications/MAMP/Library/bin/mysql80/bin/mysql -u root -proot -P 8889 -h 127.0.0.1 -e \"SHOW DATABASES;\")",
+      "Bash(sed -i '' 's/EcoFast VTC/Cabsolu/g; s/EcoFast <span class=\"text-white\">VTC<\\\\/span>/Cabsolu/g; s/EcoFast$/Cabsolu/g' /Users/mehdi/Desktop/ecofastHotel/templates/base.html.twig /Users/mehdi/Desktop/ecofastHotel/templates/auth/reset_password.html.twig /Users/mehdi/Desktop/ecofastHotel/templates/auth/forgot_password.html.twig /Users/mehdi/Desktop/ecofastHotel/templates/auth/login.html.twig /Users/mehdi/Desktop/ecofastHotel/templates/layout/app.html.twig)",
+      "Bash(sed -i '' 's/EcoFast VTC/Cabsolu/g; s/'\\\\''EcoFast'\\\\''/'\\\\''Cabsolu'\\\\''/g; s/setLastName\\('\\\\''EcoFast'\\\\''\\)/setLastName\\('\\\\''Cabsolu'\\\\''\\)/g' /Users/mehdi/Desktop/ecofastHotel/src/Controller/AuthController.php /Users/mehdi/Desktop/ecofastHotel/src/Controller/AdminEmailTestController.php /Users/mehdi/Desktop/ecofastHotel/src/Command/InitAdminCommand.php /Users/mehdi/Desktop/ecofastHotel/src/Command/TestSmtpCommand.php /Users/mehdi/Desktop/ecofastHotel/src/DataFixtures/AppFixtures.php)"
     ]
   }
 }

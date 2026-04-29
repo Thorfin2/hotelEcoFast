@@ -3,6 +3,10 @@ security:
         App\Entity\User:
             algorithm: auto
 
+    role_hierarchy:
+        ROLE_HOTEL: [ROLE_HOTEL_EMPLOYEE]
+        ROLE_ADMIN: [ROLE_HOTEL, ROLE_DRIVER]
+
     providers:
         app_user_provider:
             entity:
@@ -35,7 +39,7 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
         - { path: ^/reinitialiser-mot-de-passe, roles: PUBLIC_ACCESS }
-        - { path: ^/hotel, roles: ROLE_HOTEL }
+        - { path: ^/hotel, roles: ROLE_HOTEL_EMPLOYEE }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/chauffeur, roles: ROLE_DRIVER }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

@@ -1,6 +1,6 @@
 parameters:
-    app.name: '%env(APP_NAME)%'
-    app.base_url: '%env(APP_BASE_URL)%'
+    app.name: '%env(default:Cabsolu:APP_NAME)%'
+    app.base_url: '%env(default:https://cabsolu.fr:APP_BASE_URL)%'
     mailer.host: '%env(MAILER_HOST)%'
     mailer.port: '%env(int:MAILER_PORT)%'
     mailer.username: '%env(MAILER_USERNAME)%'
