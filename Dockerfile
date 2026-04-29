@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     && (php -m | grep -q curl || docker-php-ext-install curl) \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# PHP config (avant composer pour le memory_limit)
+# PHP config
 RUN printf "memory_limit=512M\nupload_max_filesize=10M\npost_max_size=10M\n" \
     > /usr/local/etc/php/conf.d/app.ini \
     && printf "opcache.enable=1\nopcache.memory_consumption=256\nopcache.max_accelerated_files=20000\nopcache.validate_timestamps=0\n" \
@@ -17,24 +17,22 @@ RUN printf "memory_limit=512M\nupload_max_filesize=10M\npost_max_size=10M\n" \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first for better caching
-COPY composer.json composer.lock ./
+# Copy ALL application files first
+COPY . .
 
-# Install dependencies (no dev) — memory_limit élevé pour éviter les OOM sur Railway
+# Install dependencies AFTER copy (évite tout écrasement du vendor)
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --no-dev \
     --optimize-autoloader \
     --no-scripts \
     --no-interaction \
-    --prefer-dist
+    --prefer-dist \
+    && test -f vendor/autoload_runtime.php \
+    && echo "✅ vendor/autoload_runtime.php OK"
 
-# Copy the rest of the application
-COPY . .
-
-# Create var directory and pre-warm cache (best-effort)
+# Pre-warm Symfony cache (best-effort)
 RUN mkdir -p var/cache var/log \
     && chmod -R 777 var/ \
     && APP_ENV=prod COMPOSER_MEMORY_LIMIT=-1 composer run-script post-install-cmd --no-interaction 2>/dev/null || true \
@@ -42,7 +40,6 @@ RUN mkdir -p var/cache var/log \
 
 ENV PORT=8080
 
-# Entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
