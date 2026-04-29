@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+
+  <!-- Badge fond marine -->
+  <rect width="64" height="64" rx="13" fill="#0d2233"/>
+
+  <!-- Arc du C -->
+  <path d="M 44 20 A 17 17 0 1 0 44 44"
+        stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Points verts -->
+  <circle cx="44" cy="20" r="4.5" fill="#5ab82e"/>
+  <circle cx="44" cy="44" r="4.5" fill="#5ab82e"/>
+
+</svg>

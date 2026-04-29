@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 56">
+
+  <!-- ── Icône C (fond transparent, marche sur fond sombre) ───────── -->
+
+  <!-- Arc C blanc -->
+  <path d="M 40 16 A 17 17 0 1 0 40 40"
+        stroke="white" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Pastilles vertes aux extrémités -->
+  <circle cx="40" cy="16" r="4.5" fill="#5ab82e"/>
+  <circle cx="40" cy="40" r="4.5" fill="#5ab82e"/>
+
+  <!-- ── Logotype blanc ──────────────────────────────────────────── -->
+  <text x="62" y="35"
+        font-family="'Inter','Helvetica Neue',Arial,sans-serif"
+        font-size="20" font-weight="800"
+        fill="white"
+        letter-spacing="5">CABSOLU</text>
+
+  <!-- Soulignement vert -->
+  <rect x="62" y="44" width="148" height="2.5" rx="1.25" fill="#5ab82e" opacity="0.85"/>
+
+</svg>
