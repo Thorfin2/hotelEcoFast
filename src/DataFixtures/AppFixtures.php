@@ -31,7 +31,7 @@ class AppFixtures extends Fixture
 
         // ─── Admin ────────────────────────────────────────────────────────────
         $admin = new User();
-        $adminPassword = $_ENV['ADMIN_PASSWORD'] ?? 'EcoFast2024!';
+        $adminPassword = $_ENV['ADMIN_PASSWORD'] ?? 'Cabsolu2024!';
         $admin->setFirstName('Admin')->setLastName('Cabsolu')
             ->setEmail('ecofastvtc@gmail.com')->setPhone('')
             ->setRoles(['ROLE_ADMIN'])
@@ -40,9 +40,9 @@ class AppFixtures extends Fixture
 
         // ─── Hotels ───────────────────────────────────────────────────────────
         $hotelsData = [
-            ['Le Ritz Paris', 'contact@ritz.com', '15 Place Vendôme', 'Paris', '5', '12.00', 'hotel@ecofasthotel.com', '+33 1 43 16 30 30'],
-            ['George V', 'george@fourseasons.com', '31 Avenue George V', 'Paris', '5', '10.00', 'hotel2@ecofasthotel.com', '+33 1 49 52 70 00'],
-            ['Hotel Barrière Le Fouquet\'s', 'contact@fouquets.com', '46 Avenue George V', 'Paris', '5', '8.00', 'hotel3@ecofasthotel.com', '+33 1 40 69 60 00'],
+            ['Le Ritz Paris', 'contact@ritz.com', '15 Place Vendôme', 'Paris', '5', '12.00', 'hotel@cabsolu.fr', '+33 1 43 16 30 30'],
+            ['George V', 'george@fourseasons.com', '31 Avenue George V', 'Paris', '5', '10.00', 'hotel2@cabsolu.fr', '+33 1 49 52 70 00'],
+            ['Hotel Barrière Le Fouquet\'s', 'contact@fouquets.com', '46 Avenue George V', 'Paris', '5', '8.00', 'hotel3@cabsolu.fr', '+33 1 40 69 60 00'],
         ];
 
         $hotels = [];
@@ -52,7 +52,7 @@ class AppFixtures extends Fixture
             $userHotel->setFirstName('Direction')->setLastName($data[0])
                 ->setEmail($data[6])->setPhone($data[7])
                 ->setRoles(['ROLE_HOTEL'])
-                ->setPassword($this->hasher->hashPassword($userHotel, 'ecofasthotel'));
+                ->setPassword($this->hasher->hashPassword($userHotel, 'cabsolu'));
             $manager->persist($userHotel);
 
             $hotel = new Hotel();
@@ -66,21 +66,21 @@ class AppFixtures extends Fixture
 
         // ─── Drivers ──────────────────────────────────────────────────────────
         $driversData = [
-            ['Ahmed', 'Benali', '+33 6 11 22 33 44', 'ahmed.benali@ecofasthotel.com', 'Mercedes Classe E', 'berline_premium', 'AA-123-BB'],
-            ['Pierre', 'Martin', '+33 6 22 33 44 55', 'pierre.martin@ecofasthotel.com', 'BMW Série 7', 'berline_premium', 'CC-456-DD'],
-            ['Karim', 'Hassan', '+33 6 33 44 55 66', 'karim.hassan@ecofasthotel.com', 'Mercedes Viano', 'van', 'EE-789-FF'],
-            ['Jean-Luc', 'Moreau', '+33 6 44 55 66 77', 'jeanluc.moreau@ecofasthotel.com', 'Audi A8 L', 'berline_premium', 'GG-012-HH'],
+            ['Ahmed', 'Benali', '+33 6 11 22 33 44', 'ahmed.benali@cabsolu.fr', 'Mercedes Classe E', 'berline_premium', 'AA-123-BB'],
+            ['Pierre', 'Martin', '+33 6 22 33 44 55', 'pierre.martin@cabsolu.fr', 'BMW Série 7', 'berline_premium', 'CC-456-DD'],
+            ['Karim', 'Hassan', '+33 6 33 44 55 66', 'karim.hassan@cabsolu.fr', 'Mercedes Viano', 'van', 'EE-789-FF'],
+            ['Jean-Luc', 'Moreau', '+33 6 44 55 66 77', 'jeanluc.moreau@cabsolu.fr', 'Audi A8 L', 'berline_premium', 'GG-012-HH'],
         ];
 
         $drivers = [];
         $driverStatuses = [Driver::STATUS_AVAILABLE, Driver::STATUS_AVAILABLE, Driver::STATUS_BUSY, Driver::STATUS_OFFLINE];
         foreach ($driversData as $i => $data) {
             $userDriver = new User();
-            $email = $i === 0 ? 'chauffeur@ecofasthotel.com' : $data[3];
+            $email = $i === 0 ? 'chauffeur@cabsolu.fr' : $data[3];
             $userDriver->setFirstName($data[0])->setLastName($data[1])
                 ->setEmail($email)->setPhone($data[2])
                 ->setRoles(['ROLE_DRIVER'])
-                ->setPassword($this->hasher->hashPassword($userDriver, 'ecofasthotel'));
+                ->setPassword($this->hasher->hashPassword($userDriver, 'cabsolu'));
             $manager->persist($userDriver);
 
             $driver = new Driver();
@@ -146,7 +146,7 @@ class AppFixtures extends Fixture
                 $notif->setRide($ride)->setType(Notification::TYPE_RIDE_CREATED)
                     ->setChannel(Notification::CHANNEL_EMAIL)
                     ->setRecipientType(Notification::RECIPIENT_ADMIN)
-                    ->setRecipientEmail('admin@ecofasthotel.com')
+                    ->setRecipientEmail('admin@cabsolu.fr')
                     ->setSubject("Nouvelle course #{$ride->getReference()}")
                     ->setContent('Email notification content')
                     ->setStatus(Notification::STATUS_SENT)

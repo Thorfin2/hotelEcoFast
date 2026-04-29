@@ -1,6 +1,6 @@
 #!/bin/bash
 # ══════════════════════════════════════════════════════════════════════
-#  EcoFast Hotel — Script d'installation automatique
+#  Cabsolu — Script d'installation automatique
 # ══════════════════════════════════════════════════════════════════════
 
 set -e
@@ -14,7 +14,7 @@ NC='\033[0m'
 
 echo ""
 echo -e "${CYAN}${BOLD}══════════════════════════════════════════════════════${NC}"
-echo -e "${CYAN}${BOLD}  🚗  EcoFast Hotel — Installation                    ${NC}"
+echo -e "${CYAN}${BOLD}  🚗  Cabsolu — Installation                    ${NC}"
 echo -e "${CYAN}${BOLD}══════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -51,7 +51,7 @@ fi
 
 echo ""
 echo -e "${YELLOW}📝 Configurez votre .env.local avec :${NC}"
-echo -e "   DATABASE_URL=\"mysql://root:@127.0.0.1:3306/ecofasthotel\""
+echo -e "   DATABASE_URL=\"mysql://root:@127.0.0.1:3306/cabsolu\""
 echo -e "   MAILER_USERNAME=votre.email@gmail.com"
 echo -e "   MAILER_PASSWORD=votre_mot_de_passe_application"
 echo ""
@@ -91,9 +91,9 @@ echo -e "   ${CYAN}php -S localhost:8000 -t public/${NC}"
 echo -e "   ou  ${CYAN}symfony server:start${NC}"
 echo ""
 echo -e "${BOLD}🔑 Comptes de démonstration :${NC}"
-echo -e "   ${YELLOW}⚙️  Admin     :${NC} admin@ecofasthotel.com     / ecofasthotel"
-echo -e "   ${YELLOW}🏨 Hôtel     :${NC} hotel@ecofasthotel.com     / ecofasthotel"
-echo -e "   ${YELLOW}🚘 Chauffeur :${NC} chauffeur@ecofasthotel.com / ecofasthotel"
+echo -e "   ${YELLOW}⚙️  Admin     :${NC} admin@cabsolu.fr     / cabsolu"
+echo -e "   ${YELLOW}🏨 Hôtel     :${NC} hotel@cabsolu.fr     / cabsolu"
+echo -e "   ${YELLOW}🚘 Chauffeur :${NC} chauffeur@cabsolu.fr / cabsolu"
 echo ""
 echo -e "   🌐 URL : ${CYAN}http://localhost:8000${NC}"
 echo ""

@@ -65,7 +65,7 @@ class InitAdminCommand extends Command
             $io->success("✅ Admin mis à jour : $adminEmail (mot de passe mis à jour depuis ADMIN_PASSWORD)");
         } elseif ($isNew) {
             // Nouveau compte sans mot de passe défini : mot de passe temporaire
-            $tmp = 'EcoFast2024!';
+            $tmp = 'Cabsolu2024!';
             $user->setPassword($this->hasher->hashPassword($user, $tmp));
             $io->warning("⚠️  Nouveau compte admin créé : $adminEmail — mot de passe temporaire : $tmp");
             $io->note("Définissez ADMIN_PASSWORD dans vos variables d'environnement Railway pour sécuriser ce compte.");

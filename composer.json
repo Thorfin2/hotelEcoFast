@@ -1,6 +1,6 @@
 {
-    "name": "ecofasthotel/transport-management",
-    "description": "EcoFast Hotel - Système de gestion de transport haut de gamme",
+    "name": "cabsolu/transport-management",
+    "description": "Cabsolu - Système de gestion de transport haut de gamme",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

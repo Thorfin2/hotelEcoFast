@@ -47,7 +47,7 @@ class AdminEmailTestController extends AbstractController
                     $email = (new Email())
                         ->from(new Address($mailerFromEmail, $mailerFromName))
                         ->to($to)
-                        ->subject('Test EcoFast — Symfony Mailer')
+                        ->subject('Test Cabsolu — Symfony Mailer')
                         ->html($this->buildTestHtml($mailerHost, $mailerPort, $mailerFromEmail, $to))
                         ->text('Si vous lisez ce message, Symfony Mailer fonctionne.');
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "==> Starting EcoFast Hotel..."
+echo "==> Starting Cabsolu..."
 
 # Ensure var directory exists
 mkdir -p var/cache var/log

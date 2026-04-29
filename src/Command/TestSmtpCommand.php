@@ -58,7 +58,7 @@ class TestSmtpCommand extends Command
         $payload = json_encode([
             'from' => "{$this->mailerFromName} <{$fromEmail}>",
             'to' => [$to],
-            'subject' => 'Test EcoFast - Email fonctionne !',
+            'subject' => 'Test Cabsolu - Email fonctionne !',
             'html' => '<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)"><div style="background:linear-gradient(135deg,#0d9488,#0f766e);padding:32px;text-align:center"><h1 style="color:#fff;margin:0">Cabsolu</h1></div><div style="padding:32px;text-align:center"><h2 style="color:#1e293b">Ca marche !</h2><p style="color:#64748b">La configuration email est correcte.</p></div></div>',
         ]);
 

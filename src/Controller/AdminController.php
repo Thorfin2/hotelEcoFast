@@ -228,17 +228,17 @@ class AdminController extends AbstractController
             $user = new User();
             $user->setFirstName($driver->getFirstName());
             $user->setLastName($driver->getLastName());
-            $user->setEmail($driver->getEmail() ?? strtolower($driver->getFirstName() . '.' . $driver->getLastName() . '@ecofasthotel.com'));
+            $user->setEmail($driver->getEmail() ?? strtolower($driver->getFirstName() . '.' . $driver->getLastName() . '@cabsolu.fr'));
             $user->setPhone($driver->getPhone());
             $user->setRoles(['ROLE_DRIVER']);
-            $user->setPassword($hasher->hashPassword($user, 'ecofasthotel'));
+            $user->setPassword($hasher->hashPassword($user, 'cabsolu'));
             $driver->setUser($user);
 
             $em->persist($user);
             $em->persist($driver);
             $em->flush();
 
-            $this->addFlash('success', "Chauffeur {$driver->getFullName()} créé. Login: {$user->getEmail()} / Mot de passe: ecofasthotel");
+            $this->addFlash('success', "Chauffeur {$driver->getFullName()} créé. Login: {$user->getEmail()} / Mot de passe: cabsolu");
             return $this->redirectToRoute('admin_drivers');
         }
 
