@@ -321,7 +321,8 @@ class AuthController extends AbstractController
 
     private function sendResetEmail(string $to, string $firstName, string $resetUrl): void
     {
-        $apiKey = $_ENV['RESEND_API_KEY'] ?? '';
+        // Lire depuis toutes les sources (variables_order peut varier selon le SAPI)
+        $apiKey = $_ENV['RESEND_API_KEY'] ?? $_SERVER['RESEND_API_KEY'] ?? getenv('RESEND_API_KEY') ?: '';
         if (!$apiKey || $apiKey === 'change_me') {
             return;
         }
@@ -355,7 +356,7 @@ class AuthController extends AbstractController
         </html>
         HTML;
 
-        $fromDomain = $_ENV['MAILER_FROM_EMAIL'] ?? 'onboarding@resend.dev';
+        $fromDomain = $_ENV['MAILER_FROM_EMAIL'] ?? $_SERVER['MAILER_FROM_EMAIL'] ?? getenv('MAILER_FROM_EMAIL') ?: 'onboarding@resend.dev';
 
         $payload = json_encode([
             'from'    => "$appName <$fromDomain>",
