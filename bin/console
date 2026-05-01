@@ -3,15 +3,21 @@
 
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Dotenv\Dotenv;
 
-if (!is_file(dirname(__DIR__).'/vendor/autoload_runtime.php')) {
-    throw new LogicException('Symfony Runtime is missing. Try running "composer require symfony/runtime".');
+require_once dirname(__DIR__).'/vendor/autoload.php';
+
+// Charge .env sans écraser les variables déjà définies par l'OS / Railway
+if (class_exists(Dotenv::class)) {
+    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
 }
 
-require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+$input = new ArgvInput();
+$env   = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'prod', true);
+$debug = !$input->hasParameterOption('--no-debug', true)
+    && filter_var($_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? 'prod' !== $env, FILTER_VALIDATE_BOOLEAN);
 
-return function (array $context) {
-    $kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
-
-    return new Application($kernel);
-};
+$kernel      = new Kernel($env, $debug);
+$application = new Application($kernel);
+$application->run($input);

@@ -23,8 +23,10 @@ class NotificationService
      */
     private function dispatchEmailSending(): void
     {
+        $phpBin     = PHP_BINARY; // chemin absolu vers l'exécutable PHP courant
         $consolePath = dirname(__DIR__, 2) . '/bin/console';
-        $cmd = 'php ' . escapeshellarg($consolePath) . ' app:send-pending-emails > /dev/null 2>&1 &';
+        $cmd = escapeshellarg($phpBin) . ' ' . escapeshellarg($consolePath)
+            . ' app:send-pending-emails > /dev/null 2>&1 &';
         @exec($cmd);
     }
 
