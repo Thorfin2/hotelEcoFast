@@ -2,6 +2,10 @@ framework:
     secret: '%env(APP_SECRET)%'
     http_method_override: true
     handle_all_throwables: true
+    # Railway / reverse-proxy : fait confiance au proxy direct (REMOTE_ADDR)
+    # pour que generateUrl() produise la vraie URL publique (X-Forwarded-Host/Proto)
+    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
     session:
         handler_id: null
         cookie_secure: auto
