@@ -3,6 +3,15 @@
 use App\Kernel;
 use Symfony\Component\HttpFoundation\Request;
 
+// PHP built-in server (php -S): serve static files directly without going through Symfony
+if (PHP_SAPI === 'cli-server') {
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+    $file = __DIR__ . $path;
+    if ($path !== '/' && is_file($file)) {
+        return false; // Let PHP handle the static file directly
+    }
+}
+
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
 // Load .env files – won't override env vars already set by Railway / OS

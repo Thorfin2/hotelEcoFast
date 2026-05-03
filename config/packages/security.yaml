@@ -39,6 +39,8 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/mot-de-passe-oublie, roles: PUBLIC_ACCESS }
         - { path: ^/reinitialiser-mot-de-passe, roles: PUBLIC_ACCESS }
+        - { path: ^/images/, roles: PUBLIC_ACCESS }
+        - { path: ^/favicon, roles: PUBLIC_ACCESS }
         - { path: ^/hotel, roles: ROLE_HOTEL_EMPLOYEE }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/chauffeur, roles: ROLE_DRIVER }
