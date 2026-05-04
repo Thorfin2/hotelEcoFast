@@ -4,24 +4,24 @@
   {% if is_granted('ROLE_HOTEL') %}
   <a href="{{ path('hotel_dashboard') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'hotel_dashboard' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'hotel_dashboard' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-gauge-high text-xs"></i> Tableau de bord
   </a>
   {% endif %}
   <a href="{{ path('hotel_new_ride') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'hotel_new_ride' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'hotel_new_ride' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-plus text-xs"></i> Nouvelle course
   </a>
   <a href="{{ path('hotel_rides') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') starts with 'hotel_ride' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') starts with 'hotel_ride' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-list text-xs"></i> Mes courses
   </a>
   {% if is_granted('ROLE_HOTEL') and app.user.hotel is not null and app.user.hotel.hasVisibleCommission %}
   <a href="{{ path('hotel_commissions') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'hotel_commissions' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'hotel_commissions' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-euro-sign text-xs"></i> Commissions
   </a>
   {% endif %}
@@ -29,11 +29,11 @@
 
 {% block mobile_nav %}
   {% if is_granted('ROLE_HOTEL') %}
-  <a href="{{ path('hotel_dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_dashboard' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-gauge-high w-4"></i> Tableau de bord</a>
+  <a href="{{ path('hotel_dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_dashboard' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-gauge-high w-4"></i> Tableau de bord</a>
   {% endif %}
-  <a href="{{ path('hotel_new_ride') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_new_ride' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-plus w-4"></i> Nouvelle course</a>
-  <a href="{{ path('hotel_rides') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'hotel_ride' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-list w-4"></i> Mes courses</a>
+  <a href="{{ path('hotel_new_ride') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_new_ride' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-plus w-4"></i> Nouvelle course</a>
+  <a href="{{ path('hotel_rides') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'hotel_ride' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-list w-4"></i> Mes courses</a>
   {% if is_granted('ROLE_HOTEL') and app.user.hotel is not null and app.user.hotel.hasVisibleCommission %}
-  <a href="{{ path('hotel_commissions') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_commissions' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-euro-sign w-4"></i> Commissions</a>
+  <a href="{{ path('hotel_commissions') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'hotel_commissions' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-euro-sign w-4"></i> Commissions</a>
   {% endif %}
 {% endblock %}

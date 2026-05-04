@@ -221,45 +221,202 @@ class NotificationService
 
     // ─── Email templates ─────────────────────────────────────────────────────
 
-    private function emailWrapper(string $title, string $body): string
+    private function emailWrapper(string $title, string $body, string $accentColor = '#c4905a'): string
     {
+        // Palette Cabsolu extraite du logo
+        // Navy : #0D1B2E | Bronze-or : #C4905A | Or clair : #E2C08C | Or foncé : #8A5630
         return <<<HTML
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>{$title}</title>
 <style>
-  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
-  .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-  .header { background: linear-gradient(135deg, #0d9488, #0f766e); padding: 32px; text-align: center; }
-  .header h1 { color: white; margin: 0; font-size: 24px; font-weight: 700; }
-  .header p { color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 14px; }
-  .content { padding: 32px; }
-  .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 16px 0; }
-  .label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-  .value { font-size: 15px; color: #1e293b; margin-top: 2px; font-weight: 500; }
-  .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #dcfce7; color: #166534; }
-  .btn { display: inline-block; padding: 12px 28px; background: #0d9488; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin: 16px 0; }
-  .footer { background: #f8fafc; padding: 20px 32px; text-align: center; border-top: 1px solid #e2e8f0; }
-  .footer p { color: #94a3b8; font-size: 12px; margin: 4px 0; }
-  .highlight { background: #f0fdf4; border-left: 4px solid #0d9488; padding: 12px 16px; border-radius: 4px; }
+  /* Reset */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+  a { color: inherit; }
+  img { display: block; border: 0; }
+
+  /* Layout */
+  .email-wrapper { width: 100%; background: #f0f2f5; padding: 32px 16px; }
+  .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 40px rgba(13,27,46,0.12); }
+
+  /* Header navy + filet or */
+  .header {
+    background: linear-gradient(160deg, #0d1b2e 0%, #132233 60%, #1a3048 100%);
+    padding: 0;
+    text-align: center;
+    position: relative;
+  }
+  .header-gold-bar {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #c4905a 25%, #e2c08c 50%, #c4905a 75%, transparent);
+  }
+  .header-inner { padding: 32px 32px 28px; }
+  .header-logo-ring {
+    display: inline-block;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 2px solid rgba(196,144,90,0.4);
+    padding: 3px;
+    margin-bottom: 16px;
+  }
+  .header-logo-ring img { width: 66px; height: 66px; border-radius: 50%; }
+  .header-brand {
+    font-size: 22px; font-weight: 800; color: #ffffff;
+    letter-spacing: 0.06em; margin-bottom: 4px;
+  }
+  .header-brand span { color: #c4905a; }
+  .header-subtitle {
+    font-size: 11px; color: rgba(255,255,255,0.45);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .header-title-bar {
+    background: rgba(196,144,90,0.08);
+    border-top: 1px solid rgba(196,144,90,0.15);
+    padding: 14px 32px;
+  }
+  .header-title-bar h1 {
+    font-size: 16px; font-weight: 600; color: #e2c08c;
+    letter-spacing: 0.02em;
+  }
+
+  /* Content */
+  .content { padding: 36px 32px; color: #1a1a1e; }
+  .content h2 { font-size: 20px; font-weight: 700; color: #0d1b2e; margin-bottom: 8px; }
+  .content p { font-size: 14px; color: #4d4e54; line-height: 1.65; margin-bottom: 12px; }
+
+  /* Info card */
+  .card {
+    background: #f8f9fb;
+    border: 1px solid #e8e9ec;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .card-row { padding: 8px 0; border-bottom: 1px solid #eff0f2; }
+  .card-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .card-row:first-child { padding-top: 0; }
+  .label {
+    font-size: 10px; font-weight: 700; color: #868991;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+  .value { font-size: 14px; color: #1a1a1e; font-weight: 500; }
+
+  /* Gold card (montants) */
+  .card-gold {
+    background: linear-gradient(135deg, #fdf6ee 0%, #fff 100%);
+    border: 1px solid #f2cfa0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .amount-label { font-size: 11px; font-weight: 600; color: #a67040; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .amount-value { font-size: 32px; font-weight: 800; color: #0d1b2e; }
+  .amount-sub { font-size: 13px; color: #8a5630; margin-top: 4px; }
+
+  /* Highlight info */
+  .highlight {
+    background: #fdf6ee;
+    border-left: 3px solid #c4905a;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #8a5630;
+    line-height: 1.6;
+  }
+
+  /* Status badge */
+  .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #fdf6ee;
+    color: #8a5630;
+    border: 1px solid #f2cfa0;
+  }
+
+  /* CTA Button */
+  .btn-wrap { text-align: center; margin: 28px 0 12px; }
+  .btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #c4905a, #a67040);
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 14px rgba(196,144,90,0.35);
+  }
+
+  /* Divider */
+  .divider { height: 1px; background: #eff0f2; margin: 24px 0; }
+
+  /* Footer */
+  .footer {
+    background: #0d1b2e;
+    padding: 24px 32px;
+    text-align: center;
+  }
+  .footer-brand { font-size: 13px; font-weight: 700; color: #c4905a; margin-bottom: 4px; letter-spacing: 0.04em; }
+  .footer p { font-size: 11px; color: rgba(255,255,255,0.3); margin: 3px 0; line-height: 1.5; }
+  .footer-bar { height: 2px; background: linear-gradient(90deg, transparent, #c4905a 40%, transparent); margin-bottom: 20px; }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+  .data-table th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #868991; background: #f8f9fb; border-bottom: 2px solid #e8e9ec; }
+  .data-table th:last-child { text-align: right; }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid #f0f1f3; color: #1a1a1e; vertical-align: top; }
+  .data-table td:last-child { text-align: right; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tfoot td { padding: 12px; font-weight: 700; color: #0d1b2e; background: #fdf6ee; border-top: 2px solid #f2cfa0; }
+  .data-table tfoot td:last-child { color: #c4905a; text-align: right; }
 </style>
 </head>
 <body>
+<div class="email-wrapper">
 <div class="container">
+
+  <!-- Header -->
   <div class="header">
-    <h1>{$this->appName}</h1>
-    <p>Système de transport hôtelier haut de gamme</p>
+    <div class="header-gold-bar"></div>
+    <div class="header-inner">
+      <div class="header-logo-ring">
+        <img src="{$this->appBaseUrl}/images/logo.png" alt="Cabsolu" width="66" height="66">
+      </div>
+      <div class="header-brand">CAB<span>SOLU</span></div>
+      <div class="header-subtitle">Solution Absolue pour vos Déplacements</div>
+    </div>
+    <div class="header-title-bar">
+      <h1>{$title}</h1>
+    </div>
   </div>
+
+  <!-- Content -->
   <div class="content">
     {$body}
   </div>
+
+  <!-- Footer -->
   <div class="footer">
-    <p>{$this->appName} — Plateforme de gestion de transport</p>
-    <p>Cet email a été généré automatiquement, merci de ne pas répondre.</p>
+    <div class="footer-bar"></div>
+    <div class="footer-brand">CABSOLU</div>
+    <p>Plateforme de transport hôtelier haut de gamme</p>
+    <p style="margin-top:8px;">Cet email est généré automatiquement — merci de ne pas y répondre.</p>
+    <p style="margin-top:6px;">© 2026 Cabsolu — Tous droits réservés</p>
   </div>
+
+</div>
 </div>
 </body>
 </html>
@@ -271,7 +428,7 @@ HTML;
         $hotelName = $ride->getHotel()->getName();
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Nouvelle course à assigner</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Nouvelle course à assigner</h2>
 <p>Bonjour {$admin->getFirstName()},</p>
 <p>Une nouvelle course a été créée et nécessite l'assignation d'un chauffeur.</p>
 <div class="card">
@@ -285,7 +442,7 @@ HTML;
 <div class="highlight">
   Action requise : Connectez-vous pour assigner un chauffeur disponible.
 </div>
-<a href="{$this->appBaseUrl}/admin/courses/{$ride->getId()}/assigner" class="btn">Assigner un chauffeur</a>
+<div class="btn-wrap"><a href="{$this->appBaseUrl}/admin/courses/{$ride->getId()}/assigner" class="btn">Assigner un chauffeur</a></div>
 HTML;
         return $this->emailWrapper("Nouvelle course #{$ride->getReference()}", $body);
     }
@@ -294,7 +451,7 @@ HTML;
     {
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Course créée avec succès</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Course créée avec succès</h2>
 <p>Bonjour,</p>
 <p>La course <strong>#{$ride->getReference()}</strong> a bien été enregistrée pour votre client <strong>{$ride->getClientName()}</strong>.</p>
 <div class="card">
@@ -307,7 +464,7 @@ HTML;
 <div class="highlight">
   Un chauffeur sera assigné prochainement. Vous recevrez un email de confirmation.
 </div>
-<a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a>
+<div class="btn-wrap"><a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a></div>
 HTML;
         return $this->emailWrapper("Course créée — #{$ride->getReference()}", $body);
     }
@@ -318,7 +475,7 @@ HTML;
         $clientPhone = $ride->getClientPhone() ?? 'Non renseigné';
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Nouvelle mission assignée</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Nouvelle mission assignée</h2>
 <p>Bonjour {$driver->getFirstName()},</p>
 <p>Une nouvelle course vous a été assignée. Veuillez confirmer votre disponibilité.</p>
 <div class="card">
@@ -344,7 +501,7 @@ HTML;
         $driver = $ride->getDriver();
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Chauffeur assigné à votre course</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Chauffeur assigné à votre course</h2>
 <p>Bonjour,</p>
 <p>Un chauffeur a été assigné à la course <strong>#{$ride->getReference()}</strong> pour votre client <strong>{$ride->getClientName()}</strong>.</p>
 <div class="card">
@@ -358,7 +515,7 @@ HTML;
   <div class="label">Départ</div><div class="value">{$ride->getPickupAddress()}</div><br>
   <div class="label">Destination</div><div class="value">{$ride->getDestinationAddress()}</div>
 </div>
-<a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a>
+<div class="btn-wrap"><a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a></div>
 HTML;
         return $this->emailWrapper("Chauffeur assigné — #{$ride->getReference()}", $body);
     }
@@ -367,7 +524,7 @@ HTML;
     {
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Votre réservation est confirmée !</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Votre réservation est confirmée !</h2>
 <p>Bonjour {$ride->getClientName()},</p>
 <p>Votre réservation de transport a bien été enregistrée. Voici le récapitulatif :</p>
 <div class="card">
@@ -389,7 +546,7 @@ HTML;
         $driver = $ride->getDriver();
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y à H:i');
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Votre chauffeur est prêt !</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Votre chauffeur est prêt !</h2>
 <p>Bonjour {$ride->getClientName()},</p>
 <p>Votre chauffeur a été assigné pour votre trajet du <strong>{$pickupDate}</strong>.</p>
 <div class="card">
@@ -411,7 +568,7 @@ HTML;
         $licensePlate = $ride->getDriver()?->getLicensePlate() ?? '';
         $vehicleModel = $ride->getDriver()?->getVehicleModel() ?? '';
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Votre chauffeur est en route !</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Votre chauffeur est en route !</h2>
 <p>Bonjour {$ride->getClientName()},</p>
 <p>Votre chauffeur <strong>{$driverName}</strong> est en route vers le point de prise en charge.</p>
 <div class="card">
@@ -428,7 +585,7 @@ HTML;
     {
         $driverName = $ride->getDriver()?->getFullName() ?? 'Le chauffeur';
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Course démarrée</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Course démarrée</h2>
 <p>Bonjour,</p>
 <p>La course <strong>#{$ride->getReference()}</strong> a été démarrée par <strong>{$driverName}</strong>.</p>
 <div class="card">
@@ -437,7 +594,7 @@ HTML;
   <div class="label">Chauffeur</div><div class="value">{$driverName}</div><br>
   <div class="label">Trajet</div><div class="value">{$ride->getPickupAddress()} &rarr; {$ride->getDestinationAddress()}</div>
 </div>
-<a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a>
+<div class="btn-wrap"><a href="{$this->appBaseUrl}/hotel/courses/{$ride->getId()}" class="btn">Suivre la course</a></div>
 HTML;
         return $this->emailWrapper("Course démarrée — #{$ride->getReference()}", $body);
     }
@@ -445,7 +602,7 @@ HTML;
     private function buildClientRideCompletedEmail(Ride $ride): string
     {
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Votre trajet est terminé</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Votre trajet est terminé</h2>
 <p>Bonjour {$ride->getClientName()},</p>
 <p>Votre trajet est bien arrivé à destination. Merci de votre confiance !</p>
 <div class="card">
@@ -463,7 +620,7 @@ HTML;
     private function buildStatusUpdateEmail(Ride $ride, string $statusFr): string
     {
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Course {$statusFr}</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Course {$statusFr}</h2>
 <p>La course <strong>#{$ride->getReference()}</strong> a été <strong>{$statusFr}</strong>.</p>
 <div class="card">
   <div class="label">Référence</div><div class="value">#{$ride->getReference()}</div><br>
@@ -479,19 +636,19 @@ HTML;
         $pickupDate = $ride->getPickupDatetime()->format('d/m/Y');
         $commissionRate = $ride->getHotel()->getCommissionRate();
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Course terminée avec succès</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Course terminée avec succès</h2>
 <p>La course <strong>#{$ride->getReference()}</strong> est terminée. Voici le récapitulatif financier :</p>
 <div class="card">
   <div class="label">Client</div><div class="value">{$ride->getClientName()}</div><br>
   <div class="label">Trajet</div><div class="value">{$ride->getPickupAddress()} &rarr; {$ride->getDestinationAddress()}</div><br>
   <div class="label">Date</div><div class="value">{$pickupDate}</div>
 </div>
-<div class="card" style="background:#f0fdf4;border-color:#bbf7d0">
-  <div class="label">Prix total</div><div class="value" style="font-size:20px;color:#0d9488;font-weight:700">{$ride->getPrice()} EUR</div><br>
-  <div class="label">Votre commission ({$commissionRate}%)</div>
-  <div class="value" style="font-size:18px;color:#166534;font-weight:700">{$ride->getHotelCommission()} EUR</div>
+<div class="card-gold">
+  <div class="amount-label">Prix total de la course</div>
+  <div class="amount-value">{$ride->getPrice()} €</div>
+  <div class="amount-sub">Commission hôtel ({$commissionRate}%) : <strong>{$ride->getHotelCommission()} €</strong></div>
 </div>
-<a href="{$this->appBaseUrl}/hotel/commissions" class="btn">Voir mes commissions</a>
+<div class="btn-wrap"><a href="{$this->appBaseUrl}/hotel/commissions" class="btn">Voir mes commissions</a></div>
 HTML;
         return $this->emailWrapper("Course terminée — Commission #{$ride->getReference()}", $body);
     }
@@ -501,44 +658,48 @@ HTML;
         $rows = '';
         foreach ($rides as $ride) {
             $rDate = $ride->getPickupDatetime()->format('d/m');
-            $rows .= "<tr><td style='padding:8px;border-bottom:1px solid #e2e8f0'>#{$ride->getReference()}</td>
-                <td style='padding:8px;border-bottom:1px solid #e2e8f0'>{$ride->getClientName()}</td>
-                <td style='padding:8px;border-bottom:1px solid #e2e8f0'>{$rDate}</td>
-                <td style='padding:8px;border-bottom:1px solid #e2e8f0;text-align:right'>{$ride->getPrice()} EUR</td>
-                <td style='padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;color:#0d9488;font-weight:600'>{$ride->getHotelCommission()} EUR</td>
+            $rows .= "<tr>
+                <td>#{$ride->getReference()}</td>
+                <td>{$ride->getClientName()}</td>
+                <td>{$rDate}</td>
+                <td>{$ride->getPrice()} €</td>
+                <td style='color:#c4905a;font-weight:700'>{$ride->getHotelCommission()} €</td>
             </tr>";
         }
 
         $monthFr = $month->format('F Y');
         $commRate = $hotel->getCommissionRate();
         $body = <<<HTML
-<h2 style="color:#1e293b;margin-top:0">Relevé de commissions — {$monthFr}</h2>
+<h2 style="color:#0d1b2e;margin-top:0;font-size:19px;">Relevé de commissions — {$monthFr}</h2>
 <p>Bonjour,</p>
 <p>Voici votre relevé de commissions pour <strong>{$hotel->getName()}</strong> du mois de <strong>{$monthFr}</strong>.</p>
-<div class="card" style="background:#f0fdf4;border-color:#bbf7d0;text-align:center">
-  <div class="label">Total commissions ce mois</div>
-  <div style="font-size:32px;font-weight:700;color:#0d9488;margin-top:8px">{$total} EUR</div>
-  <div style="color:#64748b;font-size:13px;margin-top:4px">sur {$monthFr} — Taux {$commRate}%</div>
+
+<div class="card-gold">
+  <div class="amount-label">Total commissions — {$monthFr}</div>
+  <div class="amount-value">{$total} €</div>
+  <div class="amount-sub">Taux de commission : {$commRate}%</div>
 </div>
-<table style="width:100%;border-collapse:collapse;font-size:13px">
+
+<table class="data-table">
   <thead>
-    <tr style="background:#f8fafc">
-      <th style="padding:8px;text-align:left;color:#64748b">Réf.</th>
-      <th style="padding:8px;text-align:left;color:#64748b">Client</th>
-      <th style="padding:8px;text-align:left;color:#64748b">Date</th>
-      <th style="padding:8px;text-align:right;color:#64748b">Prix</th>
-      <th style="padding:8px;text-align:right;color:#64748b">Commission</th>
+    <tr>
+      <th>Référence</th>
+      <th>Client</th>
+      <th>Date</th>
+      <th>Prix course</th>
+      <th>Votre commission</th>
     </tr>
   </thead>
   <tbody>{$rows}</tbody>
   <tfoot>
-    <tr style="background:#f0fdf4">
-      <td colspan="4" style="padding:12px;font-weight:700;color:#0d9488">Total</td>
-      <td style="padding:12px;font-weight:700;color:#0d9488;text-align:right">{$total} EUR</td>
+    <tr>
+      <td colspan="4">Total du mois</td>
+      <td>{$total} €</td>
     </tr>
   </tfoot>
 </table>
-<a href="{$this->appBaseUrl}/hotel/commissions" class="btn">Voir l'historique complet</a>
+
+<div class="btn-wrap"><a href="{$this->appBaseUrl}/hotel/commissions" class="btn">Voir l'historique complet</a></div>
 HTML;
         return $this->emailWrapper("Relevé commissions {$monthFr} — {$hotel->getName()}", $body);
     }

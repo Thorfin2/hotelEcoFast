@@ -146,7 +146,7 @@
       <div class="text-center mb-4">
         <i class="fas fa-map-location-dot text-dark-300 text-3xl mb-2"></i>
         <p class="text-dark-400 text-sm">Saisissez les adresses pour calculer automatiquement le prix</p>
-        <button type="button" @click="enableManualMode()" class="mt-2 text-xs text-eco-600 hover:text-eco-800 underline">Saisir le prix manuellement</button>
+        <button type="button" @click="enableManualMode()" class="mt-2 text-xs text-gold-600 hover:text-gold-800 underline">Saisir le prix manuellement</button>
       </div>
       {# Grille tarifaire #}
       <div class="mt-3 bg-dark-50 rounded-xl p-4">
@@ -172,9 +172,9 @@
             <div class="text-dark-400">15 – 17 km</div>
             <div class="font-bold text-dark-900 text-sm mt-0.5">{{ brackets.bracket_15_17|number_format(0) }} €</div>
           </div>
-          <div class="bg-eco-50 rounded-lg p-2.5 text-center border border-eco-200">
-            <div class="text-eco-600">&gt; 17 km</div>
-            <div class="font-bold text-eco-700 text-sm mt-0.5">{{ brackets.rate_per_km|number_format(2) }} €/km</div>
+          <div class="bg-gold-50 rounded-lg p-2.5 text-center border border-gold-200">
+            <div class="text-gold-600">&gt; 17 km</div>
+            <div class="font-bold text-gold-700 text-sm mt-0.5">{{ brackets.rate_per_km|number_format(2) }} €/km</div>
           </div>
         </div>
       </div>

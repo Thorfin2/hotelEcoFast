@@ -3,77 +3,91 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-<div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-navy-950">
+<div class="min-h-screen flex flex-col items-center justify-center px-4 py-12" style="background: linear-gradient(160deg, #0c1b2e 0%, #0d1e33 50%, #162840 100%);">
+
+  {# Texture subtile #}
+  <div class="absolute inset-0 opacity-[0.04]" style="background-image: radial-gradient(#c4905a 1px, transparent 1px); background-size: 32px 32px;"></div>
 
   {# Logo #}
-  <div class="mb-6 text-center" x-data="{ show: false }" x-init="setTimeout(() => show = true, 100)" x-show="show"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 -translate-y-4"
+  <div class="relative text-center mb-8"
+    x-data="{ show: false }" x-init="setTimeout(() => show = true, 80)" x-show="show"
+    x-transition:enter="transition ease-out duration-500"
+    x-transition:enter-start="opacity-0 -translate-y-5"
     x-transition:enter-end="opacity-100 translate-y-0">
-    <div class="inline-flex flex-col items-center gap-2 mb-3">
-      <img src="/images/logo.png" alt="" class="h-36 w-36 mx-auto drop-shadow-2xl" onerror="this.style.display='none'">
-    </div>
-    <p class="text-white/50 text-sm">Plateforme de gestion de transport hôtelier</p>
+    <img src="/images/logo.png" alt="" class="h-28 w-28 mx-auto drop-shadow-2xl rounded-full ring-2 ring-gold-500/20" onerror="this.style.display='none'">
+    <p class="text-white/40 text-xs mt-4 tracking-widest uppercase">Plateforme de transport hôtelier</p>
   </div>
 
   {# Login card #}
-  <div class="w-full sm:max-w-md px-6 py-6 bg-white shadow-xl overflow-hidden sm:rounded-xl"
-    x-data="{ show: false }" x-init="setTimeout(() => show = true, 200)" x-show="show"
-    x-transition:enter="transition ease-out duration-400"
-    x-transition:enter-start="opacity-0 translate-y-4"
+  <div class="relative w-full max-w-md"
+    x-data="{ show: false }" x-init="setTimeout(() => show = true, 180)" x-show="show"
+    x-transition:enter="transition ease-out duration-500"
+    x-transition:enter-start="opacity-0 translate-y-5"
     x-transition:enter-end="opacity-100 translate-y-0">
 
-    <h1 class="text-lg font-bold text-navy-900 mb-5">Connexion</h1>
+    {# Filet or en haut de la card #}
+    <div class="h-0.5 rounded-t-2xl" style="background: linear-gradient(90deg, transparent, #c4905a 40%, #e6bc5c 60%, transparent);"></div>
 
-    {% if error %}
-      <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 animate-fade-in">
-        <i class="fas fa-triangle-exclamation text-red-500"></i>
-        <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
-      </div>
-    {% endif %}
+    <div class="bg-white/98 rounded-b-2xl shadow-2xl px-8 py-8 backdrop-blur-sm">
 
-    <form method="post" class="space-y-4" action="{{ path('app_login') }}">
-      <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-      <div>
-        <label class="block text-sm font-medium text-dark-700 mb-1">
-          <i class="fas fa-envelope mr-1 text-dark-400"></i> Email
-        </label>
-        <input type="email" name="email" value="{{ last_username }}" autocomplete="email" required
-          class="form-input" placeholder="votre@email.com" autofocus>
+      <div class="mb-6">
+        <h1 class="text-xl font-bold" style="color:#0c1b2e;">Connexion</h1>
+        <p class="text-dark-400 text-sm mt-1">Accédez à votre espace de gestion</p>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-dark-700 mb-1">
-          <i class="fas fa-lock mr-1 text-dark-400"></i> Mot de passe
-        </label>
-        <div class="relative" x-data="{ show: false }">
-          <input :type="show ? 'text' : 'password'" name="password" autocomplete="current-password" required
-            class="form-input pr-10" placeholder="••••••••">
-          <button type="button" @click="show = !show"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 hover:text-dark-600">
-            <i :class="show ? 'fas fa-eye-slash' : 'fas fa-eye'" class="text-sm"></i>
-          </button>
+      {% if error %}
+        <div class="mb-5 p-3.5 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-fade-in">
+          <i class="fas fa-circle-exclamation text-red-500 flex-shrink-0"></i>
+          <p class="text-red-700 text-sm">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
         </div>
-      </div>
+      {% endif %}
 
-      <div class="flex items-center justify-between">
-        <label class="flex items-center gap-2 text-sm text-dark-500 cursor-pointer">
-          <input type="checkbox" name="_remember_me" class="rounded border-gray-300 text-eco-500 focus:ring-eco-400">
-          Se souvenir de moi
-        </label>
-        <a href="{{ path('app_forgot_password') }}" class="text-sm text-eco-600 hover:text-eco-700 transition-colors font-medium">
-          Mot de passe oublié ?
-        </a>
-      </div>
+      <form method="post" class="space-y-5" action="{{ path('app_login') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-      <button type="submit" class="btn-primary w-full py-2.5 text-sm">
-        <i class="fas fa-arrow-right-to-bracket"></i> Se connecter
-      </button>
-    </form>
+        <div>
+          <label class="block text-sm font-semibold text-dark-700 mb-1.5">
+            <i class="fas fa-envelope mr-1.5 text-dark-300 text-xs"></i>Adresse email
+          </label>
+          <input type="email" name="email" value="{{ last_username }}" autocomplete="email" required
+            class="form-input rounded-xl py-3" placeholder="votre@email.com" autofocus>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-sm font-semibold text-dark-700">
+              <i class="fas fa-lock mr-1.5 text-dark-300 text-xs"></i>Mot de passe
+            </label>
+            <a href="{{ path('app_forgot_password') }}" class="text-xs font-medium transition-colors" style="color:#c4905a;" onmouseover="this.style.color='#8a5630'" onmouseout="this.style.color='#c4905a'">
+              Mot de passe oublié ?
+            </a>
+          </div>
+          <div class="relative" x-data="{ show: false }">
+            <input :type="show ? 'text' : 'password'" name="password" autocomplete="current-password" required
+              class="form-input rounded-xl py-3 pr-11" placeholder="••••••••">
+            <button type="button" @click="show = !show"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-dark-300 hover:text-dark-600 transition-colors p-1">
+              <i :class="show ? 'fas fa-eye-slash' : 'fas fa-eye'" class="text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 text-sm text-dark-500 cursor-pointer select-none">
+            <input type="checkbox" name="_remember_me"
+              class="w-4 h-4 rounded border-dark-200 cursor-pointer"
+              style="accent-color: #c4905a;">
+            Se souvenir de moi
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3 rounded-xl text-sm font-semibold">
+          <i class="fas fa-arrow-right-to-bracket"></i> Se connecter
+        </button>
+      </form>
+    </div>
   </div>
 
-  <p class="text-center text-white/20 text-xs mt-6 mb-4">© 2026 Cabsolu</p>
+  <p class="relative text-center text-white/20 text-xs mt-8">© {{ 'now'|date('Y') }} Cabsolu — Tous droits réservés</p>
 </div>
-
 {% endblock %}

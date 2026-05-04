@@ -12,7 +12,7 @@
     {# Grille tarifaire #}
     <div class="card p-6">
       <h2 class="font-semibold text-dark-900 mb-1 flex items-center gap-2">
-        <i class="fas fa-table-list text-eco-500"></i> Grille tarifaire par tranche
+        <i class="fas fa-table-list text-gold-500"></i> Grille tarifaire par tranche
       </h2>
       <p class="text-dark-400 text-sm mb-5">Chaque tranche kilométrique a un forfait fixe. Au-delà de 17 km, le tarif au kilomètre s'applique.</p>
 
@@ -42,17 +42,17 @@
         {% endfor %}
 
         {# Au-delà #}
-        <div class="flex items-center gap-4 p-3 bg-eco-50 border border-eco-200 rounded-xl">
-          <div class="w-28 text-sm font-semibold text-eco-700 flex-shrink-0">
-            <i class="fas fa-route text-eco-400 mr-1.5 text-xs"></i>&gt; 17 km
+        <div class="flex items-center gap-4 p-3 bg-gold-50 border border-gold-200 rounded-xl">
+          <div class="w-28 text-sm font-semibold text-gold-700 flex-shrink-0">
+            <i class="fas fa-route text-gold-400 mr-1.5 text-xs"></i>&gt; 17 km
           </div>
           <div class="flex-1 flex items-center gap-2">
             <input type="number" name="rate_per_km" id="rate_per_km"
               value="{{ brackets.rate_per_km }}" step="0.1" min="0"
-              class="form-input w-28 text-right font-bold text-eco-700">
-            <span class="text-eco-600 text-sm font-medium">€ / km</span>
+              class="form-input w-28 text-right font-bold text-gold-700">
+            <span class="text-gold-600 text-sm font-medium">€ / km</span>
           </div>
-          <span class="text-xs text-eco-500 flex-shrink-0">Au km</span>
+          <span class="text-xs text-gold-500 flex-shrink-0">Au km</span>
         </div>
 
       </div>
@@ -95,7 +95,7 @@
           <span class="text-sm font-semibold text-dark-800 w-16" x-text="parseFloat(km).toFixed(1) + ' km'"></span>
         </div>
         <div class="flex-1 text-right">
-          <span class="text-2xl font-bold text-eco-700" x-text="price.toFixed(2) + ' €'"></span>
+          <span class="text-2xl font-bold text-gold-700" x-text="price.toFixed(2) + ' €'"></span>
         </div>
       </div>
       <div class="mt-2 text-xs text-dark-400" x-text="

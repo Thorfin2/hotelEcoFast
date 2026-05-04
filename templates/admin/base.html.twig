@@ -3,53 +3,53 @@
 {% block nav_links %}
   <a href="{{ path('admin_dashboard') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-gauge-high text-xs"></i> Dashboard
   </a>
   <a href="{{ path('admin_rides') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') starts with 'admin_ride' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') starts with 'admin_ride' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-car text-xs"></i> Courses
   </a>
   <a href="{{ path('admin_hotels') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') starts with 'admin_hotel' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') starts with 'admin_hotel' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-hotel text-xs"></i> Hôtels
   </a>
   <a href="{{ path('admin_drivers') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') starts with 'admin_driver' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') starts with 'admin_driver' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-id-card text-xs"></i> Chauffeurs
   </a>
   <a href="{{ path('admin_users') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') starts with 'admin_user' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') starts with 'admin_user' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-users text-xs"></i> Utilisateurs
   </a>
   <a href="{{ path('admin_commissions') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'admin_commissions' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'admin_commissions' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-euro-sign text-xs"></i> Commissions
   </a>
   <a href="{{ path('admin_notifications') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'admin_notifications' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'admin_notifications' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-bell text-xs"></i> Notifications
   </a>
   <a href="{{ path('admin_settings') }}"
     class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md transition-colors
-      {{ app.request.attributes.get('_route') == 'admin_settings' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
+      {{ app.request.attributes.get('_route') == 'admin_settings' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:text-white hover:bg-navy-800' }}">
     <i class="fas fa-gear text-xs"></i> Paramètres
   </a>
 {% endblock %}
 
 {% block mobile_nav %}
-  <a href="{{ path('admin_dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-gauge-high w-4"></i> Dashboard</a>
-  <a href="{{ path('admin_rides') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_ride' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-car w-4"></i> Courses</a>
-  <a href="{{ path('admin_hotels') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_hotel' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-hotel w-4"></i> Hôtels</a>
-  <a href="{{ path('admin_drivers') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_driver' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-id-card w-4"></i> Chauffeurs</a>
-  <a href="{{ path('admin_users') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_user' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-users w-4"></i> Utilisateurs</a>
-  <a href="{{ path('admin_commissions') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_commissions' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-euro-sign w-4"></i> Commissions</a>
-  <a href="{{ path('admin_notifications') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_notifications' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-bell w-4"></i> Notifications</a>
-  <a href="{{ path('admin_settings') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_settings' ? 'text-eco-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-gear w-4"></i> Paramètres</a>
+  <a href="{{ path('admin_dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_dashboard' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-gauge-high w-4"></i> Dashboard</a>
+  <a href="{{ path('admin_rides') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_ride' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-car w-4"></i> Courses</a>
+  <a href="{{ path('admin_hotels') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_hotel' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-hotel w-4"></i> Hôtels</a>
+  <a href="{{ path('admin_drivers') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_driver' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-id-card w-4"></i> Chauffeurs</a>
+  <a href="{{ path('admin_users') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') starts with 'admin_user' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-users w-4"></i> Utilisateurs</a>
+  <a href="{{ path('admin_commissions') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_commissions' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-euro-sign w-4"></i> Commissions</a>
+  <a href="{{ path('admin_notifications') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_notifications' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-bell w-4"></i> Notifications</a>
+  <a href="{{ path('admin_settings') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium {{ app.request.attributes.get('_route') == 'admin_settings' ? 'text-gold-400 bg-navy-800' : 'text-white/70 hover:bg-navy-800 hover:text-white' }}"><i class="fas fa-gear w-4"></i> Paramètres</a>
 {% endblock %}
