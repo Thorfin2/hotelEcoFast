@@ -80,6 +80,14 @@ class HotelController extends AbstractController
 
         $ride = new Ride();
         $ride->setHotel($hotel);
+
+        // Préremplir l'adresse de départ avec l'adresse de l'hôtel
+        if ($hotel->getAddress() && $hotel->getCity()) {
+            $ride->setPickupAddress($hotel->getAddress() . ', ' . $hotel->getCity());
+        } elseif ($hotel->getAddress()) {
+            $ride->setPickupAddress($hotel->getAddress());
+        }
+
         $form = $this->createForm(RideType::class, $ride);
         $form->handleRequest($request);
 
